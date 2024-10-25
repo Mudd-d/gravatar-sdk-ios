@@ -16,6 +16,7 @@ public enum VerticalContentPresentationStyle: Sendable, Equatable {
 /// Presentation styles supported for the horizontially scrolling content.
 public enum HorizontalContentPresentationStyle: String, Sendable, Equatable {
     /// Represents a bottom sheet with intrinsic height.
+    ///
     /// There are 2 size classes where this mode is inactive:
     ///  - Compact height: The sheet is displayed in full height.
     ///  - Regular width: The system ignores the intrinsic height and defaults to a full size sheet which is
