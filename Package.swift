@@ -35,8 +35,7 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
-            ],
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+            ]
         ),
         .testTarget(
             name: "GravatarTests",
@@ -52,8 +51,7 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")
-            ],
-            plugins: [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
+            ]
         ),
         .testTarget(
             name: "GravatarUITests",
