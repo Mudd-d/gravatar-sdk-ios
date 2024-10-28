@@ -1,4 +1,4 @@
-@testable import Gravatar
+import Gravatar
 import TestHelpers
 import XCTest
 
@@ -25,27 +25,26 @@ final class AvatarServiceTests: XCTestCase {
         let sessionMock = URLSessionMock(returnData: Bundle.imageUploadJsonData!, response: successResponse)
         let service = avatarService(with: sessionMock)
 
-        let avatar = try await service.upload(ImageHelper.testImage, accessToken: "AccessToken")
+        let avatar = try await service.upload(ImageHelper.testImage, selectionBehavior: .preserveSelection, accessToken: "AccessToken")
 
         XCTAssertEqual(avatar.id, "6f3eac1c67f970f2a0c2ea8")
 
         let request = await sessionMock.request
-        XCTAssertEqual(request?.url?.absoluteString, "https://api.gravatar.com/v3/me/avatars")
+        XCTAssertEqual(request?.url?.absoluteString, "https://api.gravatar.com/v3/me/avatars?select_avatar=false")
         XCTAssertNotNil(request?.value(forHTTPHeaderField: "Authorization"))
         XCTAssertTrue(request?.value(forHTTPHeaderField: "Authorization")?.hasPrefix("Bearer ") ?? false)
         XCTAssertNotNil(request?.value(forHTTPHeaderField: "Content-Type"))
         XCTAssertTrue(request?.value(forHTTPHeaderField: "Content-Type")?.hasPrefix("multipart/form-data; boundary=") ?? false)
-        XCTAssertTrue(request?.value(forHTTPHeaderField: "Client-Type") == "ios")
     }
 
     func testUploadImageError() async throws {
         let responseCode = 408
-        let successResponse = HTTPURLResponse.errorResponse(code: responseCode)
-        let sessionMock = URLSessionMock(returnData: "Error".data(using: .utf8)!, response: successResponse)
+        let errorResponse = HTTPURLResponse.errorResponse(code: responseCode)
+        let sessionMock = URLSessionMock(returnData: "Error".data(using: .utf8)!, response: errorResponse)
         let service = avatarService(with: sessionMock)
 
         do {
-            try await service.upload(ImageHelper.testImage, accessToken: "AccessToken")
+            try await service.upload(ImageHelper.testImage, selectionBehavior: .preserveSelection, accessToken: "AccessToken")
             XCTFail("This should throw an error")
         } catch ImageUploadError.responseError(reason: let reason) where reason.httpStatusCode == responseCode {
             // Expected error has occurred.
@@ -60,7 +59,7 @@ final class AvatarServiceTests: XCTestCase {
         let service = avatarService(with: sessionMock)
 
         do {
-            try await service.upload(UIImage(), accessToken: "AccessToken")
+            try await service.upload(UIImage(), selectionBehavior: .preserveSelection, accessToken: "AccessToken")
             XCTFail("This should throw an error")
         } catch let error as ImageUploadError {
             XCTAssertEqual(error, ImageUploadError.cannotConvertImageIntoData)
@@ -132,7 +131,6 @@ final class AvatarServiceTests: XCTestCase {
 }
 
 private func avatarService(with session: URLSessionProtocol, cache: ImageCaching? = nil) -> AvatarService {
-    let client = URLSessionHTTPClient(urlSession: session)
-    let service = AvatarService(client: client, cache: cache)
+    let service = AvatarService(urlSession: session, cache: cache)
     return service
 }

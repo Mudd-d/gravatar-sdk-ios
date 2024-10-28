@@ -1,12 +1,18 @@
 import SwiftUI
 
+struct FailedUploadInfo {
+    let avatarLocalID: String
+    let supportsRetry: Bool
+    let errorMessage: String
+}
+
 struct AvatarPickerAvatarView: View {
     let avatar: AvatarImageModel
     let maxLength: CGFloat
     let minLength: CGFloat
     let shouldSelect: () -> Bool
     let onAvatarTap: (AvatarImageModel) -> Void
-    let onRetryUpload: (AvatarImageModel) -> Void
+    let onFailedUploadTapped: (FailedUploadInfo) -> Void
 
     var body: some View {
         AvatarView(
@@ -28,18 +34,27 @@ struct AvatarPickerAvatarView: View {
         .aspectRatio(1, contentMode: .fill)
         .shape(
             RoundedRectangle(cornerRadius: AvatarGridConstants.avatarCornerRadius),
-            borderColor: .accentColor,
+            borderColor: Color(uiColor: .gravatarBlue),
             borderWidth: shouldSelect() ? AvatarGridConstants.selectedBorderWidth : 0
         )
         .overlay {
-            if avatar.isLoading {
+            switch avatar.state {
+            case .loading:
                 DimmingActivityIndicator()
                     .cornerRadius(AvatarGridConstants.avatarCornerRadius)
-            } else if avatar.uploadHasFailed {
-                DimmingRetryButton {
-                    onRetryUpload(avatar)
+            case .error(let supportsRetry, let errorMessage):
+                DimmingErrorButton {
+                    onFailedUploadTapped(
+                        .init(
+                            avatarLocalID: avatar.id,
+                            supportsRetry: supportsRetry,
+                            errorMessage: errorMessage
+                        )
+                    )
                 }
                 .cornerRadius(AvatarGridConstants.avatarCornerRadius)
+            case .loaded:
+                EmptyView()
             }
         }.onTapGesture {
             onAvatarTap(avatar)
@@ -52,7 +67,6 @@ struct AvatarPickerAvatarView: View {
     return AvatarPickerAvatarView(avatar: avatar, maxLength: AvatarGridConstants.maxAvatarWidth, minLength: AvatarGridConstants.minAvatarWidth) {
         false
     } onAvatarTap: { _ in
-
-    } onRetryUpload: { _ in
+    } onFailedUploadTapped: { _ in
     }
 }
