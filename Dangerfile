@@ -10,5 +10,7 @@ rubocop.lint(files: [], force_exclusion: true, inline_comment: true, fail_on_inl
 manifest_pr_checker.check_gemfile_lock_updated
 
 labels_checker.check(
-  do_not_merge_labels: ['do not merge']
+  do_not_merge_labels: ['do not merge'],
+  required_labels: [//], # At least one label, regardless of its name
+  required_labels_error: "You need to add at least one label to this PR",
 )
