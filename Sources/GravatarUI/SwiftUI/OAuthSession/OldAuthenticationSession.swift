@@ -10,13 +10,32 @@ actor OldAuthenticationSession: Sendable {
     let context = WebAuthenticationPresentationContextProvider()
     var session: ASWebAuthenticationSession?
 
-    func authenticate(using url: URL, callbackURLScheme: String) async throws -> URL {
+    func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
-            session = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackURLScheme) { callbackURL, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else if let callbackURL {
-                    continuation.resume(returning: callbackURL)
+            if #available(iOS 17.4, *) {
+                let callback: ASWebAuthenticationSession.Callback = {
+                    if callbackURLComponents.scheme == "https", let host = callbackURLComponents.host {
+                        return .https(host: host, path: callbackURLComponents.path)
+                    } else {
+                        return .customScheme(callbackURLComponents.scheme ?? "")
+                    }
+                }()
+
+                session = ASWebAuthenticationSession(url: url, callback: callback) { callbackURL, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else if let callbackURL {
+                        continuation.resume(returning: callbackURL)
+                    }
+                }
+
+            } else {
+                session = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackURLComponents.scheme) { callbackURL, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else if let callbackURL {
+                        continuation.resume(returning: callbackURL)
+                    }
                 }
             }
 

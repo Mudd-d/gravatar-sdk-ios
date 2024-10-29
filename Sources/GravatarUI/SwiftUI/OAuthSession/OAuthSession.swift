@@ -56,7 +56,7 @@ public struct OAuthSession: Sendable {
     }
 
     func retrieveAccessToken(with email: Email) async throws {
-        guard let secrets = await Configuration.shared.oauthSecrets else {
+        guard let secrets = await Configuration.shared.oauthSecrets, let components = secrets.callbackURLComponents else {
             assertionFailure("Trying to retrieve access token without configuring oauth secrets.")
             throw OAuthError.notConfigured
         }
@@ -64,7 +64,7 @@ public struct OAuthSession: Sendable {
         await emailStorage.save(email)
         do {
             let url = try oauthURL(with: email, secrets: secrets)
-            let callbackURL = try await authenticationSession.authenticate(using: url, callbackURLScheme: secrets.callbackScheme)
+            let callbackURL = try await authenticationSession.authenticate(using: url, callbackURLComponents: components)
             _ = await Self.handleCallback(callbackURL)
         } catch {
             throw OAuthError.from(error: error)
@@ -245,7 +245,7 @@ extension [URLQueryItem] {
 }
 
 protocol AuthenticationSession: Sendable {
-    func authenticate(using url: URL, callbackURLScheme: String) async throws -> URL
+    func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL
     func cancel() async
 }
 
