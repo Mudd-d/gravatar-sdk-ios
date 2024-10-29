@@ -1,16 +1,12 @@
-//
-//  MainTableViewController.swift
-//  Gravatar-Demo
-//
-//  Created by Pinar Olguc on 24.01.2024.
-//
 
 import Foundation
 import UIKit
+import SwiftUI
 
 class MainTableViewController: UITableViewController {
 
     enum Row: Int, CaseIterable {
+        case swiftUI
         case imageDownloadNetworking
         case uiImageViewExtension
         case fetchProfile
@@ -64,6 +60,8 @@ class MainTableViewController: UITableViewController {
         case .imageCropper:
             content.text = "Image Cropper"
         #endif
+        case .swiftUI:
+            content.text = "Swift UI"
         }
         cell.contentConfiguration = content
         return cell
@@ -98,6 +96,12 @@ class MainTableViewController: UITableViewController {
         case .imageCropper:
             navigationController?.pushViewController(DemoImageCropperViewController(), animated: true)
         #endif
+            case .swiftUI:
+                let swiftUIContentController = UIHostingController(rootView: ContentView(onDismiss: { [weak self] in
+                    self?.dismiss(animated: true)
+                }))
+                swiftUIContentController.modalPresentationStyle = .fullScreen
+                present(swiftUIContentController, animated: true)
         }
     }
 }

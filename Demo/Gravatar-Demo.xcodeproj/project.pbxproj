@@ -12,6 +12,13 @@
 		1E3FA2402C74B8CC002901F2 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA23F2C74B8CC002901F2 /* Secrets.swift */; };
 		1E3FA2412C74E539002901F2 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA23F2C74B8CC002901F2 /* Secrets.swift */; };
 		1E3FA2452C75E403002901F2 /* DemoProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */; };
+		1E62631C2CD13DB700FC362F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C5D60F2B5B33E20067C2A8 /* ContentView.swift */; };
+		1E62631D2CD13DB700FC362F /* DemoAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9146A7AD2C3BD8F000E07C63 /* DemoAvatarView.swift */; };
+		1E62631E2CD13DB700FC362F /* DemoAvatarPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91B73B362C404F6E00E7D325 /* DemoAvatarPickerView.swift */; };
+		1E62631F2CD13DB700FC362F /* DemoProfileEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */; };
+		1E6263202CD13DB700FC362F /* QEContentLayoutPickerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9133DF1D2CA54E080028196F /* QEContentLayoutPickerRow.swift */; };
+		1E6263212CD13DB700FC362F /* QEColorSchemePickerRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 919C70562CAAF28E0036B03C /* QEColorSchemePickerRow.swift */; };
+		1E6263222CD13DB700FC362F /* TestImageCropper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 917DEEC82C7F619100E43774 /* TestImageCropper.swift */; };
 		1EA26DE22CA5677700AACF58 /* DemoQuickEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E93D3C82CA566D90085139A /* DemoQuickEditorViewController.swift */; };
 		1ECAB5072BC984440043A331 /* DemoProfileConfigurationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECAB5062BC984440043A331 /* DemoProfileConfigurationViewController.swift */; };
 		49018E2D2C8110C600B1207D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 49018E2B2C8110C600B1207D /* Localizable.strings */; };
@@ -448,6 +455,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E62631C2CD13DB700FC362F /* ContentView.swift in Sources */,
+				1E62631D2CD13DB700FC362F /* DemoAvatarView.swift in Sources */,
+				1E62631E2CD13DB700FC362F /* DemoAvatarPickerView.swift in Sources */,
+				1E62631F2CD13DB700FC362F /* DemoProfileEditorView.swift in Sources */,
+				1E6263202CD13DB700FC362F /* QEContentLayoutPickerRow.swift in Sources */,
+				1E6263212CD13DB700FC362F /* QEColorSchemePickerRow.swift in Sources */,
+				1E6263222CD13DB700FC362F /* TestImageCropper.swift in Sources */,
 				91F0B3DD2B62815F0025C4F8 /* MainTableViewController.swift in Sources */,
 				1E3FA2412C74E539002901F2 /* Secrets.swift in Sources */,
 				914AC0192BD7FF08005DA4A5 /* DemoBaseProfileViewController.swift in Sources */,
