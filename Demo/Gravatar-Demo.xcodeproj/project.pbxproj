@@ -169,6 +169,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E1646B12CD14B460015B720 /* SwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				49C5D60F2B5B33E20067C2A8 /* ContentView.swift */,
+				9146A7AD2C3BD8F000E07C63 /* DemoAvatarView.swift */,
+				91B73B362C404F6E00E7D325 /* DemoAvatarPickerView.swift */,
+				1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */,
+				9133DF1A2CA54D1B0028196F /* QELayoutOptions.swift */,
+				9133DF1D2CA54E080028196F /* QEContentLayoutPickerRow.swift */,
+				919C70562CAAF28E0036B03C /* QEColorSchemePickerRow.swift */,
+				917DEEC82C7F619100E43774 /* TestImageCropper.swift */,
+			);
+			path = SwiftUI;
+			sourceTree = "<group>";
+		};
 		4948C4EA2B61C41100AC4875 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -180,18 +195,10 @@
 			isa = PBXGroup;
 			children = (
 				49C5D60D2B5B33E20067C2A8 /* DemoApp.swift */,
-				49C5D60F2B5B33E20067C2A8 /* ContentView.swift */,
-				9146A7AD2C3BD8F000E07C63 /* DemoAvatarView.swift */,
-				91B73B362C404F6E00E7D325 /* DemoAvatarPickerView.swift */,
-				1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */,
 				49C5D6112B5B33E20067C2A8 /* Assets.xcassets */,
 				49C5D6132B5B33E20067C2A8 /* Preview Content */,
 				49EFFB572C51AA3E0086589A /* Gravatar-SwiftUI-Demo.Base.xcconfig */,
 				3FD478222C51D7E20071B8B9 /* Gravatar-SwiftUI-Demo.Release.xcconfig */,
-				9133DF1A2CA54D1B0028196F /* QELayoutOptions.swift */,
-				9133DF1D2CA54E080028196F /* QEContentLayoutPickerRow.swift */,
-				919C70562CAAF28E0036B03C /* QEColorSchemePickerRow.swift */,
-				917DEEC82C7F619100E43774 /* TestImageCropper.swift */,
 			);
 			path = "Gravatar-SwiftUI-Demo";
 			sourceTree = "<group>";
@@ -199,6 +206,7 @@
 		495775E02B5B34970082812A /* Gravatar-UIKit-Demo */ = {
 			isa = PBXGroup;
 			children = (
+				1E1646B12CD14B460015B720 /* SwiftUI */,
 				91956A502B67939F00BF3CF0 /* Common */,
 				495775E12B5B34970082812A /* AppDelegate.swift */,
 				91F0B3E12B6281A60025C4F8 /* Main.storyboard */,
