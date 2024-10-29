@@ -12,7 +12,6 @@ DERIVED_DATA_FOLDER = File.join(BUILD_FOLDER, 'derived-data')
 ARTIFACTS_FOLDER = File.join(BUILD_FOLDER, 'artifacts')
 XCODEPROJ_PATH = File.join(PROJECT_ROOT_FOLDER, 'Gravatar-Demo.xcodeproj')
 DEMO_APPS_SOURCES_FOLDER = File.join(PROJECT_ROOT_FOLDER, 'Demo')
-XCCONFIG_PROTOTYPE_BUILD_SWIFTUI = File.join(DEMO_APPS_SOURCES_FOLDER, 'Gravatar-SwiftUI-Demo', 'Gravatar-SwiftUI-Demo.Release.xcconfig')
 XCCONFIG_PROTOTYPE_BUILD_UIKIT = File.join(DEMO_APPS_SOURCES_FOLDER, 'Gravatar-UIKit-Demo', 'Gravatar-UIKit-Demo.Release.xcconfig')
 COMMON_XCARGS = ['-skipPackagePluginValidation'].freeze # Allow SwiftPM plugins (e.g. swiftlint) called from Xcode to be used on CI without prior manual approval
 
@@ -100,7 +99,7 @@ platform :ios do
 
   desc 'Upload the demo app with the given name to App Center'
   lane :upload_demo_to_appcenter do |name:, build_number:|
-    UI.user_error!("Unsupported name #{name}") unless %w[SwiftUI UIKit].include? name
+    UI.user_error!("Unsupported name #{name}") unless %w[UIKit].include? name
 
     slug = "Gravatar-SDK-Demo-#{name}"
     upload_to_appcenter(appcenter_slug: slug, artifact_basename: "Gravatar #{name}")
@@ -124,15 +123,10 @@ platform :ios do
     # Which suggest the authenticated session from the first call was not carried over to the second.
     configure_code_signing(
       bundle_ids: [
-        bundle_id_prototype_build_swiftui!,
         bundle_id_prototype_build_uikit!
       ],
       readonly: readonly
     )
-  end
-
-  lane :configure_code_signing_prototype_build_swiftui do |readonly: true|
-    configure_code_signing(bundle_ids: [bundle_id_prototype_build_swiftui!], readonly: readonly)
   end
 
   lane :configure_code_signing_prototype_build_uikit do |readonly: true|
@@ -214,10 +208,6 @@ end
 
 def team_id_prototype_build!
   read_from_xcconfig!(key: 'DEVELOPMENT_TEAM', xcconfig: File.join(DEMO_APPS_SOURCES_FOLDER, 'Enterprise.xcconfig'))
-end
-
-def bundle_id_prototype_build_swiftui!
-  read_from_xcconfig!(key: 'PRODUCT_BUNDLE_IDENTIFIER', xcconfig: XCCONFIG_PROTOTYPE_BUILD_SWIFTUI)
 end
 
 def bundle_id_prototype_build_uikit!
