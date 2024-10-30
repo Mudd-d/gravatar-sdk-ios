@@ -36,8 +36,12 @@ class MainTableViewController: UITableViewController {
         guard let row = Row(rawValue: indexPath.row) else { return UITableViewCell() }
         let cell = tableView.dequeueReusableCell(withIdentifier: Self.reuseID, for: indexPath)
         var content = cell.defaultContentConfiguration()
+        cell.accessoryType = .disclosureIndicator
 
         switch row {
+        case .swiftUI:
+            content.text = "SwiftUI Demos"
+            cell.accessoryType = .none
         case .imageDownloadNetworking:
             content.text = "Image download - Networking"
         case .uiImageViewExtension:
@@ -60,8 +64,6 @@ class MainTableViewController: UITableViewController {
         case .imageCropper:
             content.text = "Image Cropper"
         #endif
-        case .swiftUI:
-            content.text = "Swift UI"
         }
         cell.contentConfiguration = content
         return cell
@@ -71,6 +73,12 @@ class MainTableViewController: UITableViewController {
         guard let row = Row(rawValue: indexPath.row) else { return }
         
         switch row {
+        case .swiftUI:
+            let swiftUIContentViewController = UIHostingController(rootView: ContentView(onDismiss: { [weak self] in
+                self?.dismiss(animated: true)
+            }))
+            swiftUIContentViewController.modalPresentationStyle = .fullScreen
+            present(swiftUIContentViewController, animated: true)
         case .imageDownloadNetworking:
             let vc = DemoAvatarDownloadViewController()
             navigationController?.pushViewController(vc, animated: true)
@@ -96,12 +104,6 @@ class MainTableViewController: UITableViewController {
         case .imageCropper:
             navigationController?.pushViewController(DemoImageCropperViewController(), animated: true)
         #endif
-            case .swiftUI:
-                let swiftUIContentController = UIHostingController(rootView: ContentView(onDismiss: { [weak self] in
-                    self?.dismiss(animated: true)
-                }))
-                swiftUIContentController.modalPresentationStyle = .fullScreen
-                present(swiftUIContentController, animated: true)
         }
     }
 }
