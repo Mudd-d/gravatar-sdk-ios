@@ -66,19 +66,19 @@ steps:
   ###################
   - group: ":appcenter: Prototype Builds"
     steps:
-      - label: "🛠️ Build UIKit Demo"
-        key: build_uikit
+      - label: "🛠️ Build Demo"
+        key: build_demo
         depends_on: test
         plugins: [$CI_TOOLKIT]
         command: |
           install_gems
-          BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution-uikit
+          BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution
         artifact_paths:
           - ".build/artifacts/*.ipa"
           - ".build/artifacts/*.dSYM.zip"
 
-      - label: "⬆️ Upload UIKit Demo to App Center"
-        depends_on: build_uikit
+      - label: "⬆️ Upload Demo to App Center"
+        depends_on: build_demo
         plugins: [$CI_TOOLKIT]
-        command: .buildkite/commands/upload-to-appcenter.sh UIKit
+        command: .buildkite/commands/upload-to-appcenter.sh
         if: build.pull_request.id != null

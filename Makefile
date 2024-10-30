@@ -23,7 +23,7 @@ OPENAPI_CLIENT_PROPERTIES ?= projectName=$(OPENAPI_PROJECT_NAME),useSPMFileStruc
 CURRENT_MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_MAKEFILE_DIR := $(patsubst %/,%,$(dir $(CURRENT_MAKEFILE_PATH)))
 
-SCHEME_DEMO_UIKIT = Gravatar-UIKit-Demo
+SCHEME_DEMO = "Gravatar Demo"
 
 # If no target is specified, display help
 .DEFAULT_GOAL := help
@@ -42,16 +42,12 @@ dev-demo: # Open an xcode project with the package and a demo project
 test: bundle-install
 	bundle exec fastlane test
 
-build-demo: build-demo-uikit
+build-demo: bundle-install
+	bundle exec fastlane build_demo scheme:$(SCHEME_DEMO)
 
-build-demo-uikit: bundle-install
-	bundle exec fastlane build_demo scheme:$(SCHEME_DEMO_UIKIT)
-
-build-demo-for-distribution: build-demo-for-distribution-uikit
-
-build-demo-for-distribution-uikit: fetch-code-signing check-build-number setup-secrets
+build-demo-for-distribution: fetch-code-signing check-build-number setup-secrets
 	bundle exec fastlane build_demo_for_distribution \
-		scheme:$(SCHEME_DEMO_UIKIT) \
+		scheme:$(SCHEME_DEMO) \
 		build_number:$(BUILD_NUMBER)
 
 check-build-number:
