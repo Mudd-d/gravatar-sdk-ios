@@ -99,12 +99,12 @@ platform :ios do
 
   desc 'Upload the demo app with the given name to App Center'
   lane :upload_demo_to_appcenter do |build_number:|
-    slug = "Gravatar-SDK-Demo"
-    upload_to_appcenter(appcenter_slug: slug, artifact_basename: "Gravatar Demo")
+    slug = 'Gravatar-SDK-Demo'
+    upload_to_appcenter(appcenter_slug: slug, artifact_basename: 'Gravatar Demo')
 
     next unless is_ci
 
-    annotate_pr_with_appcenter_link()
+    annotate_pr_with_appcenter_link
     annotate_buildkite_with_appcenter_link(appcenter_slug: slug, build_number: build_number)
   end
 
@@ -171,9 +171,9 @@ def upload_to_appcenter(appcenter_slug:, artifact_basename:)
   )
 end
 
-def annotate_pr_with_appcenter_link()
+def annotate_pr_with_appcenter_link
   comment_body = prototype_build_details_comment(
-    app_display_name: "Gravatar Prototype Build",
+    app_display_name: 'Gravatar Prototype Build',
     app_center_org_name: APPCENTER_OWNER_NAME,
     fold: true
   )
@@ -181,7 +181,7 @@ def annotate_pr_with_appcenter_link()
   comment_on_pr(
     project: GITHUB_REPO,
     pr_number: Integer(ENV.fetch('BUILDKITE_PULL_REQUEST', nil)),
-    reuse_identifier: "prototype-build-link-gravtar-demo",
+    reuse_identifier: 'prototype-build-link-gravtar-demo',
     body: comment_body
   )
 end
