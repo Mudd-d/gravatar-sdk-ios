@@ -99,7 +99,7 @@ platform :ios do
 
   desc 'Upload the demo app with the given name to App Center'
   lane :upload_demo_to_appcenter do |build_number:|
-    slug = 'Gravatar-SDK-Demo'
+    slug = 'Gravatar-SDK-Demo-UIKit'
     upload_to_appcenter(appcenter_slug: slug, artifact_basename: 'Gravatar Demo')
 
     next unless is_ci
