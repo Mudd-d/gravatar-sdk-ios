@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 
 echo "--- :arrow_down: Downloading Prototype Build"
-buildkite-agent artifact download ".build/artifacts/*.ipa" . --step "build"
-buildkite-agent artifact download ".build/artifacts/*.app.dSYM.zip" . --step "build"
+buildkite-agent artifact download ".build/artifacts/*.ipa" . --step "build_demo"
+buildkite-agent artifact download ".build/artifacts/*.app.dSYM.zip" . --step "build_demo"
 
 echo "--- :rubygems: Setting up Gems"
 install_gems
