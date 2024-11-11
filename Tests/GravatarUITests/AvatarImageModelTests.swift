@@ -1,6 +1,6 @@
-import Testing
-import TestHelpers
 @testable import GravatarUI
+import TestHelpers
+import Testing
 
 struct AvatarImageModelTests {
     @Test("Check URL exists")
@@ -35,11 +35,9 @@ struct AvatarImageModelTests {
 
         let loadedModel = model.settingStatus(to: .error(supportsRetry: true, errorMessage: "Some Error"))
         switch loadedModel.state {
-            case .error:
-                #expect(Bool(true))
-            default: #expect(Bool(false), "The state should be .error")
+        case .error:
+            #expect(Bool(true))
+        default: #expect(Bool(false), "The state should be .error")
         }
     }
 }
-
-

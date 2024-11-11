@@ -1,13 +1,13 @@
-import Testing
-import TestHelpers
 @testable import GravatarUI
+import TestHelpers
+import Testing
 
 let initialAvatars: [AvatarImageModel] = [
     .init(id: "0", source: .remote(url: "https://example.com/1.jpg")),
     .init(id: "1", source: .remote(url: "https://example.com/1.jpg"), isSelected: true),
     .init(id: "2", source: .remote(url: "https://example.com/1.jpg")),
     .init(id: "3", source: .remote(url: "https://example.com/1.jpg")),
-    .init(id: "4", source: .remote(url: "https://example.com/1.jpg"))
+    .init(id: "4", source: .remote(url: "https://example.com/1.jpg")),
 ]
 
 let initiallySelectedAvatarID = "1"
@@ -81,9 +81,9 @@ struct AvatarGridModelTests {
 
     @Test("Test set state of non-existent avatar does nothing")
     func testAvatarGridModelSetStateNonExistent() async throws {
-        #expect(!model.avatars.compactMap { $0.state }.contains(.loading))
+        #expect(!model.avatars.compactMap(\.state).contains(.loading))
         model.setState(to: .loading, onAvatarWithID: "non_existent")
-        #expect(!model.avatars.compactMap { $0.state }.contains(.loading), "Should not ")
+        #expect(!model.avatars.compactMap(\.state).contains(.loading), "Should not ")
     }
 
     @Test("Test remove function")
