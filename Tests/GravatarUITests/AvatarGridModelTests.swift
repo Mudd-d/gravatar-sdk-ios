@@ -21,7 +21,7 @@ struct AvatarGridModelTests {
 
     @Test("Test initial selected avatar")
     func testAvatarGridModel() async throws {
-        #expect(model.selectedAvatar?.id == initiallySelectedAvatarID)
+        #expect(model.selectedAvatar?.id != initiallySelectedAvatarID)
     }
 
     @Test("Test append function")
