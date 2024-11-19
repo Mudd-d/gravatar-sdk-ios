@@ -1,6 +1,8 @@
 import PhotosUI
 import SwiftUI
 
+import ImagePlayground
+
 struct SystemImagePickerView<Label, ImageEditor: ImageEditorView>: View where Label: View {
     @ViewBuilder var label: () -> Label
     var customEditor: ImageEditorBlock<ImageEditor>?
@@ -22,12 +24,14 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
     }
 
     @State var isPresented = false
+    @State var isPlaygroundPresented = false
     @State private var sourceType: SourceType?
 
     @ViewBuilder var label: () -> Label
     let onImageSelected: (UIImage) -> Void
     var customEditor: ImageEditorBlock<ImageEditor>?
     @State var imagePickerSelectedItem: ImagePickerItem?
+    @State var playgroundSelectedItem: ImagePickerItem?
 
     var body: some View {
         VStack {
@@ -40,33 +44,62 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
                         SwiftUI.Label(source.localizedTitle, systemImage: source.iconName)
                     }
                 }
+                if #available(iOS 18.2, *) {
+                    if EnvironmentValues().supportsImagePlayground {
+                        Button {
+                            isPlaygroundPresented = true
+                        } label: {
+                            SwiftUI.Label(ImagePickerLocalized.playgroundMenuTitle, systemImage: "apple.image.playground")
+                        }
+                    }
+                }
             } label: {
                 label()
             }
         }
+        .imagePlaygroundSheetIfAvailable(
+            isPresented: $isPlaygroundPresented,
+            sourceImage: nil,
+            onCompletion: { url in
+                if let image = UIImage(contentsOfFile: url.relativePath) {
+                    playgroundSelectedItem = ImagePickerItem(id: url.absoluteString, image: image)
+                }
+            },
+            onCancellation: {}
+        )
+        .sheet(item: $playgroundSelectedItem, content: { item in
+            imageEditor(with: item)
+        })
         .sheet(item: $sourceType, content: { source in
             // This allows to present different kind of pickers for different sources.
             displayImagePicker(for: source)
                 .sheet(item: $imagePickerSelectedItem, content: { item in
-                    if let customEditor {
-                        customEditor(item.image) { editedImage in
-                            self.onImageEdited(editedImage)
-                        }
-                    } else {
-                        ImageCropper(inputImage: item.image) { croppedImage in
-                            Task {
-                                await self.onImageEdited(croppedImage)
-                            }
-                        } onCancel: {
-                            imagePickerSelectedItem = nil
-                        }.ignoresSafeArea()
-                    }
+                    imageEditor(with: item)
                 })
         })
     }
 
+    @ViewBuilder
+    func imageEditor(with item: ImagePickerItem) -> some View {
+        if let customEditor {
+            customEditor(item.image) { editedImage in
+                self.onImageEdited(editedImage)
+            }
+        } else {
+            ImageCropper(inputImage: item.image) { croppedImage in
+                Task {
+                    await self.onImageEdited(croppedImage)
+                }
+            } onCancel: {
+                imagePickerSelectedItem = nil
+                playgroundSelectedItem = nil
+            }.ignoresSafeArea()
+        }
+    }
+
     private func onImageEdited(_ image: UIImage) {
         imagePickerSelectedItem = nil
+        playgroundSelectedItem = nil
         sourceType = nil
         onImageSelected(image)
     }
@@ -96,6 +129,14 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
         }
         imagePickerSelectedItem = item
     }
+}
+
+private enum ImagePickerLocalized {
+    static let playgroundMenuTitle: String = SDKLocalizedString(
+        "SystemImagePickerView.Source.Playground.title",
+        value: "Playground",
+        comment: "An option to show the image playground"
+    )
 }
 
 extension ImagePicker.SourceType {
