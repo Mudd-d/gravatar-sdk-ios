@@ -120,19 +120,6 @@ extension View {
         }
     }
 
-    /// Conditionally applies a modifier to the view.
-    @ViewBuilder
-    func `if`(
-        _ condition: () -> Bool,
-        transform: (Self) -> some View
-    ) -> some View {
-        if condition() {
-            transform(self)
-        } else {
-            self
-        }
-    }
-
     @ViewBuilder
     public func imagePlaygroundSheetIfAvailable(
         isPresented: Binding<Bool>,
