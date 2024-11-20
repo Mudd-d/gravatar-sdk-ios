@@ -34,7 +34,6 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
         }
     }
 
-    @State var isPresented = false
     @State private var sourceType: SourceType?
 
     @ViewBuilder var label: () -> Label
@@ -49,7 +48,6 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
                 ForEach(SourceType.allCases) { source in
                     Button {
                         sourceType = source
-                        isPresented = true
                     } label: {
                         SwiftUI.Label(source.localizedTitle, systemImage: source.iconName)
                     }
