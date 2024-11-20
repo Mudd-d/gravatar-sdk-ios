@@ -140,14 +140,6 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
     }
 }
 
-private enum ImagePickerLocalized {
-    static let playgroundMenuTitle: String = SDKLocalizedString(
-        "SystemImagePickerView.Source.Playground.title",
-        value: "Playground",
-        comment: "An option to show the image playground"
-    )
-}
-
 extension ImagePicker.SourceType {
     var iconName: String {
         switch self {
