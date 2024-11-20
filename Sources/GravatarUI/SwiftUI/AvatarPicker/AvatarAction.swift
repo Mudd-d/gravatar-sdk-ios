@@ -20,13 +20,13 @@ enum AvatarAction: String, CaseIterable, Identifiable {
         switch self {
         case .delete:
             SDKLocalizedString(
-                "AvatarAction.delete",
+                "AvatarPicker.AvatarAction.delete",
                 value: "Delete",
                 comment: "An option in the avatar menu that deletes the avatar"
             )
         case .share:
             SDKLocalizedString(
-                "AvatarAction.share",
+                "AvatarPicker.AvatarAction.share",
                 value: "Share",
                 comment: "An option in the avatar menu that shares the avatar"
             )
