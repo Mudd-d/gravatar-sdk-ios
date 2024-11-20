@@ -1,7 +1,6 @@
+import ImagePlayground
 import PhotosUI
 import SwiftUI
-
-import ImagePlayground
 
 struct SystemImagePickerView<Label, ImageEditor: ImageEditorView>: View where Label: View {
     @ViewBuilder var label: () -> Label
