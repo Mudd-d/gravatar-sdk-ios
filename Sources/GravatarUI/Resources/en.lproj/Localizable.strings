@@ -106,3 +106,6 @@
 /* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
 "SystemImagePickerView.Source.PhotoLibrary.title" = "Choose a Photo";
 
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
+
