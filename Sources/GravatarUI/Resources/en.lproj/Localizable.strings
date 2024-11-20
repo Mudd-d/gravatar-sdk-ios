@@ -1,3 +1,9 @@
+/* An option in the avatar menu that deletes the avatar */
+"AvatarAction.delete" = "Delete";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarAction.share" = "Share";
+
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "Login required";
 
