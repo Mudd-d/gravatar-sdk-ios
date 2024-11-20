@@ -17,6 +17,17 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
     enum SourceType: CaseIterable, Identifiable {
         case photoLibrary
         case camera
+        case playground
+
+        static var allCases: [SourceType] {
+            var cases: [SourceType] = [.camera, .photoLibrary]
+            if #available(iOS 18.2, *) {
+                if EnvironmentValues().supportsImagePlayground {
+                    cases.append(.playground)
+                }
+            }
+            return cases
+        }
 
         var id: Int {
             self.hashValue
@@ -24,7 +35,6 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
     }
 
     @State var isPresented = false
-    @State var isPlaygroundPresented = false
     @State private var sourceType: SourceType?
 
     @ViewBuilder var label: () -> Label
@@ -44,21 +54,15 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
                         SwiftUI.Label(source.localizedTitle, systemImage: source.iconName)
                     }
                 }
-                if #available(iOS 18.2, *) {
-                    if EnvironmentValues().supportsImagePlayground {
-                        Button {
-                            isPlaygroundPresented = true
-                        } label: {
-                            SwiftUI.Label(ImagePickerLocalized.playgroundMenuTitle, systemImage: "apple.image.playground")
-                        }
-                    }
-                }
             } label: {
                 label()
             }
         }
         .imagePlaygroundSheetIfAvailable(
-            isPresented: $isPlaygroundPresented,
+            isPresented: Binding(
+                get: { sourceType == .playground },
+                set: { if !$0 { sourceType = nil } }
+            ),
             sourceImage: nil,
             onCompletion: { url in
                 if let image = UIImage(contentsOfFile: url.relativePath) {
@@ -70,13 +74,19 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
         .sheet(item: $playgroundSelectedItem, content: { item in
             imageEditor(with: item)
         })
-        .sheet(item: $sourceType, content: { source in
-            // This allows to present different kind of pickers for different sources.
-            displayImagePicker(for: source)
-                .sheet(item: $imagePickerSelectedItem, content: { item in
-                    imageEditor(with: item)
-                })
-        })
+        .sheet(
+            item: Binding(
+                get: { sourceType != .playground ? sourceType : nil },
+                set: { sourceType = $0 }
+            ),
+            content: { source in
+                // This allows to present different kind of pickers for different sources.
+                displayImagePicker(for: source)
+                    .sheet(item: $imagePickerSelectedItem, content: { item in
+                        imageEditor(with: item)
+                    })
+            }
+        )
     }
 
     @ViewBuilder
@@ -120,6 +130,8 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
             } onCancel: {
                 sourceType = nil
             }.ignoresSafeArea()
+        case .playground:
+            EmptyView()
         }
     }
 
@@ -146,6 +158,8 @@ extension ImagePicker.SourceType {
             "camera"
         case .photoLibrary:
             "photo.on.rectangle.angled"
+        case .playground:
+            "apple.image.playground"
         }
     }
 
@@ -163,13 +177,12 @@ extension ImagePicker.SourceType {
                 value: "Take a Photo",
                 comment: "An option in a menu that will display the camera for taking a picture"
             )
-        }
-    }
-
-    func map() -> UIImagePickerController.SourceType {
-        switch self {
-        case .photoLibrary: .photoLibrary
-        case .camera: .camera
+        case .playground:
+            SDKLocalizedString(
+                "SystemImagePickerView.Source.Playground.title",
+                value: "Playground",
+                comment: "An option to show the image playground"
+            )
         }
     }
 }
