@@ -25,6 +25,13 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         return URL(string: url)
     }
 
+    var shareURL: URL? {
+        guard case .remote(let url) = source else {
+            return nil
+        }
+        return URLComponents(string: url)?.replacingQueryItem(name: "size", value: "max").url
+    }
+
     var localImage: Image? {
         guard case .local(let image) = source else {
             return nil
@@ -47,6 +54,6 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
     }
 
     func settingStatus(to newStatus: State) -> AvatarImageModel {
-        AvatarImageModel(id: id, source: source, state: newStatus)
+        AvatarImageModel(id: id, source: source, state: newStatus, isSelected: isSelected)
     }
 }
