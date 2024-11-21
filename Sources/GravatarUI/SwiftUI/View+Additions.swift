@@ -107,6 +107,7 @@ extension View {
         }
     }
 
+    /// Applies detents for iOS 16+.
     func presentationDetentsIfAvailable(_ detents: [QEDetent]) -> some View {
         if #available(iOS 16.0, *) {
             return self.presentationDetents(detents.map())
