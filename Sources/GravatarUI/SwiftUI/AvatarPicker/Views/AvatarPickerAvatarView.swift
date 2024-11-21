@@ -68,7 +68,6 @@ struct AvatarPickerAvatarView: View {
         }
     }
 
-    @ViewBuilder
     func ellipsisView() -> some View {
         Image("more-horizontal", bundle: Bundle.module).renderingMode(.template)
             .tint(.white)
@@ -77,7 +76,6 @@ struct AvatarPickerAvatarView: View {
             .padding(CGFloat.DS.Padding.half)
     }
 
-    @ViewBuilder
     func actionsMenu() -> some View {
         Menu {
             ForEach(AvatarAction.allCases) { action in
