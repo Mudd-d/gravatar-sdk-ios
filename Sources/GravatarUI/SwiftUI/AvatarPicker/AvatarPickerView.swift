@@ -143,9 +143,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             notifyAvatarSelection()
         }
         .sheet(item: $shareSheetItem) { item in
-            // Sharing the url helps with proper metadata to appear at the top of the share sheet.
-            // Plus, some apps may not prefer to define `NSPhotoLibraryAddUsageDescription` in such
-            // cases the sharing can be done via opening the URL with Safari.
+            // Sharing the URL helps with proper metadata to appear at the top of the share sheet.
             ShareSheet(items: [item.url, item.image])
                 .presentationDetentsIfAvailable([.medium, .large])
         }
