@@ -190,7 +190,7 @@ class AvatarPickerViewModel: ObservableObject {
             )
             ImageCache.shared.setEntry(.ready(squareImage), for: avatar.url)
 
-            let newModel = AvatarImageModel(id: avatar.id, source: .remote(url: avatar.url))
+            let newModel = AvatarImageModel(with: avatar)
             grid.replaceModel(withID: localID, with: newModel)
 
             if avatar.isSelected {
@@ -354,7 +354,8 @@ extension UIImage {
 extension AvatarImageModel {
     init(with avatar: Avatar) {
         id = avatar.id
-        source = .remote(url: avatar.url)
+        let thumbnailSize = Int(ceil(AvatarGridConstants.maxAvatarWidth * UITraitCollection.current.displayScale))
+        source = .remote(url: avatar.url(withSize: String(thumbnailSize)))
         state = .loaded
         isSelected = avatar.isSelected
     }
