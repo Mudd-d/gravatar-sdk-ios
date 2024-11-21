@@ -335,7 +335,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         case .share:
             Task {
                 if let url = avatar.shareURL,
-                    let image = await model.fetchOriginalSizeAvatar(for: avatar) {
+                   let image = await model.fetchOriginalSizeAvatar(for: avatar)
+                {
                     shareSheetItem = AvatarShareItem(id: avatar.id, image: image, url: url)
                 }
             }
