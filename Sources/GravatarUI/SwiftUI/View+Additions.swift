@@ -106,6 +106,14 @@ extension View {
             return self
         }
     }
+    
+    func presentationDetentsIfAvailable(_ detents: [QEDetent]) -> some View {
+        if #available(iOS 16.0, *) {
+            return self.presentationDetents(detents.map())
+        } else {
+            return self
+        }
+    }
 
     /// Caution: `InnerHeightPreferenceKey` accumulates the values so DO NOT use this on  a View and one of its ancestors at the same time.
     @ViewBuilder

@@ -21,6 +21,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var safariURL: URL?
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
+    @State private var shareSheetItem: AvatarShareItem?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -140,6 +141,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
+        }
+        .sheet(item: $shareSheetItem) { item in
+            // Sharing the url helps with proper metadata to appear at the top of the share sheet.
+            // Plus, some apps may not prefer to define `NSPhotoLibraryAddUsageDescription` in such
+            // cases the sharing can be done via opening the URL with Safari.
+            ShareSheet(items: [item.url, item.image])
+                .presentationDetentsIfAvailable([.medium, .large])
         }
     }
 
@@ -293,8 +301,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    // TODO: Replace
-                    print("Avatar action tapped: \(avatar.id), \(action.rawValue)")
+                    handleAvatarAction(avatar: avatar, action: action)
                 }
             )
             .padding(.horizontal, Constants.horizontalPadding)
@@ -310,8 +317,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    // TODO: Replace
-                    print("Avatar action tapped: \(avatar.id), \(action.rawValue)")
+                    handleAvatarAction(avatar: avatar, action: action)
                 }
             )
             .padding(.top, .DS.Padding.medium)
@@ -321,6 +327,21 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             }
             .padding(.horizontal, Constants.horizontalPadding)
             .padding(.bottom, .DS.Padding.medium)
+        }
+    }
+
+    func handleAvatarAction(avatar: AvatarImageModel, action: AvatarAction) {
+        switch action {
+        case .share:
+            Task {
+                if let url = avatar.shareURL,
+                    let image = await model.fetchOriginalSizeAvatar(for: avatar) {
+                    shareSheetItem = AvatarShareItem(id: avatar.id, image: image, url: url)
+                }
+            }
+        case .delete:
+            // TODO: Delete
+            break
         }
     }
 
