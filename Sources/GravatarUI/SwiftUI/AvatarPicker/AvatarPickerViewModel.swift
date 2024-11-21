@@ -28,8 +28,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var selectedAvatarURL: URL?
     @Published private(set) var backendSelectedAvatarURL: URL?
     @Published private(set) var gridResponseStatus: Result<Void, Error>?
-
-    let grid: AvatarGridModel = .init(avatars: [])
+    @Published private(set) var grid: AvatarGridModel = .init(avatars: [])
 
     private var profileResult: Result<ProfileSummaryModel, Error>? {
         didSet {
@@ -91,6 +90,23 @@ class AvatarPickerViewModel: ObservableObject {
         }
 
         return await avatarSelectionTask?.value
+    }
+
+    func fetchOriginalSizeAvatar(for avatar: AvatarImageModel) async -> UIImage? {
+        guard let avatarURL = avatar.shareURL else { return nil }
+        do {
+            grid.setState(to: .loading, onAvatarWithID: avatar.id)
+            let result = try await ImageDownloadService().fetchImage(with: avatarURL)
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            return result.image
+        } catch ImageFetchingError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            toastManager.showToast(reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDownloadFail, type: .error)
+        } catch {
+            grid.setState(to: .loaded, onAvatarWithID: avatar.id)
+            toastManager.showToast(Localized.avatarDownloadFail, type: .error)
+        }
+        return nil
     }
 
     func postAvatarSelection(with avatarID: String, authToken: String, identifier: ProfileIdentifier) async -> Avatar? {
@@ -307,6 +323,11 @@ extension AvatarPickerViewModel {
             "AvatarPicker.Upload.Error.ImageTooBig.Error",
             value: "The provided image exceeds the maximum size: 10MB",
             comment: "Error message to show when the upload fails because the image is too big."
+        )
+        static let avatarDownloadFail = SDKLocalizedString(
+            "AvatarPickerViewModel.Download.Fail",
+            value: "Oops, something didn't quite work out while trying to download your avatar.",
+            comment: "This error message shows when the user attempts to download an avatar and fails."
         )
     }
 }
