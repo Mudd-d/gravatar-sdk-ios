@@ -86,7 +86,7 @@ final class URLComponentsTests: XCTestCase {
         let newURL = urlComponents.replacingQueryItem(name: "c", value: "123").string
         XCTAssertEqual(newURL, "https://example.com/path?a=1&b=2&c=123")
     }
-    
+
     func testReplaceQueryItemWhenNoQueryItemExists() throws {
         let urlComponents = try XCTUnwrap(URLComponents(string: "https://example.com/path"))
         let newURL = urlComponents.replacingQueryItem(name: "a", value: "123").string

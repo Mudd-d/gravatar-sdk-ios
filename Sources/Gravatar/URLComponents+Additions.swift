@@ -30,7 +30,8 @@ extension URLComponents {
         let newItem = URLQueryItem(name: name, value: value)
 
         if var queryItems = self.queryItems,
-           let sizeItemIndex = queryItems.firstIndex(where: { $0.name == name }) {
+           let sizeItemIndex = queryItems.firstIndex(where: { $0.name == name })
+        {
             // Replace the query item
             queryItems[sizeItemIndex] = newItem
             copy.queryItems = queryItems
