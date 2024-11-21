@@ -354,8 +354,8 @@ extension UIImage {
 extension AvatarImageModel {
     init(with avatar: Avatar) {
         id = avatar.id
-        let thumbnailSize = Int(ceil(AvatarGridConstants.maxAvatarWidth * UITraitCollection.current.displayScale))
-        source = .remote(url: avatar.url(withSize: String(thumbnailSize)))
+        let avatarGridItemSize = Int(AvatarGridConstants.maxAvatarWidth * UITraitCollection.current.displayScale)
+        source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
         state = .loaded
         isSelected = avatar.isSelected
     }
