@@ -145,6 +145,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .sheet(item: $shareSheetItem) { item in
             // Sharing the URL helps with proper metadata to appear at the top of the share sheet.
             ShareSheet(items: [item.url, item.image])
+                .colorScheme(colorScheme)
                 .presentationDetentsIfAvailable([.medium, .large])
         }
     }
