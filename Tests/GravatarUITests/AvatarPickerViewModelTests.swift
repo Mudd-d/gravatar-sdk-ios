@@ -93,9 +93,7 @@ final class AvatarPickerViewModelTests {
                     #expect(observedStates[1] == .loading)
                     #expect(observedStates[2] == .loaded)
                     print("Reached 3 states, confirming...")
-                    Task { @MainActor
-                        confirmation.confirm()
-                    }
+                    confirmation.confirm()
                 }
             }.store(in: &cancellables)
             print("End of confirmation block...") // Debug log
