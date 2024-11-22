@@ -63,7 +63,12 @@ public struct AvatarService: Sendable {
     @discardableResult
     package func upload(_ image: UIImage, accessToken: String, selectionBehavior: AvatarSelection) async throws -> Avatar {
         do {
-            let (data, _) = try await imageUploader.uploadImage(image, accessToken: accessToken, avatarSelection: selectionBehavior, additionalHTTPHeaders: nil)
+            let (data, _) = try await imageUploader.uploadImage(
+                image.squared(),
+                accessToken: accessToken,
+                avatarSelection: selectionBehavior,
+                additionalHTTPHeaders: nil
+            )
             return try data.decode()
         } catch let error as ImageUploadError {
             throw error

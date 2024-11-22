@@ -167,13 +167,13 @@ class AvatarPickerViewModel: ObservableObject {
         // SwiftUI doesn't update the UI if the grid is empty.
         // objectWillChange forces the update.
         objectWillChange.send()
-        let squareImage = shouldSquareImage ? image.squared() : image
+
         let localID = UUID().uuidString
 
-        let localImageModel = AvatarImageModel(id: localID, source: .local(image: squareImage), state: .loading)
+        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading)
         grid.append(localImageModel)
 
-        await doUpload(squareImage: squareImage, localID: localID, accessToken: authToken)
+        await doUpload(squareImage: image, localID: localID, accessToken: authToken)
     }
 
     func retryUpload(of localID: String) async {
@@ -333,35 +333,6 @@ extension Result<[AvatarImageModel], Error> {
             models.isEmpty
         default:
             false
-        }
-    }
-}
-
-extension UIImage {
-    fileprivate func squared() -> UIImage {
-        let (height, width) = (size.height, size.width)
-        guard height != width else {
-            return self
-        }
-        let squareSide = {
-            // If there's a side difference of 1~2px in an image smaller then (around) 100px, this will return false.
-            if width != height && (abs(width - height) / min(width, height)) < 0.02 {
-                // Aspect fill
-                return min(height, width)
-            }
-            // Aspect fit
-            return max(height, width)
-        }()
-
-        let squareSize = CGSize(width: squareSide, height: squareSide)
-        let imageOrigin = CGPoint(x: (squareSide - width) / 2, y: (squareSide - height) / 2)
-
-        let format = UIGraphicsImageRendererFormat()
-        format.scale = 1
-        return UIGraphicsImageRenderer(size: squareSize, format: format).image { context in
-            UIColor.black.setFill()
-            context.fill(CGRect(origin: .zero, size: squareSize))
-            draw(in: CGRect(origin: imageOrigin, size: size))
         }
     }
 }
