@@ -75,31 +75,26 @@ final class AvatarPickerViewModelTests {
             #expect(Bool(false), "No avatar found")
             return
         }
-        await confirmation { confirmation in
+
+        await confirmation(expectedCount: 2) { confirmation in
             model.toastManager.$toasts.sink { toasts in
                 #expect(toasts.count == 0, "No toast should be shown in success case")
                 confirmation.confirm()
             }.store(in: &cancellables)
-        }
-        print("Starting confirmation block...") // Debug log
 
-        await confirmation { confirmation in
             var observedStates: [AvatarImageModel.State] = []
             model.grid.$avatars.sink { models in
                 observedStates.append(models[0].state)
-                print("Observed states: \(observedStates)")
                 if observedStates.count == 3 {
                     #expect(observedStates[0] == .loaded)
                     #expect(observedStates[1] == .loading)
                     #expect(observedStates[2] == .loaded)
-                    print("Reached 3 states, confirming...")
                     confirmation.confirm()
                 }
             }.store(in: &cancellables)
-            print("End of confirmation block...") // Debug log
+            let result = await model.fetchOriginalSizeAvatar(for: avatar)
+            #expect(result != nil)
         }
-        let result = await model.fetchOriginalSizeAvatar(for: avatar)
-        #expect(result != nil)
     }
 
     @Test
