@@ -27,7 +27,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
         case .share:
             SDKLocalizedString(
                 "AvatarPicker.AvatarAction.share",
-                value: "Share",
+                value: "Share...",
                 comment: "An option in the avatar menu that shares the avatar"
             )
         }
