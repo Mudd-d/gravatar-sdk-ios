@@ -98,6 +98,74 @@ final class AvatarPickerViewModelTests {
     }
 
     @Test
+    func testFetchOriginalSizeFailsWithURLSessionError() async throws {
+        let model = Self.createModel(imageDownloader: TestImageFetcher(result: .urlSessionError))
+        await model.refresh()
+        guard let avatar = model.grid.avatars.first else {
+            #expect(Bool(false), "No avatar found")
+            return
+        }
+
+        await confirmation(expectedCount: 2) { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == TestImageFetcher.sessionErrorMessage)
+                    #expect(toasts.first?.type == .error)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            var observedStates: [AvatarImageModel.State] = []
+            model.grid.$avatars.sink { models in
+                observedStates.append(models[0].state)
+                if observedStates.count == 3 {
+                    #expect(observedStates[0] == .loaded)
+                    #expect(observedStates[1] == .loading)
+                    #expect(observedStates[2] == .loaded)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+            let result = await model.fetchOriginalSizeAvatar(for: avatar)
+            #expect(result == nil)
+        }
+    }
+
+    @Test
+    func testFetchOriginalSizeFailsWithGenericError() async throws {
+        let model = Self.createModel(imageDownloader: TestImageFetcher(result: .fail))
+        await model.refresh()
+        guard let avatar = model.grid.avatars.first else {
+            #expect(Bool(false), "No avatar found")
+            return
+        }
+
+        await confirmation(expectedCount: 2) { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarDownloadFail)
+                    #expect(toasts.first?.type == .error)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            var observedStates: [AvatarImageModel.State] = []
+            model.grid.$avatars.sink { models in
+                observedStates.append(models[0].state)
+                if observedStates.count == 3 {
+                    #expect(observedStates[0] == .loaded)
+                    #expect(observedStates[1] == .loading)
+                    #expect(observedStates[2] == .loaded)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+            let result = await model.fetchOriginalSizeAvatar(for: avatar)
+            #expect(result == nil)
+        }
+    }
+
+    @Test
     func testUploadAvatar() async throws {
         model.grid.setAvatars([])
 
