@@ -13,12 +13,16 @@ final class AvatarPickerViewModelTests {
         model = Self.createModel()
     }
 
-    static func createModel(session: URLSessionAvatarPickerMock = .init()) -> AvatarPickerViewModel {
+    static func createModel(
+        session: URLSessionAvatarPickerMock = .init(),
+        imageDownloader: ImageDownloader = TestImageFetcher(result: .success)
+    ) -> AvatarPickerViewModel {
         .init(
             email: .init("some@email.com"),
             authToken: "token",
             profileService: ProfileService(urlSession: session),
-            avatarService: AvatarService(urlSession: session)
+            avatarService: AvatarService(urlSession: session),
+            imageDownloader: imageDownloader
         )
     }
 
@@ -62,6 +66,42 @@ final class AvatarPickerViewModelTests {
             let selected = await model.selectAvatar(with: toSelectID)
             #expect(selected?.id == toSelectID)
         }
+    }
+
+    @Test
+    func testFetchOriginalSizeAvatarSuccess() async throws {
+        await model.refresh()
+        guard let avatar = model.grid.avatars.first else {
+            #expect(Bool(false), "No avatar found")
+            return
+        }
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count == 0, "No toast should be shown in success case")
+                confirmation.confirm()
+            }.store(in: &cancellables)
+        }
+        print("Starting confirmation block...") // Debug log
+
+        await confirmation { confirmation in
+            var observedStates: [AvatarImageModel.State] = []
+            model.grid.$avatars.sink { models in
+                observedStates.append(models[0].state)
+                print("Observed states: \(observedStates)")
+                if observedStates.count == 3 {
+                    #expect(observedStates[0] == .loaded)
+                    #expect(observedStates[1] == .loading)
+                    #expect(observedStates[2] == .loaded)
+                    print("Reached 3 states, confirming...")
+                    Task { @MainActor
+                        confirmation.confirm()
+                    }
+                }
+            }.store(in: &cancellables)
+            print("End of confirmation block...") // Debug log
+        }
+        let result = await model.fetchOriginalSizeAvatar(for: avatar)
+        #expect(result != nil)
     }
 
     @Test

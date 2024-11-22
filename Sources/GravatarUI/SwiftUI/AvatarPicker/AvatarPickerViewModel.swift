@@ -6,6 +6,7 @@ import SwiftUI
 class AvatarPickerViewModel: ObservableObject {
     private let profileService: ProfileService
     private let avatarService: AvatarService
+    private let imageDownloader: ImageDownloader
 
     private(set) var email: Email? {
         didSet {
@@ -49,12 +50,19 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var profileModel: AvatarPickerProfileView.Model?
     @ObservedObject var toastManager: ToastManager = .init()
 
-    init(email: Email, authToken: String?, profileService: ProfileService? = nil, avatarService: AvatarService? = nil) {
+    init(
+        email: Email,
+        authToken: String?,
+        profileService: ProfileService? = nil,
+        avatarService: AvatarService? = nil,
+        imageDownloader: ImageDownloader? = nil
+    ) {
         self.email = email
         avatarIdentifier = .email(email)
         self.authToken = authToken
         self.profileService = profileService ?? ProfileService()
         self.avatarService = avatarService ?? AvatarService()
+        self.imageDownloader = imageDownloader ?? ImageDownloadService()
     }
 
     /// Internal init for previewing purposes. Do not make this public.
@@ -63,8 +71,13 @@ class AvatarPickerViewModel: ObservableObject {
         selectedImageID: String? = nil,
         profileModel: ProfileSummaryModel? = nil,
         profileService: ProfileService? = nil,
-        avatarService: AvatarService? = nil
+        avatarService: AvatarService? = nil,
+        imageDownloader: ImageDownloader? = nil
     ) {
+        self.profileService = profileService ?? ProfileService()
+        self.avatarService = avatarService ?? AvatarService()
+        self.imageDownloader = imageDownloader ?? ImageDownloadService()
+
         if let selectedImageID {
             self.selectedAvatarResult = .success(selectedImageID)
         }
@@ -83,8 +96,6 @@ class AvatarPickerViewModel: ObservableObject {
                 break
             }
         }
-        self.profileService = profileService ?? ProfileService()
-        self.avatarService = avatarService ?? AvatarService()
     }
 
     func selectAvatar(with id: String) async -> Avatar? {
@@ -108,7 +119,7 @@ class AvatarPickerViewModel: ObservableObject {
         guard let avatarURL = avatar.shareURL else { return nil }
         do {
             grid.setState(to: .loading, onAvatarWithID: avatar.id)
-            let result = try await ImageDownloadService().fetchImage(with: avatarURL)
+            let result = try await imageDownloader.fetchImage(with: avatarURL, forceRefresh: false, processingMethod: .common())
             grid.setState(to: .loaded, onAvatarWithID: avatar.id)
             return result.image
         } catch ImageFetchingError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
