@@ -2,7 +2,7 @@
 "AvatarPicker.AvatarAction.delete" = "Delete";
 
 /* An option in the avatar menu that shares the avatar */
-"AvatarPicker.AvatarAction.share" = "Share";
+"AvatarPicker.AvatarAction.share" = "Share...";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "Login required";
@@ -72,6 +72,9 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "View profile →";
+
+/* This error message shows when the user attempts to download an avatar and fails. */
+"AvatarPickerViewModel.Download.Fail" = "Oops, something didn't quite work out while trying to download your avatar.";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "Oops, something didn't quite work out while trying to change your avatar.";
