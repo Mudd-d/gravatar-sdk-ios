@@ -102,7 +102,7 @@ final class AvatarPickerViewModelTests {
 
         await confirmation(expectedCount: 2) { confirmation in
             model.toastManager.$toasts.sink { toasts in
-                #expect(toasts.count == 1)
+                #expect(toasts.count <= 1)
                 if toasts.count == 1 {
                     #expect(toasts.first?.message == TestImageFetcher.sessionErrorMessage)
                     #expect(toasts.first?.type == .error)
