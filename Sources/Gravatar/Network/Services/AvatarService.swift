@@ -90,12 +90,12 @@ public struct AvatarService: Sendable {
             }
         } catch let error as HTTPClientError {
             switch error {
-                case .URLSessionError(let urlSessionError):
-                    throw AvatarDeleteError.responseError(reason: .URLSessionError(error: urlSessionError))
-                case .invalidHTTPStatusCodeError(let response, _):
-                    throw AvatarDeleteError.responseError(reason: .invalidHTTPStatusCode(response: response, errorPayload: nil))
-                case .invalidURLResponseError(let urlResponse):
-                    throw AvatarDeleteError.responseError(reason: .invalidURLResponse(response: urlResponse))
+            case .URLSessionError(let urlSessionError):
+                throw AvatarDeleteError.responseError(reason: .URLSessionError(error: urlSessionError))
+            case .invalidHTTPStatusCodeError(let response, _):
+                throw AvatarDeleteError.responseError(reason: .invalidHTTPStatusCode(response: response, errorPayload: nil))
+            case .invalidURLResponseError(let urlResponse):
+                throw AvatarDeleteError.responseError(reason: .invalidURLResponse(response: urlResponse))
             }
         } catch {
             throw AvatarDeleteError.responseError(reason: .unexpected(error))

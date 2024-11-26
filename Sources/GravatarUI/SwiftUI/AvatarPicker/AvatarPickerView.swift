@@ -344,11 +344,11 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     func onAvatarAction(_ avatar: AvatarImageModel, action: AvatarAction) {
         switch action {
-            case .share:
-                break
-            case .delete:
-                avatarToDelete = avatar
-                isAvatarDeletionDialogPresented = true
+        case .share:
+            break
+        case .delete:
+            avatarToDelete = avatar
+            isAvatarDeletionDialogPresented = true
         }
     }
 
@@ -498,7 +498,7 @@ private enum AvatarPicker {
         static let deletionConfirmationTitle = SDKLocalizedString(
             "AvatarPicker.Deletion.Confirmation.title",
             value: "Are you sure you want to delete this image?",
-            comment:"Title of the confirmation dialog to delete an avatar"
+            comment: "Title of the confirmation dialog to delete an avatar"
         )
         static let deletionConfirmationButtonTitle = SDKLocalizedString(
             "AvatarPicker.Deletion.Confirmation.ctaButtonTitle",
