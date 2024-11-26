@@ -115,3 +115,11 @@
 /* An option to show the image playground */
 "SystemImagePickerView.Source.Playground.title" = "Playground";
 
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "Are you sure you want to delete this image?";
+
+/* The title button which confirms the avatar deletion */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Delete";
+
+/* This error message shows when the user attempts to delete an avatar and fails */
+"AvatarPickerViewModel.Delete.Error" = "Error deleting the image.";
