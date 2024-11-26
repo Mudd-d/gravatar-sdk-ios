@@ -107,6 +107,15 @@ extension View {
         }
     }
 
+    /// Applies detents for iOS 16+.
+    func presentationDetentsIfAvailable(_ detents: [QEDetent]) -> some View {
+        if #available(iOS 16.0, *) {
+            return self.presentationDetents(detents.map())
+        } else {
+            return self
+        }
+    }
+
     /// Caution: `InnerHeightPreferenceKey` accumulates the values so DO NOT use this on  a View and one of its ancestors at the same time.
     @ViewBuilder
     func accumulateIntrinsicHeight() -> some View {
