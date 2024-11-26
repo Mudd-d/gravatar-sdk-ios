@@ -10,7 +10,7 @@ let internalTypes: [String] = [
 
 let packageTypes: [String] = [
     "Avatar",
-    "Rating",
+    "AvatarRating",
     "UpdateAvatarRequest"
 ]
 

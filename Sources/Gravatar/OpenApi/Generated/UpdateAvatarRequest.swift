@@ -4,11 +4,11 @@ import Foundation
 ///
 package struct UpdateAvatarRequest: Codable, Hashable, Sendable {
     /// Rating associated with the image.
-    package private(set) var rating: Rating?
+    package private(set) var rating: AvatarRating?
     /// Alternative text description of the image.
     package private(set) var altText: String?
 
-    package init(rating: Rating? = nil, altText: String? = nil) {
+    package init(rating: AvatarRating? = nil, altText: String? = nil) {
         self.rating = rating
         self.altText = altText
     }

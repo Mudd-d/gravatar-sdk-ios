@@ -1,5 +1,6 @@
 Sources/GravatarOpenAPIClient/Models/AssociatedResponse.swift
 Sources/GravatarOpenAPIClient/Models/Avatar.swift
+Sources/GravatarOpenAPIClient/Models/AvatarRating.swift
 Sources/GravatarOpenAPIClient/Models/CryptoWalletAddress.swift
 Sources/GravatarOpenAPIClient/Models/GalleryImage.swift
 Sources/GravatarOpenAPIClient/Models/Interest.swift
@@ -9,7 +10,6 @@ Sources/GravatarOpenAPIClient/Models/ModelError.swift
 Sources/GravatarOpenAPIClient/Models/Profile.swift
 Sources/GravatarOpenAPIClient/Models/ProfileContactInfo.swift
 Sources/GravatarOpenAPIClient/Models/ProfilePayments.swift
-Sources/GravatarOpenAPIClient/Models/Rating.swift
 Sources/GravatarOpenAPIClient/Models/SetEmailAvatarRequest.swift
 Sources/GravatarOpenAPIClient/Models/UpdateAvatarRequest.swift
 Sources/GravatarOpenAPIClient/Models/VerifiedAccount.swift
