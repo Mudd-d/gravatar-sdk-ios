@@ -9,7 +9,9 @@ let internalTypes: [String] = [
 ]
 
 let packageTypes: [String] = [
-    "Avatar"
+    "Avatar",
+    "AvatarRating",
+    "UpdateAvatarRequest"
 ]
 
 enum AccessControlError: Error {
