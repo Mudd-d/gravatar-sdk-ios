@@ -37,6 +37,10 @@ class AvatarGridModel: ObservableObject {
         replaceModel(withID: id, with: toggledModel)
     }
 
+    func insert(_ newModel: AvatarImageModel, at index: Int) {
+        avatars.insert(newModel, at: index)
+    }
+
     func append(_ newModel: AvatarImageModel) {
         avatars.insert(newModel, at: 0)
     }
@@ -62,7 +66,9 @@ class AvatarGridModel: ObservableObject {
         }
     }
 
-    func deleteModel(_ id: String) {
+    func deleteModel(_ id: String) -> Int {
+        let index = avatars.firstIndex { $0.id == id }!
         avatars.removeAll { $0.id == id }
+        return index
     }
 }

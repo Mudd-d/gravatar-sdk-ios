@@ -21,6 +21,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var safariURL: URL?
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
+    @State private var isAvatarDeletionDialogPresented: Bool = false
+    @State private var avatarToDelete: AvatarImageModel?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -114,6 +116,24 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     Button(Localized.dismissButtonTitle, role: .cancel) {}
                 } message: { error in
                     Text(error.errorMessage)
+                }
+                .confirmationDialog(
+                    Localized.deletionConfirmationTitle,
+                    isPresented: $isAvatarDeletionDialogPresented,
+                    titleVisibility: .visible,
+                    presenting: avatarToDelete
+                ) { avatar in
+                    Button(role: .destructive) {
+                        Task {
+                            // The animation won't run during the action-sheet dismissal
+                            // This delay will allow the avatar deletion animation to run.
+                            try? await Task.sleep(nanoseconds: 10_000_000)
+                            deleteAvatar(avatar)
+                        }
+                    } label: {
+                        Label(Localized.deletionConfirmationButtonTitle, systemImage: "trash")
+                    }
+                    Button(Localized.dismissButtonTitle, role: .cancel) {}
                 }
             }
 
@@ -293,8 +313,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    // TODO: Replace
-                    print("Avatar action tapped: \(avatar.id), \(action.rawValue)")
+                    onAvatarAction(avatar, action: action)
                 }
             )
             .padding(.horizontal, Constants.horizontalPadding)
@@ -310,8 +329,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    // TODO: Replace
-                    print("Avatar action tapped: \(avatar.id), \(action.rawValue)")
+                    onAvatarAction(avatar, action: action)
                 }
             )
             .padding(.top, .DS.Padding.medium)
@@ -321,6 +339,22 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             }
             .padding(.horizontal, Constants.horizontalPadding)
             .padding(.bottom, .DS.Padding.medium)
+        }
+    }
+
+    func onAvatarAction(_ avatar: AvatarImageModel, action: AvatarAction) {
+        switch action {
+            case .share:
+                break
+            case .delete:
+                avatarToDelete = avatar
+                isAvatarDeletionDialogPresented = true
+        }
+    }
+
+    func deleteAvatar(_ avatar: AvatarImageModel) {
+        Task {
+            await model.delete(avatar)
         }
     }
 
@@ -460,6 +494,16 @@ private enum AvatarPicker {
             "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle",
             value: "Try again",
             comment: "Title of a button that allows the user to try loading their avatars again"
+        )
+        static let deletionConfirmationTitle = SDKLocalizedString(
+            "AvatarPicker.Deletion.Confirmation.title",
+            value: "Are you sure you want to delete this image?",
+            comment:"Title of the confirmation dialog to delete an avatar"
+        )
+        static let deletionConfirmationButtonTitle = SDKLocalizedString(
+            "AvatarPicker.Deletion.Confirmation.ctaButtonTitle",
+            value: "Delete",
+            comment: "The title button which confirms the avatar deletion."
         )
 
         enum Header {

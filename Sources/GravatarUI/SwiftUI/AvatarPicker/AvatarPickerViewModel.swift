@@ -188,7 +188,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func deleteFailed(_ id: String) {
-        grid.deleteModel(id)
+        _ = grid.deleteModel(id)
     }
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
@@ -299,6 +299,23 @@ class AvatarPickerViewModel: ObservableObject {
         await avatars
         await profile
     }
+
+    func delete(_ avatar: AvatarImageModel) async {
+        guard let token = self.authToken else { return }
+        let deletedIndex = withAnimation {
+            grid.deleteModel(avatar.id)
+        }
+        do {
+            try await avatarService.delete(avatarID: avatar.id, accessToken: token)
+        } catch AvatarDeleteError.responseError(let reason) where reason.httpStatusCode == 404 {
+            return // no-op. We delete a not-found avatar from the UI.
+        } catch {
+            withAnimation {
+                grid.insert(avatar, at: deletedIndex)
+            }
+            toastManager.showToast(Localized.avatarDeletionError, type: .error)
+        }
+    }
 }
 
 extension AvatarPickerViewModel {
@@ -322,6 +339,11 @@ extension AvatarPickerViewModel {
             "AvatarPicker.Upload.Error.ImageTooBig.Error",
             value: "The provided image exceeds the maximum size: 10MB",
             comment: "Error message to show when the upload fails because the image is too big."
+        )
+        static let avatarDeletionError = SDKLocalizedString(
+            "AvatarPickerViewModel.Delete.Error",
+            value: "Error deleting the image.",
+            comment: "This error message shows when the user attempts to delete an avatar and fails."
         )
     }
 }
