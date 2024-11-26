@@ -23,6 +23,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var isUploadErrorDialogPresented: Bool = false
     @State private var isAvatarDeletionDialogPresented: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
+    @State private var shareSheetItem: AvatarShareItem?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -128,7 +129,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                             // The animation won't run during the action-sheet dismissal
                             // This delay will allow the avatar deletion animation to run.
                             try? await Task.sleep(nanoseconds: 10_000_000)
-                            deleteAvatar(avatar)
+                            await model.delete(avatar)
                         }
                     } label: {
                         Label(Localized.deletionConfirmationButtonTitle, systemImage: "trash")
@@ -160,6 +161,12 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
+        }
+        .sheet(item: $shareSheetItem) { item in
+            // Sharing the URL helps with proper metadata to appear at the top of the share sheet.
+            ShareSheet(items: [item.url, item.image])
+                .colorScheme(colorScheme)
+                .presentationDetentsIfAvailable([.medium, .large])
         }
     }
 
@@ -313,7 +320,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    onAvatarAction(avatar, action: action)
+                    handleAvatarAction(avatar: avatar, action: action)
                 }
             )
             .padding(.horizontal, Constants.horizontalPadding)
@@ -329,7 +336,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     isUploadErrorDialogPresented = true
                 },
                 onAvatarActionTap: { avatar, action in
-                    onAvatarAction(avatar, action: action)
+                    handleAvatarAction(avatar: avatar, action: action)
                 }
             )
             .padding(.top, .DS.Padding.medium)
@@ -342,19 +349,19 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
     }
 
-    func onAvatarAction(_ avatar: AvatarImageModel, action: AvatarAction) {
+    func handleAvatarAction(avatar: AvatarImageModel, action: AvatarAction) {
         switch action {
         case .share:
-            break
+            Task {
+                if let url = avatar.shareURL,
+                   let image = await model.fetchOriginalSizeAvatar(for: avatar)
+                {
+                    shareSheetItem = AvatarShareItem(id: avatar.id, image: image, url: url)
+                }
+            }
         case .delete:
             avatarToDelete = avatar
             isAvatarDeletionDialogPresented = true
-        }
-    }
-
-    func deleteAvatar(_ avatar: AvatarImageModel) {
-        Task {
-            await model.delete(avatar)
         }
     }
 

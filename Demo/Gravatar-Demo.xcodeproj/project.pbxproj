@@ -472,6 +472,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Demo/Gravatar-Demo/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Accessing camera to create an avatar.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Accessing photo library to save the avatar.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -502,6 +503,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Demo/Gravatar-Demo/Info.plist";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Accessing camera to create an avatar.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Accessing photo library to save the avatar.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
