@@ -91,7 +91,7 @@ extension URLRequest {
         additionalHTTPHeaders: [HTTPHeaderField]?,
         selectionBehavior: AvatarSelection
     ) -> URLRequest {
-        var request = URLRequest(url: .imageUploadURL.appendingQueryItems(for: selectionBehavior))
+        var request = URLRequest(url: .avatarsURL.appendingQueryItems(for: selectionBehavior))
         request.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         additionalHTTPHeaders?.forEach { headerTuple in
@@ -102,7 +102,7 @@ extension URLRequest {
 }
 
 extension URL {
-    fileprivate static var imageUploadURL: URL {
+    static var avatarsURL: URL {
         APIConfig.baseURL.appendingPathComponent("v3/me/avatars")
     }
 }

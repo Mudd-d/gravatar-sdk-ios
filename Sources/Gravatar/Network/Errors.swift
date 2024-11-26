@@ -121,3 +121,7 @@ extension APIError: CustomDebugStringConvertible {
         }
     }
 }
+
+package enum AvatarDeleteError: Error {
+    case responseError(reason: ResponseErrorReason)
+}
