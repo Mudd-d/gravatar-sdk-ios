@@ -71,10 +71,7 @@ final class AvatarPickerViewModelTests {
     @Test
     func testFetchOriginalSizeAvatarSuccess() async throws {
         await model.refresh()
-        guard let avatar = model.grid.avatars.first else {
-            #expect(Bool(false), "No avatar found")
-            return
-        }
+        let avatar = try #require(model.grid.avatars.first, "No avatar found")
 
         await confirmation(expectedCount: 2) { confirmation in
             model.toastManager.$toasts.sink { toasts in
@@ -101,14 +98,11 @@ final class AvatarPickerViewModelTests {
     func testFetchOriginalSizeFailsWithURLSessionError() async throws {
         let model = Self.createModel(imageDownloader: TestImageFetcher(result: .urlSessionError))
         await model.refresh()
-        guard let avatar = model.grid.avatars.first else {
-            #expect(Bool(false), "No avatar found")
-            return
-        }
+        let avatar = try #require(model.grid.avatars.first, "No avatar found")
 
         await confirmation(expectedCount: 2) { confirmation in
             model.toastManager.$toasts.sink { toasts in
-                #expect(toasts.count <= 1)
+                #expect(toasts.count == 1)
                 if toasts.count == 1 {
                     #expect(toasts.first?.message == TestImageFetcher.sessionErrorMessage)
                     #expect(toasts.first?.type == .error)
@@ -135,10 +129,7 @@ final class AvatarPickerViewModelTests {
     func testFetchOriginalSizeFailsWithGenericError() async throws {
         let model = Self.createModel(imageDownloader: TestImageFetcher(result: .fail))
         await model.refresh()
-        guard let avatar = model.grid.avatars.first else {
-            #expect(Bool(false), "No avatar found")
-            return
-        }
+        let avatar = try #require(model.grid.avatars.first, "No avatar found")
 
         await confirmation(expectedCount: 2) { confirmation in
             model.toastManager.$toasts.sink { toasts in
