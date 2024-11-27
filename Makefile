@@ -99,6 +99,8 @@ install-and-generate: $(OPENAPI_GENERATOR_CLONE_DIR) # Clones and setup the open
 	make generate
 
 generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
+	sed -i '' 's|components/schemas/Rating|components/schemas/AvatarRating|g' $(OPENAPI_DIR)/openapi.yaml
+	sed -i '' 's| Rating:| AvatarRating:|g' $(OPENAPI_DIR)/openapi.yaml
 	rm -rf "$(OPENAPI_GENERATED_DIR)"/* && \
 	docker run --rm \
 	-v $(OPENAPI_DIR):/local openapitools/openapi-generator-cli:"$(OPENAPI_GENERATOR_GIT_TAG)" generate \
