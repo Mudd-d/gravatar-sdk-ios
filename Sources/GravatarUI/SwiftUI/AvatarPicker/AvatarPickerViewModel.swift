@@ -135,7 +135,7 @@ class AvatarPickerViewModel: ObservableObject {
     func fetchAndSaveToFile(avatar: AvatarImageModel) async -> URL? {
         guard let image = await fetchOriginalSizeAvatar(for: avatar),
               let imageData = image.pngData() else { return nil }
-        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("image.jpg")
+        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("image.png")
         do {
             try imageData.write(to: fileURL)
             return fileURL
