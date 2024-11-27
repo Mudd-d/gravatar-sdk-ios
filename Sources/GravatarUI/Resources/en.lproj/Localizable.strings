@@ -73,8 +73,8 @@
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "View profile →";
 
-/* This error message shows when the user attempts to download an avatar and fails. */
-"AvatarPickerViewModel.Download.Fail" = "Oops, something didn't quite work out while trying to download your avatar.";
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "Oops, something didn't quite work out while trying to share your avatar.";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "Oops, something didn't quite work out while trying to change your avatar.";

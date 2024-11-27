@@ -124,10 +124,20 @@ class AvatarPickerViewModel: ObservableObject {
             return result.image
         } catch ImageFetchingError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             grid.setState(to: .loaded, onAvatarWithID: avatar.id)
-            toastManager.showToast(reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDownloadFail, type: .error)
+            toastManager.showToast(reason.urlSessionErrorLocalizedDescription ?? Localized.avatarShareFail, type: .error)
         } catch {
             grid.setState(to: .loaded, onAvatarWithID: avatar.id)
-            toastManager.showToast(Localized.avatarDownloadFail, type: .error)
+            toastManager.showToast(Localized.avatarShareFail, type: .error)
+        }
+        return nil
+    }
+
+    func fetchAndSaveToFile(avatar: AvatarImageModel) async -> URL? {
+        guard let image = await fetchOriginalSizeAvatar(for: avatar) else { return nil }
+        do {
+            return try image.saveToFile()
+        } catch {
+            toastManager.showToast(Localized.avatarShareFail, type: .error)
         }
         return nil
     }
@@ -382,6 +392,11 @@ extension AvatarPickerViewModel {
             "AvatarPickerViewModel.Download.Fail",
             value: "Oops, something didn't quite work out while trying to download your avatar.",
             comment: "This error message shows when the user attempts to download an avatar and fails."
+        )
+        static let avatarShareFail = SDKLocalizedString(
+            "AvatarPickerViewModel.Share.Fail",
+            value: "Oops, something didn't quite work out while trying to share your avatar.",
+            comment: "This error message shows when the user attempts to share an avatar and fails."
         )
     }
 }

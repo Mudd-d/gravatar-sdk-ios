@@ -165,10 +165,11 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             notifyAvatarSelection()
         }
         .sheet(item: $shareSheetItem) { item in
-            // Sharing the URL helps with proper metadata to appear at the top of the share sheet.
-            ShareSheet(items: [item.url, item.image])
+            ShareSheet(items: [item.fileURL])
                 .colorScheme(colorScheme)
-                .presentationDetentsIfAvailable([.medium, .large])
+                .presentationDetentsIfAvailable(
+                    [contentLayoutProvider.shareSheetInitialDetent, .large]
+                )
         }
     }
 
@@ -355,10 +356,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         switch action {
         case .share:
             Task {
-                if let url = avatar.shareURL,
-                   let image = await model.fetchOriginalSizeAvatar(for: avatar)
-                {
-                    shareSheetItem = AvatarShareItem(id: avatar.id, image: image, url: url)
+                if let fileURL = await model.fetchAndSaveToFile(avatar: avatar) {
+                    shareSheetItem = AvatarShareItem(id: avatar.id, fileURL: fileURL)
                 }
             }
         case .delete:
