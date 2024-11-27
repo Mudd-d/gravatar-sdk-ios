@@ -132,6 +132,19 @@ class AvatarPickerViewModel: ObservableObject {
         return nil
     }
 
+    func fetchAndSaveToFile(avatar: AvatarImageModel) async -> URL? {
+        guard let image = await fetchOriginalSizeAvatar(for: avatar),
+              let imageData = image.pngData() else { return nil }
+        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("image.jpg")
+        do {
+            try imageData.write(to: fileURL)
+            return fileURL
+        } catch {
+            toastManager.showToast(Localized.avatarDownloadFail, type: .error)
+        }
+        return nil
+    }
+
     func postAvatarSelection(with avatarID: String, authToken: String, identifier: ProfileIdentifier) async -> Avatar? {
         defer {
             grid.setState(to: .loaded, onAvatarWithID: avatarID)
