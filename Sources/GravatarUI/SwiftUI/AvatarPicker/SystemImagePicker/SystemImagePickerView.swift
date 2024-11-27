@@ -39,7 +39,6 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
     let onImageSelected: (UIImage) -> Void
     var customEditor: ImageEditorBlock<ImageEditor>?
     @State var imagePickerSelectedItem: ImagePickerItem?
-    @State var playgroundSelectedItem: ImagePickerItem?
 
     var body: some View {
         VStack {
@@ -55,22 +54,17 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
                 label()
             }
         }
-        .imagePlaygroundSheetIfAvailable(
+        .modifier(ImagePlaygroundModifier(
             isPresented: Binding(
                 get: { sourceType == .playground },
                 set: { if !$0 { sourceType = nil } }
             ),
+            customEditor: customEditor,
             sourceImage: nil,
-            onCompletion: { url in
-                if let image = UIImage(contentsOfFile: url.relativePath) {
-                    playgroundSelectedItem = ImagePickerItem(id: url.absoluteString, image: image)
-                }
-            },
-            onCancellation: {}
-        )
-        .sheet(item: $playgroundSelectedItem, content: { item in
-            imageEditor(with: item)
-        })
+            onCompletion: { image in
+                onImageEdited(image)
+            }
+        ))
         .sheet(
             item: Binding(
                 get: { sourceType != .playground ? sourceType : nil },
@@ -86,27 +80,21 @@ private struct ImagePicker<Label, ImageEditor: ImageEditorView>: View where Labe
         )
     }
 
-    @ViewBuilder
     func imageEditor(with item: ImagePickerItem) -> some View {
-        if let customEditor {
-            customEditor(item.image) { editedImage in
-                self.onImageEdited(editedImage)
-            }
-        } else {
-            ImageCropper(inputImage: item.image) { croppedImage in
-                Task {
-                    await self.onImageEdited(croppedImage)
-                }
-            } onCancel: {
+        CustomizableImageEditor(
+            item: item,
+            customEditor: customEditor,
+            onEditComplete: { image in
+                onImageEdited(image)
+            },
+            onCancel: {
                 imagePickerSelectedItem = nil
-                playgroundSelectedItem = nil
-            }.ignoresSafeArea()
-        }
+            }
+        )
     }
 
     private func onImageEdited(_ image: UIImage) {
         imagePickerSelectedItem = nil
-        playgroundSelectedItem = nil
         sourceType = nil
         onImageSelected(image)
     }
