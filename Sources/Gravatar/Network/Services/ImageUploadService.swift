@@ -91,32 +91,13 @@ extension URLRequest {
         additionalHTTPHeaders: [HTTPHeaderField]?,
         selectionBehavior: AvatarSelection
     ) -> URLRequest {
-        var request = URLRequest(url: .imageUploadURL.appendingQueryItems(for: selectionBehavior))
+        var request = URLRequest(url: .avatarsURL.appendingQueryItems(for: selectionBehavior))
         request.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         request.httpMethod = "POST"
         additionalHTTPHeaders?.forEach { headerTuple in
             request.addValue(headerTuple.value, forHTTPHeaderField: headerTuple.name)
         }
         return request
-    }
-}
-
-extension URL {
-    fileprivate static var imageUploadURL: URL {
-        APIConfig.baseURL.appendingPathComponent("v3/me/avatars")
-    }
-}
-
-extension URL {
-    func appendingQueryItems(for selectionBehavior: AvatarSelection) -> URL {
-        let queryItems = selectionBehavior.queryItems
-        if #available(iOS 16.0, *) {
-            return self.appending(queryItems: queryItems)
-        } else {
-            var components = URLComponents(string: absoluteString)
-            components?.queryItems = queryItems
-            return components?.url ?? self
-        }
     }
 }
 

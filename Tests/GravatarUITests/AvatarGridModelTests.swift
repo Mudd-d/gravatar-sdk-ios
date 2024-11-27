@@ -68,7 +68,7 @@ struct AvatarGridModelTests {
     @Test("Test delete function")
     func testAvatarGridModelDelete() async throws {
         #expect(model.index(of: "3") == 3)
-        model.deleteModel("3")
+        _ = model.deleteModel("3")
         #expect(model.index(of: "3") == nil)
     }
 
@@ -98,5 +98,13 @@ struct AvatarGridModelTests {
         #expect(model.isEmpty == false)
         model.setAvatars([])
         #expect(model.isEmpty)
+    }
+
+    @Test("Test insert function")
+    func testAvatarGridModelInsert() async throws {
+        let toInsert = AvatarImageModel(id: "new", source: .remote(url: "https://example.com"))
+        model.insert(toInsert, at: 2)
+
+        #expect(model.index(of: "new") == 2)
     }
 }

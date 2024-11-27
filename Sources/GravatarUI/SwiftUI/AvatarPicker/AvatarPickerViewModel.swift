@@ -225,7 +225,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func deleteFailed(_ id: String) {
-        grid.deleteModel(id)
+        _ = grid.deleteModel(id)
     }
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
@@ -336,6 +336,29 @@ class AvatarPickerViewModel: ObservableObject {
         await avatars
         await profile
     }
+
+    func delete(_ avatar: AvatarImageModel) async {
+        guard let token = self.authToken else { return }
+        let deletedIndex = withAnimation {
+            grid.deleteModel(avatar.id)
+        }
+        do {
+            try await avatarService.delete(avatarID: avatar.id, accessToken: token)
+        } catch APIError.responseError(let reason) where reason.httpStatusCode == 404 {
+            return // no-op. We delete a not-found avatar from the UI.
+        } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
+        } catch {
+            handleError(message: Localized.avatarDeletionError)
+        }
+
+        func handleError(message: String) {
+            withAnimation {
+                grid.insert(avatar, at: deletedIndex)
+            }
+            toastManager.showToast(message, type: .error)
+        }
+    }
 }
 
 extension AvatarPickerViewModel {
@@ -359,6 +382,16 @@ extension AvatarPickerViewModel {
             "AvatarPicker.Upload.Error.ImageTooBig.Error",
             value: "The provided image exceeds the maximum size: 10MB",
             comment: "Error message to show when the upload fails because the image is too big."
+        )
+        static let avatarDeletionError = SDKLocalizedString(
+            "AvatarPickerViewModel.Delete.Error",
+            value: "Oops, there was an error deleting the image.",
+            comment: "This error message shows when the user attempts to delete an avatar and fails."
+        )
+        static let avatarDownloadFail = SDKLocalizedString(
+            "AvatarPickerViewModel.Download.Fail",
+            value: "Oops, something didn't quite work out while trying to download your avatar.",
+            comment: "This error message shows when the user attempts to download an avatar and fails."
         )
         static let avatarShareFail = SDKLocalizedString(
             "AvatarPickerViewModel.Share.Fail",
