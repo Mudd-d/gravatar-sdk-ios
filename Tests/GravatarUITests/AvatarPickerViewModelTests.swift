@@ -135,7 +135,7 @@ final class AvatarPickerViewModelTests {
             model.toastManager.$toasts.sink { toasts in
                 #expect(toasts.count <= 1)
                 if toasts.count == 1 {
-                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarDownloadFail)
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarShareFail)
                     #expect(toasts.first?.type == .error)
                     confirmation.confirm()
                 }
