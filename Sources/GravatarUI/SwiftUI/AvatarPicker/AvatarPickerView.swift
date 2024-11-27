@@ -21,7 +21,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var safariURL: URL?
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
-    @State private var isAvatarDeletionDialogPresented: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
 
@@ -120,7 +119,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 }
                 .confirmationDialog(
                     Localized.deletionConfirmationTitle,
-                    isPresented: $isAvatarDeletionDialogPresented,
+                    isPresented: Binding(
+                        get: { avatarToDelete != nil },
+                        set: { if !$0 { avatarToDelete = nil } }
+                    ),
                     titleVisibility: .visible,
                     presenting: avatarToDelete
                 ) { avatar in
@@ -361,7 +363,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             }
         case .delete:
             avatarToDelete = avatar
-            isAvatarDeletionDialogPresented = true
         }
     }
 

@@ -334,13 +334,19 @@ class AvatarPickerViewModel: ObservableObject {
         }
         do {
             try await avatarService.delete(avatarID: avatar.id, accessToken: token)
-        } catch AvatarDeleteError.responseError(let reason) where reason.httpStatusCode == 404 {
+        } catch APIError.responseError(let reason) where reason.httpStatusCode == 404 {
             return // no-op. We delete a not-found avatar from the UI.
+        } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
         } catch {
+            handleError(message: Localized.avatarDeletionError)
+        }
+
+        func handleError(message: String) {
             withAnimation {
                 grid.insert(avatar, at: deletedIndex)
             }
-            toastManager.showToast(Localized.avatarDeletionError, type: .error)
+            toastManager.showToast(message, type: .error)
         }
     }
 }
@@ -369,7 +375,7 @@ extension AvatarPickerViewModel {
         )
         static let avatarDeletionError = SDKLocalizedString(
             "AvatarPickerViewModel.Delete.Error",
-            value: "Error deleting the image.",
+            value: "Oops, there was an error deleting the image.",
             comment: "This error message shows when the user attempts to delete an avatar and fails."
         )
         static let avatarDownloadFail = SDKLocalizedString(

@@ -84,21 +84,9 @@ public struct AvatarService: Sendable {
         request.httpMethod = "DELETE"
         let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
         do {
-            let (_, response) = try await client.data(with: authorizedRequest)
-            if response.isError {
-                throw AvatarDeleteError.responseError(reason: .invalidURLResponse(response: response))
-            }
-        } catch let error as HTTPClientError {
-            switch error {
-            case .URLSessionError(let urlSessionError):
-                throw AvatarDeleteError.responseError(reason: .URLSessionError(error: urlSessionError))
-            case .invalidHTTPStatusCodeError(let response, _):
-                throw AvatarDeleteError.responseError(reason: .invalidHTTPStatusCode(response: response, errorPayload: nil))
-            case .invalidURLResponseError(let urlResponse):
-                throw AvatarDeleteError.responseError(reason: .invalidURLResponse(response: urlResponse))
-            }
+            _ = try await client.data(with: authorizedRequest)
         } catch {
-            throw AvatarDeleteError.responseError(reason: .unexpected(error))
+            throw error.apiError()
         }
     }
 }

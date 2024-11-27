@@ -125,4 +125,4 @@
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Delete";
 
 /* This error message shows when the user attempts to delete an avatar and fails */
-"AvatarPickerViewModel.Delete.Error" = "Error deleting the image.";
+"AvatarPickerViewModel.Delete.Error" = "Oops, there was an error deleting the image.";
