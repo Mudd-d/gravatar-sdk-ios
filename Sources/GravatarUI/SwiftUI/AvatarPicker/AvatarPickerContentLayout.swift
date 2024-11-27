@@ -54,6 +54,20 @@ public enum AvatarPickerContentLayout: AvatarPickerContentLayoutProviding, Equat
             false
         }
     }
+
+    var shareSheetInitialDetent: QEDetent {
+        switch self {
+        case .vertical(presentationStyle: let presentationStyle):
+            switch presentationStyle {
+            case .expandableMedium(let initialFraction, _):
+                .fraction(initialFraction)
+            case .large:
+                .medium
+            }
+        case .horizontal:
+            .fraction(VerticalContentPresentationStyle.expandableMediumInitialFraction)
+        }
+    }
 }
 
 /// Content layout to use pre iOS 16.0 where the system don't offer different presentation styles for SwiftUI.
@@ -69,10 +83,16 @@ enum AvatarPickerContentLayoutType: String, CaseIterable, Identifiable, AvatarPi
     // MARK: AvatarPickerContentLayoutProviding
 
     var contentLayout: AvatarPickerContentLayoutType { self }
+
+    var shareSheetInitialDetent: QEDetent {
+        .fraction(VerticalContentPresentationStyle.expandableMediumInitialFraction)
+    }
 }
 
 /// Internal type. This is an abstraction over `AvatarPickerContentLayoutType` and `AvatarPickerContentLayout`
 /// to use when all we are interested is to find out if the content is horizontial or vertical.
 protocol AvatarPickerContentLayoutProviding: Sendable {
     var contentLayout: AvatarPickerContentLayoutType { get }
+    // Determines the initial detent of share sheet inside the QE.
+    var shareSheetInitialDetent: QEDetent { get }
 }
