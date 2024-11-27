@@ -22,7 +22,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
     @State private var shareSheetItem: AvatarShareItem?
-    @State private var playgroundImageItem: AvatarShareItem?
+    @State private var playgroundInputItem: PlaygroundInputItem?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -152,11 +152,11 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .modifier(ImagePlaygroundModifier(
             isPresented: Binding(
-                get: { playgroundImageItem != nil },
-                set: { if !$0 { playgroundImageItem = nil } }
+                get: { playgroundInputItem != nil },
+                set: { if !$0 { playgroundInputItem = nil } }
             ),
             customEditor: customImageEditor,
-            sourceImage: Image(uiImage: playgroundImageItem?.image ?? UIImage()),
+            sourceImage: playgroundInputItem?.image,
             onCompletion: { image in
                 uploadImage(image)
             }
@@ -355,10 +355,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             break
         case .playground:
             Task {
-                if let url = avatar.shareURL,
-                   let image = await model.fetchOriginalSizeAvatar(for: avatar)
-                {
-                    playgroundImageItem = AvatarShareItem(id: avatar.id, image: image, url: url)
+                if let image = await model.fetchOriginalSizeAvatar(for: avatar) {
+                    playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
                 }
             }
         }
