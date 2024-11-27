@@ -3,6 +3,8 @@ import SwiftUI
 
 /// Presentation styles supported for the verticially scrolling content.
 public enum VerticalContentPresentationStyle: Sendable, Equatable {
+    public static let expandableMediumInitialFraction: CGFloat = 0.7
+
     /// Full height sheet.
     case large
 
@@ -10,7 +12,7 @@ public enum VerticalContentPresentationStyle: Sendable, Equatable {
     /// - initialFraction: The fractional height of the sheet in its initial state.
     /// - prioritizeScrollOverResize: A behavior that prioritizes scrolling the content of the sheet when
     /// swiping, rather than resizing it. Note that this parameter is effective only for iOS 16.4 +.
-    case expandableMedium(initialFraction: CGFloat = 0.7, prioritizeScrollOverResize: Bool = false)
+    case expandableMedium(initialFraction: CGFloat = VerticalContentPresentationStyle.expandableMediumInitialFraction, prioritizeScrollOverResize: Bool = false)
 }
 
 /// Presentation styles supported for the horizontially scrolling content.

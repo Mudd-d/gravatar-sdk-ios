@@ -145,7 +145,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .sheet(item: $shareSheetItem) { item in
             ShareSheet(items: [item.fileURL])
                 .colorScheme(colorScheme)
-                .presentationDetentsIfAvailable([.fraction(0.7), .large])
+                .presentationDetentsIfAvailable([.fraction(VerticalContentPresentationStyle.expandableMediumInitialFraction), .large])
         }
     }
 
