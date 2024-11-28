@@ -7,6 +7,7 @@ import UIKit
 public struct AvatarService: Sendable {
     private let imageDownloader: ImageDownloader
     private let imageUploader: ImageUploader
+    private let client: URLSessionHTTPClient
 
     /// Creates a new `AvatarService`
     ///
@@ -21,6 +22,7 @@ public struct AvatarService: Sendable {
     public init(urlSession: URLSessionProtocol? = nil, cache: ImageCaching? = nil) {
         self.imageDownloader = ImageDownloadService(urlSession: urlSession, cache: cache)
         self.imageUploader = ImageUploadService(urlSession: urlSession)
+        self.client = URLSessionHTTPClient(urlSession: urlSession)
     }
 
     /// Fetches a Gravatar user profile image using an `AvatarId`, and delivers the image asynchronously. See also: ``ImageDownloadService`` to
@@ -74,6 +76,17 @@ public struct AvatarService: Sendable {
             throw error
         } catch {
             throw ImageUploadError.responseError(reason: .unexpected(error))
+        }
+    }
+
+    package func delete(avatarID: String, accessToken: String) async throws {
+        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID))
+        request.httpMethod = "DELETE"
+        let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
+        do {
+            _ = try await client.data(with: authorizedRequest)
+        } catch {
+            throw error.apiError()
         }
     }
 }
