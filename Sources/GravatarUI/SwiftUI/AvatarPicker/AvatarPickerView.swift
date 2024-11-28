@@ -132,7 +132,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                             // The animation won't run during the action-sheet dismissal
                             // This delay will allow the avatar deletion animation to run.
                             try? await Task.sleep(nanoseconds: 10_000_000)
-                            await model.delete(avatar)
+                            let isDeletingSelected = model.grid.selectedAvatar == avatar
+                            if await model.delete(avatar), isDeletingSelected {
+                                notifyAvatarSelection()
+                            }
                         }
                     } label: {
                         Label(Localized.deletionConfirmationButtonTitle, systemImage: "trash")
