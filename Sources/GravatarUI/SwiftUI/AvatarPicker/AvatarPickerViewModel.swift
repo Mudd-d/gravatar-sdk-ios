@@ -362,8 +362,8 @@ class AvatarPickerViewModel: ObservableObject {
         of avatar: AvatarImageModel,
         token: String,
         deletingAvatarIndex: Int,
-        previouslySelectedAvatar: AvatarImageModel?) async -> Bool
-    {
+        previouslySelectedAvatar: AvatarImageModel?
+    ) async -> Bool {
         do {
             try await avatarService.delete(avatarID: avatar.id, accessToken: token)
             return true
