@@ -4,6 +4,18 @@ import SwiftUI
 enum AvatarAction: String, CaseIterable, Identifiable {
     case share
     case delete
+    case playground
+
+    static var allCases: [AvatarAction] {
+        var cases: [AvatarAction] = []
+        if #available(iOS 18.2, *) {
+            if EnvironmentValues().supportsImagePlayground {
+                cases.append(.playground)
+            }
+        }
+        cases.append(contentsOf: [.share, .delete])
+        return cases
+    }
 
     var id: String { rawValue }
 
@@ -13,6 +25,8 @@ enum AvatarAction: String, CaseIterable, Identifiable {
             Image(systemName: "trash")
         case .share:
             Image(systemName: "square.and.arrow.up")
+        case .playground:
+            Image(systemName: "apple.image.playground")
         }
     }
 
@@ -30,6 +44,12 @@ enum AvatarAction: String, CaseIterable, Identifiable {
                 value: "Share...",
                 comment: "An option in the avatar menu that shares the avatar"
             )
+        case .playground:
+            SDKLocalizedString(
+                "SystemImagePickerView.Source.Playground.title",
+                value: "Playground",
+                comment: "An option to show the image playground"
+            )
         }
     }
 
@@ -37,7 +57,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share:
+        case .share, .playground:
             nil
         }
     }

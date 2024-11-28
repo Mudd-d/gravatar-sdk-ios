@@ -23,6 +23,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var isUploadErrorDialogPresented: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
+    @State private var playgroundInputItem: PlaygroundInputItem?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -131,7 +132,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                             // The animation won't run during the action-sheet dismissal
                             // This delay will allow the avatar deletion animation to run.
                             try? await Task.sleep(nanoseconds: 10_000_000)
-                            await model.delete(avatar)
+                            let isDeletingSelected = model.grid.selectedAvatar == avatar
+                            if await model.delete(avatar), isDeletingSelected {
+                                notifyAvatarSelection()
+                            }
                         }
                     } label: {
                         Label(Localized.deletionConfirmationButtonTitle, systemImage: "trash")
@@ -171,6 +175,17 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     [contentLayoutProvider.shareSheetInitialDetent, .large]
                 )
         }
+        .modifier(ImagePlaygroundModifier(
+            isPresented: Binding(
+                get: { playgroundInputItem != nil },
+                set: { if !$0 { playgroundInputItem = nil } }
+            ),
+            customEditor: customImageEditor,
+            sourceImage: playgroundInputItem?.image,
+            onCompletion: { image in
+                uploadImage(image)
+            }
+        ))
     }
 
     private func header() -> some View {
@@ -362,6 +377,12 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             }
         case .delete:
             avatarToDelete = avatar
+        case .playground:
+            Task {
+                if let image = await model.fetchOriginalSizeAvatar(for: avatar) {
+                    playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
+                }
+            }
         }
     }
 
