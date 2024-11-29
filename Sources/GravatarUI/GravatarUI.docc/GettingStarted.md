@@ -44,7 +44,7 @@ end
 
 The demo application included in this SDK is designed to showcase the core functionalities and provide a starting point for integrating the SDK into your project. It offers a practical, hands-on way to explore key features and test configurations in a controlled environment.
 
-While some features are ready to be tested out of the box, others require additional setup, such creating a Gravatar Application on the developer portal, and configuring the secrets in the Demo app.
+While some features are ready to be tested out of the box, others require additional setup, such as creating a Gravatar Application on the developer portal, and configuring the secrets in the Demo app.
 
 ### To access the full featured demo app:
 1. Create a [Gravatar Application](https://docs.gravatar.com/oauth/#creating-and-updating-your-application).
