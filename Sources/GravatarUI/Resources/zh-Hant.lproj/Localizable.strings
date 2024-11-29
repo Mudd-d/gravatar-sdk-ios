@@ -1,7 +1,10 @@
-/* Translation-Revision-Date: 2024-10-18 12:54:04+0000 */
+/* Translation-Revision-Date: 2024-11-27 09:54:03+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: zh_TW */
+
+/* An option in the avatar menu that deletes the avatar */
+"AvatarPicker.AvatarAction.delete" = "刪除";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "需要登入";
@@ -110,4 +113,7 @@
 
 /* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
 "SystemImagePickerView.Source.PhotoLibrary.title" = "選擇照片";
+
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

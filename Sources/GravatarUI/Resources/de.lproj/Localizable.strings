@@ -1,7 +1,13 @@
-/* Translation-Revision-Date: 2024-10-17 17:54:03+0000 */
+/* Translation-Revision-Date: 2024-11-25 18:54:03+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: de */
+
+/* An option in the avatar menu that deletes the avatar */
+"AvatarPicker.AvatarAction.delete" = "Löschen";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "Teilen";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "Anmelden erforderlich";
@@ -110,4 +116,7 @@
 
 /* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
 "SystemImagePickerView.Source.PhotoLibrary.title" = "Foto auswählen";
+
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 
