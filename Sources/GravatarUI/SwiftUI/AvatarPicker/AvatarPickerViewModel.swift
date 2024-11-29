@@ -344,9 +344,11 @@ class AvatarPickerViewModel: ObservableObject {
         }
         let previouslySelectedAvatar = grid.selectedAvatar
 
-        guard let deletedIndex = withAnimation(nil, {
+        let deletedIndex = withAnimation {
             grid.deleteModel(avatar.id)
-        }) else { return false }
+        }
+
+        guard let deletedIndex else { return false }
 
         if selectedAvatarURL != grid.selectedAvatar?.url {
             selectedAvatarURL = grid.selectedAvatar?.url
