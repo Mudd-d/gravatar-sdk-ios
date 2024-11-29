@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import GravatarUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -47,6 +48,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
     }
 
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        guard let url = userActivity.webpageURL else { return }
 
+        Task {
+            _ = await OAuthSession.handleCallback(url)
+        }
+    }
 }
 
