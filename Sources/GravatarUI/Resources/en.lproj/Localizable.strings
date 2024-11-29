@@ -82,9 +82,6 @@
 /* This error message shows when the user attempts to delete an avatar and fails. */
 "AvatarPickerViewModel.Delete.Error" = "Oops, there was an error deleting the image.";
 
-/* This error message shows when the user attempts to download an avatar and fails. */
-"AvatarPickerViewModel.Download.Fail" = "Oops, something didn't quite work out while trying to download your avatar.";
-
 /* This error message shows when the user attempts to share an avatar and fails. */
 "AvatarPickerViewModel.Share.Fail" = "Oops, something didn't quite work out while trying to share your avatar.";
 
