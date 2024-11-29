@@ -66,8 +66,8 @@ class AvatarGridModel: ObservableObject {
         }
     }
 
-    func deleteModel(_ id: String) -> Int {
-        let index = avatars.firstIndex { $0.id == id }!
+    func deleteModel(_ id: String) -> Int? {
+        guard let index = avatars.firstIndex(where: { $0.id == id }) else { return nil }
         avatars.removeAll { $0.id == id }
         if selectedAvatar?.id == id {
             selectedAvatar = nil

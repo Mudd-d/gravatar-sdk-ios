@@ -343,9 +343,13 @@ class AvatarPickerViewModel: ObservableObject {
             selectedAvatarURL = grid.selectedAvatar?.url
         }
         let previouslySelectedAvatar = grid.selectedAvatar
+
         let deletedIndex = withAnimation {
             grid.deleteModel(avatar.id)
         }
+
+        guard let deletedIndex else { return false }
+
         if selectedAvatarURL != grid.selectedAvatar?.url {
             selectedAvatarURL = grid.selectedAvatar?.url
         }
@@ -368,7 +372,7 @@ class AvatarPickerViewModel: ObservableObject {
             try await avatarService.delete(avatarID: avatar.id, accessToken: token)
             return true
         } catch APIError.responseError(let reason) where reason.httpStatusCode == 404 {
-            return false // no-op. We delete a not-found avatar from the UI.
+            return true // no-op. We delete a not-found avatar from the UI.
         } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
         } catch {
