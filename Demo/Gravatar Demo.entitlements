@@ -2,7 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleShortVersionString</key>
-	<string>3.1.0-rc.1</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:gravatar.com</string>
+		<string>applinks:gravatar.com</string>
+	</array>
 </dict>
 </plist>

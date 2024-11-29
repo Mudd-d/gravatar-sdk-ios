@@ -414,11 +414,6 @@ extension AvatarPickerViewModel {
             value: "Oops, there was an error deleting the image.",
             comment: "This error message shows when the user attempts to delete an avatar and fails."
         )
-        static let avatarDownloadFail = SDKLocalizedString(
-            "AvatarPickerViewModel.Download.Fail",
-            value: "Oops, something didn't quite work out while trying to download your avatar.",
-            comment: "This error message shows when the user attempts to download an avatar and fails."
-        )
         static let avatarShareFail = SDKLocalizedString(
             "AvatarPickerViewModel.Share.Fail",
             value: "Oops, something didn't quite work out while trying to share your avatar.",
