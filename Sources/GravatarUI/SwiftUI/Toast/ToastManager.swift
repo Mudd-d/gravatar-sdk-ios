@@ -41,6 +41,7 @@ class ToastManager: ObservableObject {
 
 enum ToastType: Int {
     case info
+    case warning
     case error
 }
 
