@@ -3,8 +3,12 @@ import Foundation
 private let baseURL = URL(string: "https://api.gravatar.com/v3/profiles/")!
 private let avatarsBaseURLComponents = URLComponents(string: "https://api.gravatar.com/v3/me/avatars")!
 
+private func avatarBaseURL(with avatarID: String) -> URL? {
+    URL(string: "https://api.gravatar.com/v3/me/avatars/\(avatarID)")
+}
+
 private func selectAvatarBaseURL(with avatarID: String) -> URL? {
-    URL(string: "https://api.gravatar.com/v3/me/avatars/\(avatarID)/email")
+    avatarBaseURL(with: avatarID)?.appendingPathComponent("email")
 }
 
 /// A service to perform Profile related tasks.
@@ -53,6 +57,32 @@ public struct ProfileService: ProfileFetching, Sendable {
             var request = URLRequest(url: url).settingAuthorizationHeaderField(with: token)
             request.httpMethod = "POST"
             request.httpBody = try SelectAvatarBody(emailHash: profileID.id).data
+            let (data, _) = try await client.data(with: request)
+            return try data.decode()
+        } catch {
+            throw error.apiError()
+        }
+    }
+
+    @discardableResult
+    package func setRating(
+        _ rating: AvatarRating,
+        for avatar: AvatarIdentifier,
+        token: String
+    ) async throws -> Avatar {
+        guard let url = avatarsBaseURLComponents
+            .settingQueryItems([.init(name: "raiting", value: rating.rawValue)]).url?
+            .appendingPathComponent(avatar.id)
+        else {
+            throw APIError.requestError(reason: .urlInitializationFailed)
+        }
+
+        do {
+            var request = URLRequest(url: url).settingAuthorizationHeaderField(with: token)
+            request.httpMethod = "PATCH"
+
+            let requestBody = try JSONEncoder().encode(UpdateAvatarRequest(rating: rating))
+            request.httpBody = requestBody
             let (data, _) = try await client.data(with: request)
             return try data.decode()
         } catch {
