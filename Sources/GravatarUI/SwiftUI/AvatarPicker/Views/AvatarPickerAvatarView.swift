@@ -80,25 +80,101 @@ struct AvatarPickerAvatarView: View {
 
     func actionsMenu() -> some View {
         Menu {
-            ForEach(AvatarAction.allCases) { action in
-                Button(role: action.role) {
-                    onActionTap(action)
-                } label: {
-                    Label {
-                        Text(action.localizedTitle)
-                    } icon: {
-                        action.icon
+            Section {
+                button(for: .share)
+                if #available(iOS 18.2, *) {
+                    if EnvironmentValues().supportsImagePlayground {
+                        button(for: .playground)
                     }
                 }
+            }
+            Section {
+                Menu {
+                    ForEach(AvatarRating.allCases, id: \.self) { rating in
+                        button(for: .rating(rating))
+                    }
+                } label: {
+                    label(forAction: AvatarAction.rating(avatar.rating))
+                }
+            }
+            Section {
+                button(for: .delete)
             }
         } label: {
             ellipsisView()
         }
     }
+
+    func button(for action: AvatarAction) -> some View {
+        Group {
+            switch action {
+            case .rating(let rating):
+                Button(role: action.role) {
+                    onActionTap(action)
+                } label: {
+                    let buttonTitle = "\(rating.rawValue) (\(rating.localizedSubtitle))"
+                    if rating == avatar.rating {
+                        Label(buttonTitle, systemImage: "checkmark")
+                    } else {
+                        Text(buttonTitle)
+                    }
+                }
+            case .delete, .playground, .share:
+                Button(role: action.role) {
+                    onActionTap(action)
+                } label: {
+                    label(forAction: action)
+                }
+            }
+        }
+    }
+
+    func label(forAction action: AvatarAction) -> Label<Text, Image> {
+        Label {
+            Text(action.localizedTitle)
+        } icon: {
+            action.icon
+        }
+    }
+}
+
+extension AvatarRating {
+    fileprivate var localizedSubtitle: String {
+        switch self {
+        case .g:
+            SDKLocalizedString(
+                "Avatar.Rating.G.subtitle",
+                value: "General",
+                comment: "Rating that indicates that the avatar is suitable for everyone"
+            )
+        case .pg:
+            SDKLocalizedString(
+                "Avatar.Rating.PG.subtitle",
+                value: "Parental Guidance",
+                comment: "Rating that indicates that the avatar may not be suitable for children"
+            )
+        case .r:
+            SDKLocalizedString(
+                "Avatar.Rating.R.subtitle",
+                value: "Restricted",
+                comment: "Rating that indicates that the avatar may not be suitable for children"
+            )
+        case .x:
+            SDKLocalizedString(
+                "Avatar.Rating.X.subtitle",
+                value: "Extreme",
+                comment: "Rating that indicates that the avatar is obviously and extremely suitable for children"
+            )
+        }
+    }
 }
 
 #Preview {
-    let avatar = AvatarImageModel(id: "1", source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256"))
+    let avatar = AvatarImageModel(
+        id: "1",
+        source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256"),
+        rating: .pg
+    )
     return AvatarPickerAvatarView(avatar: avatar, maxLength: AvatarGridConstants.maxAvatarWidth, minLength: AvatarGridConstants.minAvatarWidth) {
         false
     } onAvatarTap: { _ in
