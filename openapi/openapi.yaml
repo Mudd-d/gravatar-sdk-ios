@@ -54,13 +54,7 @@ components:
             - >-
               https://gravatar.com/userimage/252014526/d38bele5a98a2bbc40df69172a2a8348.jpeg
         rating:
-          type: string
-          description: Rating associated with the image.
-          enum:
-            - G
-            - PG
-            - R
-            - X
+          $ref: '#/components/schemas/AvatarRating'
         alt_text:
           type: string
           description: Alternative text description of the image.
