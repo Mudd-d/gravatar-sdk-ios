@@ -456,6 +456,6 @@ extension AvatarImageModel {
         source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
         state = .loaded
         isSelected = avatar.isSelected
-        rating = avatar.rating
+        rating = avatar.avatarRating
     }
 }
