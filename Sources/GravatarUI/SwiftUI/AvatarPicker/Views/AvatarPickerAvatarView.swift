@@ -91,7 +91,7 @@ struct AvatarPickerAvatarView: View {
             Section {
                 Menu {
                     ForEach(AvatarRating.allCases, id: \.self) { rating in
-                        button(for: .rating(rating))
+                        button(for: .rating(rating), isSelected: rating == avatar.rating)
                     }
                 } label: {
                     label(forAction: AvatarAction.rating(avatar.rating))
@@ -105,35 +105,38 @@ struct AvatarPickerAvatarView: View {
         }
     }
 
-    func button(for action: AvatarAction) -> some View {
-        Group {
+    private func button(
+        for action: AvatarAction,
+        isSelected selected: Bool = false,
+        systemImageWhenSelected systemImage: String = "checkmark"
+    ) -> some View {
+        Button(role: action.role) {
+            onActionTap(action)
+        } label: {
             switch action {
             case .rating(let rating):
-                Button(role: action.role) {
-                    onActionTap(action)
-                } label: {
-                    let buttonTitle = "\(rating.rawValue) (\(rating.localizedSubtitle))"
-                    if rating == avatar.rating {
-                        Label(buttonTitle, systemImage: "checkmark")
-                    } else {
-                        Text(buttonTitle)
-                    }
+                let buttonTitle = "\(rating.rawValue) (\(rating.localizedSubtitle))"
+
+                if selected {
+                    label(forAction: action, title: buttonTitle, systemImage: systemImage)
+                } else {
+                    Text(buttonTitle)
                 }
             case .delete, .playground, .share:
-                Button(role: action.role) {
-                    onActionTap(action)
-                } label: {
-                    label(forAction: action)
-                }
+                label(forAction: action)
             }
         }
     }
 
-    func label(forAction action: AvatarAction) -> Label<Text, Image> {
+    private func label(forAction action: AvatarAction, title: String? = nil, systemImage: String) -> Label<Text, Image> {
+        label(forAction: action, title: title, image: Image(systemName: systemImage))
+    }
+
+    private func label(forAction action: AvatarAction, title: String? = nil, image: Image? = nil) -> Label<Text, Image> {
         Label {
-            Text(action.localizedTitle)
+            Text(title ?? action.localizedTitle)
         } icon: {
-            action.icon
+            image ?? action.icon
         }
     }
 }
