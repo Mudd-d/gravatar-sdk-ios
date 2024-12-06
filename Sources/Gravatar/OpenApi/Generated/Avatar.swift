@@ -3,11 +3,19 @@ import Foundation
 /// An avatar that the user has already uploaded to their Gravatar account.
 ///
 package struct Avatar: Codable, Hashable, Sendable {
+    package enum Rating: String, Codable, CaseIterable, Sendable {
+        case g = "G"
+        case pg = "PG"
+        case r = "R"
+        case x = "X"
+    }
+
     /// Unique identifier for the image.
     package private(set) var imageId: String
     /// Image URL
     package private(set) var imageUrl: String
-    package private(set) var rating: AvatarRating
+    /// Rating associated with the image.
+    package private(set) var rating: Rating
     /// Alternative text description of the image.
     package private(set) var altText: String
     /// Whether the image is currently selected as the provided selected email's avatar.
@@ -15,7 +23,7 @@ package struct Avatar: Codable, Hashable, Sendable {
     /// Date and time when the image was last updated.
     package private(set) var updatedDate: Date
 
-    package init(imageId: String, imageUrl: String, rating: AvatarRating, altText: String, selected: Bool? = nil, updatedDate: Date) {
+    package init(imageId: String, imageUrl: String, rating: Rating, altText: String, selected: Bool? = nil, updatedDate: Date) {
         self.imageId = imageId
         self.imageUrl = imageUrl
         self.rating = rating
