@@ -25,7 +25,7 @@ enum AvatarAction: Identifiable {
         case .playground:
             Image(systemName: "apple.image.playground")
         case .rating:
-            Image(systemName: "eye")
+            Image(systemName: "star.leadinghalf.filled")
         }
     }
 
