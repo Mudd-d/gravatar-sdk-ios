@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+@testable import Gravatar
 @testable import GravatarUI
 import TestHelpers
 import Testing
@@ -269,53 +270,78 @@ final class AvatarPickerViewModelTests {
 final class URLSessionAvatarPickerMock: URLSessionProtocol {
     let returnErrorCode: Int?
 
-    enum RequestType: String {
-        case profiles
-        case avatars
-    }
-
     init(returnErrorCode: Int? = nil) {
         self.returnErrorCode = returnErrorCode
     }
 
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        if request.httpMethod == "POST" {
-            if request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true {
-                return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
-            }
+        if request.isSetAvatarForEmailRequest {
+            return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
         }
-        if isSetAvatarRatingRequest(request) {
+
+        if request.isSetAvatarRatingRequest {
             if let returnErrorCode {
                 return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
             } else {
-                return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse())
+                return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse()) // Avatar data
             }
         }
-        if request.url?.absoluteString.contains(RequestType.profiles.rawValue) == true {
+
+        if request.isProfilesRequest {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
-        } else if request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true {
+        } else if request.isAvatarsRequest == true {
             return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
         }
+
         fatalError("Request not mocked: \(request.url?.absoluteString ?? "unknown request")")
     }
 
     func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
         if let returnErrorCode {
-            return ("".data(using: .utf8)!, HTTPURLResponse.errorResponse(code: returnErrorCode))
+            return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
         }
         return (Bundle.postAvatarUploadJsonData, HTTPURLResponse.successResponse())
     }
+}
 
-    private func isSetAvatarRatingRequest(_ request: URLRequest) -> Bool {
-        guard request.httpMethod == "PATCH",
-              request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true,
-              let bodyData = request.httpBody,
-              let updateAvatarRequestBody = try? JSONDecoder().decode(UpdateAvatarRequest.self, from: bodyData),
-              updateAvatarRequestBody.rating != nil
+extension URLRequest {
+    private enum RequestType: String {
+        case profiles
+        case avatars
+    }
 
+    fileprivate var isAvatarsRequest: Bool {
+        self.url?.absoluteString.contains(RequestType.avatars.rawValue) == true
+    }
+
+    fileprivate var isProfilesRequest: Bool {
+        self.url?.absoluteString.contains(RequestType.profiles.rawValue) == true
+    }
+
+    fileprivate var isSetAvatarRatingRequest: Bool {
+        guard self.httpMethod == "PATCH",
+              self.isAvatarsRequest,
+              self.httpBody.isDecodable(asType: UpdateAvatarRequest.self)
         else {
             return false
         }
         return true
+    }
+
+    fileprivate var isSetAvatarForEmailRequest: Bool {
+        guard self.httpMethod == "POST",
+              self.isAvatarsRequest,
+              self.httpBody.isDecodable(asType: SetEmailAvatarRequest.self)
+        else {
+            return false
+        }
+        return true
+    }
+}
+
+extension Data? {
+    fileprivate func isDecodable<T: Decodable>(asType type: T.Type, using decoder: JSONDecoder = JSONDecoder()) -> Bool {
+        guard let self else { return false }
+        return (try? decoder.decode(T.self, from: self)) != nil
     }
 }
