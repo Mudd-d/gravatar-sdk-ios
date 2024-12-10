@@ -71,7 +71,7 @@ public struct ProfileService: ProfileFetching, Sendable {
         token: String
     ) async throws -> Avatar {
         guard let url = avatarsBaseURLComponents
-            .settingQueryItems([.init(name: "raiting", value: rating.rawValue)]).url?
+            .settingQueryItems([.init(name: "rating", value: rating.rawValue)]).url?
             .appendingPathComponent(avatar.id)
         else {
             throw APIError.requestError(reason: .urlInitializationFailed)
