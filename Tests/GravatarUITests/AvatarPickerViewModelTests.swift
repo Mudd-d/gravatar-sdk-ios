@@ -274,10 +274,6 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
         case avatars
     }
 
-    enum QueryType: String {
-        case rating
-    }
-
     init(returnErrorCode: Int? = nil) {
         self.returnErrorCode = returnErrorCode
     }
@@ -313,7 +309,10 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
     private func isSetAvatarRatingRequest(_ request: URLRequest) -> Bool {
         guard request.httpMethod == "PATCH",
               request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true,
-              request.url?.query?.contains(QueryType.rating.rawValue) == true
+              let bodyData = request.httpBody,
+              let updateAvatarRequestBody = try? JSONDecoder().decode(UpdateAvatarRequest.self, from: bodyData),
+              updateAvatarRequestBody.rating != nil
+
         else {
             return false
         }
