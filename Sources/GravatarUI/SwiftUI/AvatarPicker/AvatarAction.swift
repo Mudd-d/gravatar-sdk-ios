@@ -5,6 +5,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
     case share
     case delete
     case playground
+    case altText
 
     static var allCases: [AvatarAction] {
         var cases: [AvatarAction] = []
@@ -13,7 +14,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
                 cases.append(.playground)
             }
         }
-        cases.append(contentsOf: [.share, .delete])
+        cases.append(contentsOf: [.share, .altText, .delete])
         return cases
     }
 
@@ -27,6 +28,8 @@ enum AvatarAction: String, CaseIterable, Identifiable {
             Image(systemName: "square.and.arrow.up")
         case .playground:
             Image(systemName: "apple.image.playground")
+        case .altText:
+            Image(systemName: "text.below.photo")
         }
     }
 
@@ -50,6 +53,12 @@ enum AvatarAction: String, CaseIterable, Identifiable {
                 value: "Playground",
                 comment: "An option to show the image playground"
             )
+        case .altText:
+            SDKLocalizedString(
+                "AvatarPicker.AvatarAction.altText",
+                value: "Alt Text",
+                comment: "An option in the avatar menu that edits the avatar's Alt Text."
+            )
         }
     }
 
@@ -57,7 +66,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share, .playground:
+        case .share, .playground, .altText:
             nil
         }
     }

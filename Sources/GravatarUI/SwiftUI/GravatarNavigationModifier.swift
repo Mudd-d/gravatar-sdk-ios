@@ -1,20 +1,27 @@
 import SwiftUI
 
 struct GravatarNavigationModifier: ViewModifier {
-    var title: String
+    var title: String?
+    var doneButtonTitle: String?
     var actionButtonDisabled: Bool
+
+    @State private var safariURL: URL?
 
     var onActionButtonPressed: (() -> Void)? = nil
     var onDoneButtonPressed: (() -> Void)? = nil
 
     func body(content: Content) -> some View {
         content
-            .navigationTitle(title)
+            .navigationTitle(title ?? Constants.gravatarNavigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        onActionButtonPressed?()
+                        if let action = onActionButtonPressed {
+                            action()
+                        } else {
+                            openProfileEditInSafari()
+                        }
                     }) {
                         Image("gravatar", bundle: .module)
                             .tint(Color(UIColor.gravatarBlue))
@@ -26,7 +33,7 @@ struct GravatarNavigationModifier: ViewModifier {
                     Button(action: {
                         onDoneButtonPressed?()
                     }) {
-                        Text(Localized.doneButtonTitle)
+                        Text(doneButtonTitle ?? Localized.doneButtonTitle)
                             .tint(Color(UIColor.gravatarBlue))
                     }
                 }
@@ -42,10 +49,23 @@ struct GravatarNavigationModifier: ViewModifier {
                     )
                 }
             }
+            .fullScreenCover(item: $safariURL) { url in
+                SafariView(url: url)
+                    .edgesIgnoringSafeArea(.all)
+            }
+    }
+
+    private func openProfileEditInSafari() {
+        guard let url = URL(string: "https://gravatar.com/profile") else { return }
+        safariURL = url
     }
 }
 
 extension GravatarNavigationModifier {
+    enum Constants {
+        static let gravatarNavigationTitle = "Gravatar"
+    }
+
     private enum Localized {
         static let doneButtonTitle = SDKLocalizedString(
             "GravatarNavigationModifier.Button.Done.title",
@@ -57,7 +77,8 @@ extension GravatarNavigationModifier {
 
 extension View {
     func gravatarNavigation(
-        title: String,
+        title: String? = nil,
+        doneButtonTitle: String? = nil,
         actionButtonDisabled: Bool,
         onActionButtonPressed: (() -> Void)? = nil,
         onDoneButtonPressed: (() -> Void)? = nil
@@ -65,6 +86,7 @@ extension View {
         modifier(
             GravatarNavigationModifier(
                 title: title,
+                doneButtonTitle: doneButtonTitle,
                 actionButtonDisabled: actionButtonDisabled,
                 onActionButtonPressed: onActionButtonPressed,
                 onDoneButtonPressed: onDoneButtonPressed

@@ -24,6 +24,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
+    @State private var altTextEditorAvatar: AvatarImageModel?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -149,11 +150,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .preference(key: VerticalSizeClassPreferenceKey.self, value: verticalSizeClass)
         .gravatarNavigation(
-            title: Constants.title,
             actionButtonDisabled: model.profileModel?.profileURL == nil,
-            onActionButtonPressed: {
-                openProfileEditInSafari()
-            },
             onDoneButtonPressed: {
                 isPresented = false
             }
@@ -186,6 +183,18 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
+        .sheet(item: $altTextEditorAvatar) { avatarToEdit in
+            NavigationView {
+                AltTextEditorView(avatar: avatarToEdit, email: model.email!, altText: avatarToEdit.altText ?? "") { newText in
+                    altTextEditorAvatar = nil
+                    Task {
+                        await model.update(avatarToEdit, altText: newText)
+                    }
+                } onCancel: {
+                    altTextEditorAvatar = nil
+                }
+            }
+        }
     }
 
     private func header() -> some View {
@@ -383,7 +392,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
                 }
             }
+        case .altText:
+            editAltText(for: avatar)
         }
+    }
+
+    func editAltText(for avatar: AvatarImageModel) {
+        altTextEditorAvatar = avatar
     }
 
     func selectAvatar(with id: String) {
@@ -415,6 +430,17 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .padding(.horizontal, Constants.horizontalPadding)
     }
 
+    private func altTextEditor(for avatar: AvatarImageModel) -> some View {
+        AltTextEditorView(avatar: avatar, email: model.email!, altText: avatar.altText ?? "") { newText in
+            altTextEditorAvatar = nil
+            Task {
+                await model.update(avatar, altText: newText)
+            }
+        } onCancel: {
+            altTextEditorAvatar = nil
+        }.transition(.move(edge: .top))
+    }
+
     private func avatarsLoadingView() -> some View {
         VStack {
             Spacer(minLength: .DS.Padding.large)
@@ -431,11 +457,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     private func openProfileInSafari() {
         safariURL = model.profileModel?.profileURL
-    }
-
-    private func openProfileEditInSafari() {
-        guard let url = URL(string: "https://gravatar.com/profile") else { return }
-        safariURL = url
     }
 
     @ViewBuilder
@@ -487,7 +508,6 @@ private enum AvatarPicker {
     enum Constants {
         static let horizontalPadding: CGFloat = .DS.Padding.double
         static let lightModeShadowColor = Color(uiColor: UIColor.rgba(25, 30, 35, alpha: 0.2))
-        static let title: String = "Gravatar" // defined here to avoid translations
         static let vStackVerticalSpacing: CGFloat = .DS.Padding.medium
         static let profileViewTopSpacing: CGFloat = .DS.Padding.double
     }

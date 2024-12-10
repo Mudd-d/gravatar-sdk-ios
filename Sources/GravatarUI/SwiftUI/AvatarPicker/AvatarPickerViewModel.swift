@@ -337,6 +337,26 @@ class AvatarPickerViewModel: ObservableObject {
         await profile
     }
 
+    func update(_ avatar: AvatarImageModel, altText: String) async -> Bool {
+        guard let token = self.authToken else { return false }
+        do {
+            try await avatarService.update(altText, rating: nil, avatarID: avatar.id, accessToken: token)
+            grid.replaceModel(withID: avatar.id, with: avatar.updating(altText: altText))
+            toastManager.showToast(Localized.avatarAltTextSuccess + "\n- \"\(altText)\"")
+            return true
+        } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
+        } catch {
+            handleError(message: Localized.avatarDeletionError)
+        }
+
+        func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
+        }
+
+        return false
+    }
+
     func delete(_ avatar: AvatarImageModel) async -> Bool {
         guard let token = self.authToken else { return false }
         defer {
@@ -419,6 +439,11 @@ extension AvatarPickerViewModel {
             value: "Oops, something didn't quite work out while trying to share your avatar.",
             comment: "This error message shows when the user attempts to share an avatar and fails."
         )
+        static let avatarAltTextSuccess = SDKLocalizedString(
+            "AvatarPickerViewModel.AltText.Success",
+            value: "Image alt text was changed successfully",
+            comment: "This confirmation message shows when the user has updated the alt text."
+        )
     }
 }
 
@@ -440,5 +465,6 @@ extension AvatarImageModel {
         source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
         state = .loaded
         isSelected = avatar.isSelected
+        altText = avatar.altText
     }
 }
