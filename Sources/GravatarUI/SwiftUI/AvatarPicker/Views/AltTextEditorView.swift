@@ -13,6 +13,8 @@ struct AltTextEditorView: View {
 
     @State var altText: String = ""
     @State var charCount: Int = 0
+    @State var safariURL: URL? = nil
+
     @FocusState var focused: Bool
 
     let onSave: (String) -> Void
@@ -50,6 +52,10 @@ struct AltTextEditorView: View {
                 onCancel()
             }
         )
+        .fullScreenCover(item: $safariURL) { url in
+            SafariView(url: url)
+                .edgesIgnoringSafeArea(.all)
+        }
     }
 
     var altTextField: some View {
@@ -96,7 +102,9 @@ struct AltTextEditorView: View {
     }
 
     var altTextHelpButton: some View {
-        Button(Localized.helpButtonTitle) {}.font(.footnote)
+        Button(Localized.helpButtonTitle) {
+            safariURL = URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars")
+        }.font(.footnote)
     }
 
     var imageView: some View {
