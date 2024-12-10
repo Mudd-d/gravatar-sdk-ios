@@ -89,4 +89,18 @@ public struct AvatarService: Sendable {
             throw error.apiError()
         }
     }
+
+    package func update(_ altText: String?, rating: AvatarRating?, avatarID: String, accessToken: String) async throws {
+        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID))
+        request.httpMethod = "PATCH"
+        let updateBody = UpdateAvatarRequest(rating: rating, altText: altText)
+        request.httpBody = try JSONEncoder().encode(updateBody)
+
+        let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
+        do {
+            _ = try await client.data(with: authorizedRequest)
+        } catch {
+            throw error.apiError()
+        }
+    }
 }
