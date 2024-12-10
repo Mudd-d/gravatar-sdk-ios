@@ -347,7 +347,9 @@ class AvatarPickerViewModel: ObservableObject {
                 for: .hashID(avatar.id),
                 token: authToken
             )
-            grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+            withAnimation {
+                grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+            }
         } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarRatingError)
         } catch {
