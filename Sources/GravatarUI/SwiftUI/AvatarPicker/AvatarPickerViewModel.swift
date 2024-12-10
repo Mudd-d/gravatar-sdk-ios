@@ -349,6 +349,7 @@ class AvatarPickerViewModel: ObservableObject {
             )
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+                toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
             }
         } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarRatingError)
@@ -442,6 +443,11 @@ extension AvatarPickerViewModel {
             "AvatarPickerViewModel.Share.Fail",
             value: "Oops, something didn't quite work out while trying to share your avatar.",
             comment: "This error message shows when the user attempts to share an avatar and fails."
+        )
+        static let avatarRatingUpdateSuccess = SDKLocalizedString(
+            "AvatarPickerViewModel.RatingUpdate.Success",
+            value: "Avatar rating was changed successfully",
+            comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
         )
         static let avatarRatingError = SDKLocalizedString(
             "AvatarPickerViewModel.Rating.Error",
