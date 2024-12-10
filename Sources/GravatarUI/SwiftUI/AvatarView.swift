@@ -12,7 +12,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
     private let urlSession: URLSession
     private let transaction: Transaction
 
-    @available(*, deprecated, message: "Use the initializer with `placeholder: (() -> Placeholder)?` instead.")
+    @available(*, deprecated, message: "Use the initializer with `placeholderView: (() -> Placeholder)?` instead.")
     public init(
         url: URL?,
         placeholder: Image?,
