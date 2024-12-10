@@ -211,6 +211,59 @@ final class AvatarPickerViewModelTests {
             #expect(model.grid.avatars.count == 1)
         }
     }
+
+    @Test("Handle avatar rating change: Success")
+    func changeAvatarRatingSucceeds() async throws {
+        let testAvatarID = "991a7b71cf9f34..."
+
+        await model.refresh()
+        let avatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }), "No avatar found")
+        try #require(avatar.rating == .g)
+
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarRatingUpdateSuccess)
+                    #expect(toasts.first?.type == .info)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            await model.setRating(.pg, for: avatar)
+        }
+        let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
+        #expect(resultAvatar.rating == .pg)
+    }
+
+    @Test(
+        "Handle avatar rating change: Failure",
+        arguments: [HTTPStatus.unauthorized, .forbidden]
+    )
+    func changeAvatarRatingReturnsError(httpStatus: HTTPStatus) async throws {
+        let testAvatarID = "991a7b71cf9f34..."
+        model = Self.createModel(session: .init(returnErrorCode: httpStatus.rawValue))
+
+        await model.refresh()
+        let avatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }), "No avatar found")
+        try #require(avatar.rating == .g)
+
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarRatingError)
+                    #expect(toasts.first?.type == .error)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            await model.setRating(.pg, for: avatar)
+        }
+
+        let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
+        #expect(resultAvatar.rating == .g, "The rating should not be changed")
+    }
 }
 
 final class URLSessionAvatarPickerMock: URLSessionProtocol {
@@ -221,6 +274,10 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
         case avatars
     }
 
+    enum QueryType: String {
+        case rating
+    }
+
     init(returnErrorCode: Int? = nil) {
         self.returnErrorCode = returnErrorCode
     }
@@ -229,6 +286,13 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
         if request.httpMethod == "POST" {
             if request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true {
                 return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
+            }
+        }
+        if isSetAvatarRatingRequest(request) {
+            if let returnErrorCode {
+                return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
+            } else {
+                return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse())
             }
         }
         if request.url?.absoluteString.contains(RequestType.profiles.rawValue) == true {
@@ -244,5 +308,15 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
             return ("".data(using: .utf8)!, HTTPURLResponse.errorResponse(code: returnErrorCode))
         }
         return (Bundle.postAvatarUploadJsonData, HTTPURLResponse.successResponse())
+    }
+
+    private func isSetAvatarRatingRequest(_ request: URLRequest) -> Bool {
+        guard request.httpMethod == "PATCH",
+              request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true,
+              request.url?.query?.contains(QueryType.rating.rawValue) == true
+        else {
+            return false
+        }
+        return true
     }
 }
