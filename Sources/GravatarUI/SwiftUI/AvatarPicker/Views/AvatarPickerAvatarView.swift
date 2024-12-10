@@ -166,7 +166,7 @@ extension AvatarRating {
             SDKLocalizedString(
                 "Avatar.Rating.X.subtitle",
                 value: "Extreme",
-                comment: "Rating that indicates that the avatar is obviously and extremely suitable for children"
+                comment: "Rating that indicates that the avatar is obviously and extremely unsuitable for children"
             )
         }
     }
