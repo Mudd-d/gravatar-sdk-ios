@@ -341,8 +341,10 @@ class AvatarPickerViewModel: ObservableObject {
         guard let token = self.authToken else { return false }
         do {
             try await avatarService.update(altText, rating: nil, avatarID: avatar.id, accessToken: token)
-            grid.replaceModel(withID: avatar.id, with: avatar.updating(altText: altText))
             toastManager.showToast(Localized.avatarAltTextSuccess + "\n- \"\(altText)\"")
+            withAnimation {
+                grid.replaceModel(withID: avatar.id, with: avatar.updating(altText: altText))
+            }
             return true
         } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
