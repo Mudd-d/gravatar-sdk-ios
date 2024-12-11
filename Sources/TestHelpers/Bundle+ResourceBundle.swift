@@ -44,6 +44,10 @@ extension Bundle {
         testsBundle.jsonData(forResource: "avatarUploadResponse")
     }
 
+    public static var setRatingJsonData: Data {
+        testsBundle.jsonData(forResource: "avatarSetRatingResponse")
+    }
+
     public static var getAvatarsJsonData: Data {
         testsBundle.jsonData(forResource: "avatarsResponse")
     }

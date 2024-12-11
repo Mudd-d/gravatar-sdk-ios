@@ -18,6 +18,7 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
     let isSelected: Bool
     let state: State
     let altText: String?
+    let rating: AvatarRating
 
     var url: URL? {
         guard case .remote(let url) = source else {
@@ -47,11 +48,12 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         return image
     }
 
-    init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, altText: String? = nil) {
+    init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, rating: AvatarRating = .g, altText: String? = nil) {
         self.id = id
         self.source = source
         self.state = state
         self.isSelected = isSelected
+        self.rating = rating
         self.altText = altText
     }
 
