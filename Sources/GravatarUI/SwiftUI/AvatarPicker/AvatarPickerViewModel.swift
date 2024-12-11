@@ -338,6 +338,7 @@ class AvatarPickerViewModel: ObservableObject {
         await profile
     }
 
+    @discardableResult
     func update(_ avatar: AvatarImageModel, altText: String) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
@@ -360,6 +361,7 @@ class AvatarPickerViewModel: ObservableObject {
         return false
     }
 
+    @discardableResult
     func update(_ avatar: AvatarImageModel, rating: AvatarRating) async -> Bool {
         guard let authToken else { return false }
 
