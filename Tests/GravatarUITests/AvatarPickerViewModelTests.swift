@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+@testable import Gravatar
 @testable import GravatarUI
 import TestHelpers
 import Testing
@@ -211,38 +212,136 @@ final class AvatarPickerViewModelTests {
             #expect(model.grid.avatars.count == 1)
         }
     }
+
+    @Test("Handle avatar rating change: Success")
+    func changeAvatarRatingSucceeds() async throws {
+        let testAvatarID = "991a7b71cf9f34..."
+
+        await model.refresh()
+        let avatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }), "No avatar found")
+        try #require(avatar.rating == .g)
+
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarRatingUpdateSuccess)
+                    #expect(toasts.first?.type == .info)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            await model.setRating(.pg, for: avatar)
+        }
+        let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
+        #expect(resultAvatar.rating == .pg)
+    }
+
+    @Test(
+        "Handle avatar rating change: Failure",
+        arguments: [HTTPStatus.unauthorized, .forbidden]
+    )
+    func changeAvatarRatingReturnsError(httpStatus: HTTPStatus) async throws {
+        let testAvatarID = "991a7b71cf9f34..."
+        model = Self.createModel(session: .init(returnErrorCode: httpStatus.rawValue))
+
+        await model.refresh()
+        let avatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }), "No avatar found")
+        try #require(avatar.rating == .g)
+
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    #expect(toasts.first?.message == AvatarPickerViewModel.Localized.avatarRatingError)
+                    #expect(toasts.first?.type == .error)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            await model.setRating(.pg, for: avatar)
+        }
+
+        let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
+        #expect(resultAvatar.rating == .g, "The rating should not be changed")
+    }
 }
 
 final class URLSessionAvatarPickerMock: URLSessionProtocol {
     let returnErrorCode: Int?
-
-    enum RequestType: String {
-        case profiles
-        case avatars
-    }
 
     init(returnErrorCode: Int? = nil) {
         self.returnErrorCode = returnErrorCode
     }
 
     func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        if request.httpMethod == "POST" {
-            if request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true {
-                return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
+        if request.isSetAvatarForEmailRequest {
+            return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
+        }
+
+        if request.isSetAvatarRatingRequest {
+            if let returnErrorCode {
+                return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
+            } else {
+                return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse()) // Avatar data
             }
         }
-        if request.url?.absoluteString.contains(RequestType.profiles.rawValue) == true {
+
+        if request.isProfilesRequest {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
-        } else if request.url?.absoluteString.contains(RequestType.avatars.rawValue) == true {
+        } else if request.isAvatarsRequest == true {
             return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
         }
+
         fatalError("Request not mocked: \(request.url?.absoluteString ?? "unknown request")")
     }
 
     func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
         if let returnErrorCode {
-            return ("".data(using: .utf8)!, HTTPURLResponse.errorResponse(code: returnErrorCode))
+            return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
         }
         return (Bundle.postAvatarUploadJsonData, HTTPURLResponse.successResponse())
+    }
+}
+
+extension URLRequest {
+    private enum RequestType: String {
+        case profiles
+        case avatars
+    }
+
+    fileprivate var isAvatarsRequest: Bool {
+        self.url?.absoluteString.contains(RequestType.avatars.rawValue) == true
+    }
+
+    fileprivate var isProfilesRequest: Bool {
+        self.url?.absoluteString.contains(RequestType.profiles.rawValue) == true
+    }
+
+    fileprivate var isSetAvatarRatingRequest: Bool {
+        guard self.httpMethod == "PATCH",
+              self.isAvatarsRequest,
+              self.httpBody.isDecodable(asType: UpdateAvatarRequest.self)
+        else {
+            return false
+        }
+        return true
+    }
+
+    fileprivate var isSetAvatarForEmailRequest: Bool {
+        guard self.httpMethod == "POST",
+              self.isAvatarsRequest,
+              self.httpBody.isDecodable(asType: SetEmailAvatarRequest.self)
+        else {
+            return false
+        }
+        return true
+    }
+}
+
+extension Data? {
+    fileprivate func isDecodable<T: Decodable>(asType type: T.Type, using decoder: JSONDecoder = JSONDecoder()) -> Bool {
+        guard let self else { return false }
+        return (try? decoder.decode(T.self, from: self)) != nil
     }
 }
