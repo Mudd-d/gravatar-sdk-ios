@@ -156,7 +156,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             actionButtonDisabled: model.profileModel?.profileURL == nil,
             onDoneButtonPressed: {
                 isPresented = false
-            }
+            },
+            preferenceKey: InnerHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .onChange(of: authToken ?? "") { newValue in

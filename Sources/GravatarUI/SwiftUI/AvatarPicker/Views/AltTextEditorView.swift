@@ -55,7 +55,8 @@ struct AltTextEditorView: View {
             shouldEmitInnerHeight: false,
             onDoneButtonPressed: {
                 onCancel()
-            }
+            },
+            preferenceKey: AltTextHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
     }
