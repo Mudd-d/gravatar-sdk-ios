@@ -207,7 +207,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         let localID = UUID().uuidString
 
-        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading)
+        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, rating: .g)
         grid.append(localImageModel)
 
         await doUpload(squareImage: image, localID: localID, accessToken: authToken)
@@ -290,7 +290,8 @@ class AvatarPickerViewModel: ObservableObject {
         let newModel = AvatarImageModel(
             id: imageID,
             source: .local(image: squareImage),
-            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage)
+            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage),
+            rating: grid.model(with: imageID)?.rating ?? .g
         )
         grid.replaceModel(withID: imageID, with: newModel)
     }
@@ -337,6 +338,7 @@ class AvatarPickerViewModel: ObservableObject {
         await profile
     }
 
+    @discardableResult
     func update(_ avatar: AvatarImageModel, altText: String) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
@@ -350,6 +352,35 @@ class AvatarPickerViewModel: ObservableObject {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
         } catch {
             handleError(message: Localized.avatarDeletionError)
+        }
+
+        func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
+        }
+
+        return false
+    }
+
+    @discardableResult
+    func update(_ avatar: AvatarImageModel, rating: AvatarRating) async -> Bool {
+        guard let authToken else { return false }
+
+        do {
+            let updatedAvatar = try await avatarService.update(
+                nil,
+                rating: rating,
+                avatarID: avatar.id,
+                accessToken: authToken
+            )
+            toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
+            withAnimation {
+                grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+            }
+            return true
+        } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarRatingError)
+        } catch {
+            handleError(message: Localized.avatarRatingError)
         }
 
         func handleError(message: String) {
@@ -446,6 +477,16 @@ extension AvatarPickerViewModel {
             value: "Image alt text was changed successfully",
             comment: "This confirmation message shows when the user has updated the alt text."
         )
+        static let avatarRatingUpdateSuccess = SDKLocalizedString(
+            "AvatarPickerViewModel.RatingUpdate.Success",
+            value: "Avatar rating was changed successfully.",
+            comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
+        )
+        static let avatarRatingError = SDKLocalizedString(
+            "AvatarPickerViewModel.Rating.Error",
+            value: "Oops, something didn't quite work out while trying to rate your avatar.",
+            comment: "This error message shows when the user attempts to change the rating of an avatar and fails."
+        )
     }
 }
 
@@ -468,5 +509,6 @@ extension AvatarImageModel {
         state = .loaded
         isSelected = avatar.isSelected
         altText = avatar.altText
+        rating = avatar.avatarRating
     }
 }

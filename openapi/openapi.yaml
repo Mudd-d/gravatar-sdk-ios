@@ -738,7 +738,7 @@ paths:
         '403':
           description: Insufficient Scope
           $ref: '#/components/responses/insufficient_scope'
-  /me/avatars/{imageHash}:
+  /me/avatars/{imageId}:
     delete:
       summary: Delete avatar
       description: Deletes a specific avatar for the authenticated user.
@@ -748,14 +748,14 @@ paths:
       security:
         - oauth: []
       parameters:
-        - name: imageHash
+        - name: imageId
           in: path
           required: true
-          description: The hash of the avatar to delete.
+          description: The ID of the avatar to delete.
           schema:
             type: string
       responses:
-        '200':
+        '204':
           description: Avatar deleted successfully
         '401':
           description: Not Authorized
@@ -763,8 +763,6 @@ paths:
         '403':
           description: Insufficient Scope
           $ref: '#/components/responses/insufficient_scope'
-        '404':
-          description: Avatar not found
     patch:
       summary: Update avatar data
       description: Updates the avatar data for a given avatar for the authenticated user.
@@ -795,10 +793,10 @@ paths:
                       providing globally unique avatars.
               required: []
       parameters:
-        - name: imageHash
+        - name: imageId
           in: path
           required: true
-          description: The hash of the avatar to update.
+          description: The ID of the avatar to update.
           schema:
             type: string
       responses:
@@ -814,8 +812,6 @@ paths:
         '403':
           description: Insufficient Scope
           $ref: '#/components/responses/insufficient_scope'
-        '404':
-          description: Avatar not found
   /me/avatars/{imageId}/email:
     post:
       summary: Set avatar for the hashed email
@@ -849,7 +845,7 @@ paths:
       security:
         - oauth: []
       responses:
-        '200':
+        '204':
           description: Avatar successfully set
         '401':
           description: Not Authorized
