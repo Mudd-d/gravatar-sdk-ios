@@ -231,7 +231,7 @@ final class AvatarPickerViewModelTests {
                 }
             }.store(in: &cancellables)
 
-            await model.setRating(.pg, for: avatar)
+            await model.update(avatar, rating: .pg)
         }
         let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
         #expect(resultAvatar.rating == .pg)
@@ -259,7 +259,7 @@ final class AvatarPickerViewModelTests {
                 }
             }.store(in: &cancellables)
 
-            await model.setRating(.pg, for: avatar)
+            await model.update(avatar, rating: .pg)
         }
 
         let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))

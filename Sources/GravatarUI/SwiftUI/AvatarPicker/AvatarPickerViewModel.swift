@@ -360,8 +360,8 @@ class AvatarPickerViewModel: ObservableObject {
         return false
     }
 
-    func setRating(_ rating: AvatarRating, for avatar: AvatarImageModel) async {
-        guard let authToken else { return }
+    func update(_ avatar: AvatarImageModel, rating: AvatarRating) async -> Bool {
+        guard let authToken else { return false }
 
         do {
             let updatedAvatar = try await profileService.setRating(
@@ -373,6 +373,7 @@ class AvatarPickerViewModel: ObservableObject {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
                 toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
             }
+            return true
         } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarRatingError)
         } catch {
@@ -382,6 +383,8 @@ class AvatarPickerViewModel: ObservableObject {
         func handleError(message: String) {
             toastManager.showToast(message, type: .error)
         }
+
+        return false
     }
 
     func delete(_ avatar: AvatarImageModel) async -> Bool {

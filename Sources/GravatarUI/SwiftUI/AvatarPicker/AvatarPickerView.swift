@@ -396,7 +396,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             editAltText(for: avatar)
         case .rating(let rating):
             Task {
-                await model.setRating(rating, for: avatar)
+                await model.update(avatar, rating: rating)
             }
         }
     }
