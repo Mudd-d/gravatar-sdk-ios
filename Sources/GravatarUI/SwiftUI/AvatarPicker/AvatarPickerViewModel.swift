@@ -356,7 +356,7 @@ class AvatarPickerViewModel: ObservableObject {
         func handleError(message: String) {
             toastManager.showToast(message, type: .error)
         }
-        
+
         return false
     }
 

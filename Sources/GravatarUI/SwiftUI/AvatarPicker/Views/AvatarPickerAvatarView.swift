@@ -89,6 +89,7 @@ struct AvatarPickerAvatarView: View {
                 }
             }
             Section {
+                button(for: .altText)
                 Menu {
                     ForEach(AvatarRating.allCases, id: \.self) { rating in
                         button(for: .rating(rating), isSelected: rating == avatar.rating)
@@ -122,7 +123,7 @@ struct AvatarPickerAvatarView: View {
                 } else {
                     Text(buttonTitle)
                 }
-            case .delete, .playground, .share:
+            case .altText, .delete, .playground, .share:
                 label(forAction: action)
             }
         }
