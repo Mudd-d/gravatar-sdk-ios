@@ -82,13 +82,9 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
         case .success(let image):
             image.resizable()
         case .failure, .empty:
-            if let placeholderView {
-                placeholderView()
-            }
+            placeholderView?()
         @unknown default:
-            if let placeholderView {
-                placeholderView()
-            }
+            placeholderView?()
         }
     }
 }
