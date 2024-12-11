@@ -3,12 +3,8 @@ import Foundation
 private let baseURL = URL(string: "https://api.gravatar.com/v3/profiles/")!
 private let avatarsBaseURLComponents = URLComponents(string: "https://api.gravatar.com/v3/me/avatars")!
 
-private func avatarBaseURL(with avatarID: String) -> URL? {
-    URL(string: "https://api.gravatar.com/v3/me/avatars/\(avatarID)")
-}
-
 private func selectAvatarBaseURL(with avatarID: String) -> URL? {
-    avatarBaseURL(with: avatarID)?.appendingPathComponent("email")
+    URL(string: "https://api.gravatar.com/v3/me/avatars/\(avatarID)/email")
 }
 
 /// A service to perform Profile related tasks.
