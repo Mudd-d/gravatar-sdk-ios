@@ -90,6 +90,7 @@ public struct AvatarService: Sendable {
         }
     }
 
+    @discardableResult
     package func update(
         _ altText: String?,
         rating: AvatarRating?,
