@@ -372,9 +372,9 @@ class AvatarPickerViewModel: ObservableObject {
                 avatarID: avatar.id,
                 accessToken: authToken
             )
+            toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
-                toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
             }
             return true
         } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
