@@ -446,7 +446,7 @@ extension AvatarPickerViewModel {
         )
         static let avatarRatingUpdateSuccess = SDKLocalizedString(
             "AvatarPickerViewModel.RatingUpdate.Success",
-            value: "Avatar rating was changed successfully",
+            value: "Avatar rating was changed successfully.",
             comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
         )
         static let avatarRatingError = SDKLocalizedString(
