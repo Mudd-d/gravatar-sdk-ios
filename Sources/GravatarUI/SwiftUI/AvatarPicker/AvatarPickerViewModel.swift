@@ -366,10 +366,11 @@ class AvatarPickerViewModel: ObservableObject {
         guard let authToken else { return false }
 
         do {
-            let updatedAvatar = try await profileService.setRating(
-                rating,
-                for: .hashID(avatar.id),
-                token: authToken
+            let updatedAvatar = try await avatarService.update(
+                nil,
+                rating: rating,
+                avatarID: avatar.id,
+                accessToken: authToken
             )
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))

@@ -63,30 +63,6 @@ public struct ProfileService: ProfileFetching, Sendable {
             throw error.apiError()
         }
     }
-
-    @discardableResult
-    package func setRating(
-        _ rating: AvatarRating,
-        for avatar: AvatarIdentifier,
-        token: String
-    ) async throws -> Avatar {
-        guard let url = avatarsBaseURLComponents.url?.appendingPathComponent(avatar.id)
-        else {
-            throw APIError.requestError(reason: .urlInitializationFailed)
-        }
-
-        do {
-            var request = URLRequest(url: url).settingAuthorizationHeaderField(with: token)
-            request.httpMethod = "PATCH"
-
-            let requestBody = try JSONEncoder().encode(UpdateAvatarRequest(rating: rating))
-            request.httpBody = requestBody
-            let (data, _) = try await client.data(with: request)
-            return try data.decode()
-        } catch {
-            throw error.apiError()
-        }
-    }
 }
 
 extension ProfileService {

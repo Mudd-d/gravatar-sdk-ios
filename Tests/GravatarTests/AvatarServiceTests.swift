@@ -128,6 +128,43 @@ final class AvatarServiceTests: XCTestCase {
         XCTAssertEqual(request?.url?.query, expectedQuery)
         XCTAssertNotNil(imageResponse.image)
     }
+
+    func testSetRatingReturnsAvatar() async throws {
+        let data = Bundle.setRatingJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let referenceAvatar = try decoder.decode(Avatar.self, from: data)
+        let avatar = try await service.update(
+            nil,
+            rating: .g,
+            avatarID: AvatarIdentifier.email("test@example.com").id,
+            accessToken: "faketoken"
+        )
+
+        XCTAssertEqual(avatar, referenceAvatar)
+    }
+
+    func testSetRatingHandlesError() async {
+        let session = URLSessionMock(returnData: Data(), response: .errorResponse(code: 403))
+        let service = avatarService(with: session)
+
+        do {
+            try await service.update(
+                nil,
+                rating: .g,
+                avatarID: AvatarIdentifier.email("test@example.com").id,
+                accessToken: "faketoken"
+            )
+        } catch APIError.responseError(reason: .invalidHTTPStatusCode(let response, _)) {
+            XCTAssertEqual(response.statusCode, 403)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
 }
 
 private func avatarService(with session: URLSessionProtocol, cache: ImageCaching? = nil) -> AvatarService {

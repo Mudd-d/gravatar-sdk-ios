@@ -70,31 +70,4 @@ final class ProfileServiceTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
-
-    func testSetRatingReturnsAvatar() async throws {
-        let data = Bundle.setRatingJsonData
-        let session = URLSessionMock(returnData: data, response: .successResponse())
-        let service = ProfileService(urlSession: session)
-
-        let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .iso8601
-
-        let referenceAvatar = try decoder.decode(Avatar.self, from: data)
-        let avatar = try await service.setRating(.g, for: .email("test@example.com"), token: "faketoken")
-
-        XCTAssertEqual(avatar, referenceAvatar)
-    }
-
-    func testSetRatingHandlesError() async {
-        let session = URLSessionMock(returnData: Data(), response: .errorResponse(code: 403))
-        let service = ProfileService(urlSession: session)
-
-        do {
-            try await service.setRating(.g, for: .email("test@example.com"), token: "faketoken")
-        } catch APIError.responseError(reason: .invalidHTTPStatusCode(let response, _)) {
-            XCTAssertEqual(response.statusCode, 403)
-        } catch {
-            XCTFail(error.localizedDescription)
-        }
-    }
 }

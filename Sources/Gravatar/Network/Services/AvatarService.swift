@@ -90,7 +90,12 @@ public struct AvatarService: Sendable {
         }
     }
 
-    package func update(_ altText: String?, rating: AvatarRating?, avatarID: String, accessToken: String) async throws {
+    package func update(
+        _ altText: String?,
+        rating: AvatarRating?,
+        avatarID: String,
+        accessToken: String
+    ) async throws -> Avatar {
         var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID))
         request.httpMethod = "PATCH"
         let updateBody = UpdateAvatarRequest(rating: rating, altText: altText)
@@ -98,7 +103,8 @@ public struct AvatarService: Sendable {
 
         let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
         do {
-            _ = try await client.data(with: authorizedRequest)
+            let (data, _) = try await client.data(with: authorizedRequest)
+            return try data.decode()
         } catch {
             throw error.apiError()
         }
