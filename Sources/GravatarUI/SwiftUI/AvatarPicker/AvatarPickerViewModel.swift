@@ -339,7 +339,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     @discardableResult
-    func update(_ avatar: AvatarImageModel, altText: String) async -> Bool {
+    func update(altText: String, for avatar: AvatarImageModel) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
             let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
@@ -362,7 +362,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     @discardableResult
-    func update(_ avatar: AvatarImageModel, rating: AvatarRating) async -> Bool {
+    func update(rating: AvatarRating, for avatar: AvatarImageModel) async -> Bool {
         guard let authToken else { return false }
 
         do {

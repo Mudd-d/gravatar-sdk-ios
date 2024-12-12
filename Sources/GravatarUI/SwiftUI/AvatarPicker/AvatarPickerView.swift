@@ -188,7 +188,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 AltTextEditorView(avatar: avatarToEdit, email: model.email, altText: avatarToEdit.altText) { newText in
                     altTextEditorAvatar = nil
                     Task {
-                        await model.update(avatarToEdit, altText: newText)
+                        await model.update(altText: newText, for: avatarToEdit)
                     }
                 } onCancel: {
                     altTextEditorAvatar = nil
@@ -393,15 +393,15 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 }
             }
         case .altText:
-            editAltText(for: avatar)
+            showAltTextEditor(with: avatar)
         case .rating(let rating):
             Task {
-                await model.update(avatar, rating: rating)
+                await model.update(rating: rating, for: avatar)
             }
         }
     }
 
-    func editAltText(for avatar: AvatarImageModel) {
+    func showAltTextEditor(with avatar: AvatarImageModel) {
         altTextEditorAvatar = avatar
     }
 
