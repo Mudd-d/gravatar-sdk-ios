@@ -185,7 +185,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         ))
         .sheet(item: $altTextEditorAvatar) { avatarToEdit in
             NavigationView {
-                AltTextEditorView(avatar: avatarToEdit, email: model.email!, altText: avatarToEdit.altText ?? "") { newText in
+                AltTextEditorView(avatar: avatarToEdit, email: model.email, altText: avatarToEdit.altText) { newText in
                     altTextEditorAvatar = nil
                     Task {
                         await model.update(avatarToEdit, altText: newText)
@@ -432,17 +432,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .avatarPickerBorder(colorScheme: colorScheme)
         .padding(.horizontal, Constants.horizontalPadding)
-    }
-
-    private func altTextEditor(for avatar: AvatarImageModel) -> some View {
-        AltTextEditorView(avatar: avatar, email: model.email!, altText: avatar.altText ?? "") { newText in
-            altTextEditorAvatar = nil
-            Task {
-                await model.update(avatar, altText: newText)
-            }
-        } onCancel: {
-            altTextEditorAvatar = nil
-        }.transition(.move(edge: .top))
     }
 
     private func avatarsLoadingView() -> some View {

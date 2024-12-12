@@ -1,8 +1,8 @@
-import SwiftUI
+    import SwiftUI
 
 struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
-    let email: Email
+    let email: Email?
     let imageSize: CGFloat = 96
     let minLength: CGFloat = 96
     let characterLimit: Int = 100
@@ -22,7 +22,9 @@ struct AltTextEditorView: View {
 
     var body: some View {
         VStack {
-            EmailText(email: email)
+            if let email {
+                EmailText(email: email)
+            }
             VStack(alignment: .leading) {
                 HStack {
                     titleText
