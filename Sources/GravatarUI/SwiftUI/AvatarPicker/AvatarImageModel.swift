@@ -57,9 +57,9 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         self.altText = altText
     }
 
-    func updating(_ callback: (inout Builder) -> Void) -> AvatarImageModel {
+    func updating<Value>(_ keyPath: WritableKeyPath<AvatarImageModel.Builder, Value>, to newValue: Value) -> AvatarImageModel {
         var builder = Builder(self)
-        callback(&builder)
+        builder[keyPath: keyPath] = newValue
         return builder.build()
     }
 }

@@ -24,7 +24,7 @@ struct AvatarImageModelTests {
         let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
-        let loadedModel = model.settingStatus(to: .loaded)
+        let loadedModel = model.updating(\.state, to: .loaded)
         #expect(loadedModel.state == .loaded, "The state should be .loaded")
     }
 
@@ -33,7 +33,7 @@ struct AvatarImageModelTests {
         let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
-        let loadedModel = model.settingStatus(to: .error(supportsRetry: true, errorMessage: "Some Error"))
+        let loadedModel = model.updating(\.state, to: .error(supportsRetry: true, errorMessage: "Some Error"))
         switch loadedModel.state {
         case .error:
             #expect(Bool(true))
