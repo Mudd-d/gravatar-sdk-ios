@@ -1,5 +1,20 @@
+/* Rating that indicates that the avatar is suitable for everyone */
+"Avatar.Rating.G.subtitle" = "General";
+
+/* Rating that indicates that the avatar may not be suitable for children */
+"Avatar.Rating.PG.subtitle" = "Parental Guidance";
+
+/* Rating that indicates that the avatar may not be suitable for children */
+"Avatar.Rating.R.subtitle" = "Restricted";
+
+/* Rating that indicates that the avatar is obviously and extremely unsuitable for children */
+"Avatar.Rating.X.subtitle" = "Extreme";
+
 /* An option in the avatar menu that deletes the avatar */
 "AvatarPicker.AvatarAction.delete" = "Delete";
+
+/* An option in the avatar menu that shows the current rating, and allows the user to change that rating. The rating is used to indicate the appropriateness of an avatar for different audiences, and follows the US system of Motion Picture ratings: G, PG, R, and X. */
+"AvatarPicker.AvatarAction.rate" = "Rating: %@";
 
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "Share...";
@@ -84,6 +99,12 @@
 
 /* This error message shows when the user attempts to delete an avatar and fails. */
 "AvatarPickerViewModel.Delete.Error" = "Oops, there was an error deleting the image.";
+
+/* This error message shows when the user attempts to change the rating of an avatar and fails. */
+"AvatarPickerViewModel.Rating.Error" = "Oops, something didn't quite work out while trying to rate your avatar.";
+
+/* This confirmation message shows when the user picks a different avatar rating and the change was applied successfully. */
+"AvatarPickerViewModel.RatingUpdate.Success" = "Avatar rating was changed successfully.";
 
 /* This error message shows when the user attempts to share an avatar and fails. */
 "AvatarPickerViewModel.Share.Fail" = "Oops, something didn't quite work out while trying to share your avatar.";

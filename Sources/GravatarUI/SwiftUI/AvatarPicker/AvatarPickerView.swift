@@ -396,6 +396,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
                 }
             }
+        case .rating(let rating):
+            Task {
+                await model.setRating(rating, for: avatar)
+            }
         }
     }
 
