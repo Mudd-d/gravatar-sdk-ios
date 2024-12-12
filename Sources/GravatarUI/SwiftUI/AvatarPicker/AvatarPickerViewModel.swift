@@ -342,10 +342,10 @@ class AvatarPickerViewModel: ObservableObject {
     func update(_ avatar: AvatarImageModel, altText: String) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
-            try await avatarService.update(altText, rating: nil, avatarID: avatar.id, accessToken: token)
-            toastManager.showToast(Localized.avatarAltTextSuccess + "\n- \"\(altText)\"")
+            let updatedAvatar = try await avatarService.update(altText: altText, avatarID: avatar.id, accessToken: token)
+            toastManager.showToast(Localized.avatarAltTextSuccess + "\n\n \"\(altText)\"")
             withAnimation {
-                grid.replaceModel(withID: avatar.id, with: avatar.updating(altText: altText))
+                grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }
             return true
         } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
@@ -367,7 +367,6 @@ class AvatarPickerViewModel: ObservableObject {
 
         do {
             let updatedAvatar = try await avatarService.update(
-                nil,
                 rating: rating,
                 avatarID: avatar.id,
                 accessToken: authToken
@@ -474,8 +473,13 @@ extension AvatarPickerViewModel {
         )
         static let avatarAltTextSuccess = SDKLocalizedString(
             "AvatarPickerViewModel.AltText.Success",
-            value: "Image alt text was changed successfully",
+            value: "Image alt text was changed successfully.",
             comment: "This confirmation message shows when the user has updated the alt text."
+        )
+        static let avatarAltTextError = SDKLocalizedString(
+            "AvatarPickerViewModel.AltText.Error",
+            value: "Oops, something didn't quite work out while trying to update the alt text.",
+            comment: "This error message shows when the user attempts to change the alt text of an avatar and fails."
         )
         static let avatarRatingUpdateSuccess = SDKLocalizedString(
             "AvatarPickerViewModel.RatingUpdate.Success",

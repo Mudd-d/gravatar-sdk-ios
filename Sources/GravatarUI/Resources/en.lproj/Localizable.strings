@@ -161,7 +161,10 @@
 "AltText.Editor.cancelButtonTitle" = "Cancel";
 
 /* This confirmation message shows when the user has updated the alt text */
-"AvatarPickerViewModel.AltText.Success" = "Image alt text was changed successfully";
+"AvatarPickerViewModel.AltText.Success" = "Image alt text was changed successfully.";
+
+/* This error message shows when the user attempts to change the alt text of an avatar and fails */
+"AvatarPickerViewModel.AltText.Error" = "Oops, something didn't quite work out while trying to update the alt text.";
 
 /* Title for Help button which opens a view explaining what alt text is */
 "AltText.Editor.helpButtonTitle" = "What is alt text?";

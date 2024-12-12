@@ -92,8 +92,8 @@ public struct AvatarService: Sendable {
 
     @discardableResult
     package func update(
-        _ altText: String?,
-        rating: AvatarRating?,
+        altText: String? = nil,
+        rating: AvatarRating? = nil,
         avatarID: String,
         accessToken: String
     ) async throws -> Avatar {

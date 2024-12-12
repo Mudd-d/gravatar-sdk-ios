@@ -193,7 +193,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 } onCancel: {
                     altTextEditorAvatar = nil
                 }
-            }
+            }.colorScheme(colorScheme)
         }
     }
 
