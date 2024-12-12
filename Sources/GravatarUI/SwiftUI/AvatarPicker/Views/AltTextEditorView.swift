@@ -1,4 +1,4 @@
-    import SwiftUI
+import SwiftUI
 
 struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
