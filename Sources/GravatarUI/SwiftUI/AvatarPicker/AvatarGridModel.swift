@@ -33,7 +33,7 @@ class AvatarGridModel: ObservableObject {
 
     func setState(to state: AvatarImageModel.State, onAvatarWithID id: String) {
         guard let imageModel = model(with: id) else { return }
-        let toggledModel = imageModel.updating(\.state, to: state).updating(\.altText, to: "")
+        let toggledModel = imageModel.updating { $0.state = state }
         replaceModel(withID: id, with: toggledModel)
     }
 
