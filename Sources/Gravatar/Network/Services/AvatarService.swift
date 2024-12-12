@@ -94,10 +94,10 @@ public struct AvatarService: Sendable {
     package func update(
         altText: String? = nil,
         rating: AvatarRating? = nil,
-        avatarID: String,
+        avatarID: AvatarIdentifier,
         accessToken: String
     ) async throws -> Avatar {
-        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID))
+        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID.id))
         request.httpMethod = "PATCH"
         let updateBody = UpdateAvatarRequest(rating: rating, altText: altText)
         request.httpBody = try JSONEncoder().encode(updateBody)
