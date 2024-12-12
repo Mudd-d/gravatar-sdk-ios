@@ -6,14 +6,14 @@ struct AvatarImageModelTests {
     @Test("Check URL exists")
     func testURLExists() async throws {
         let imageURL = "https://example.com/avatar.jpg"
-        let model = AvatarImageModel(id: "someID", source: .remote(url: imageURL))
+        let model = AvatarImageModel.preview_init(id: "someID", source: .remote(url: imageURL))
         #expect(model.url?.absoluteString == imageURL)
         #expect(model.localImage == nil)
     }
 
     @Test("Check local image exists")
     func testLocalImageExists() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage))
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage))
         #expect(model.localImage != nil)
         #expect(model.localUIImage != nil)
         #expect(model.url == nil)
@@ -21,19 +21,19 @@ struct AvatarImageModelTests {
 
     @Test("Check state change from loading to loaded")
     func testStateChangeLoadingLoaded() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
-        let loadedModel = model.settingStatus(to: .loaded)
+        let loadedModel = model.updating { $0.state = .loaded }
         #expect(loadedModel.state == .loaded, "The state should be .loaded")
     }
 
     @Test("Check state change from loading to error")
     func testStateChangeLoadingError() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
-        let loadedModel = model.settingStatus(to: .error(supportsRetry: true, errorMessage: "Some Error"))
+        let loadedModel = model.updating { $0.state = .error(supportsRetry: true, errorMessage: "Some Error") }
         switch loadedModel.state {
         case .error:
             #expect(Bool(true))

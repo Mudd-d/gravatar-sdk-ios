@@ -159,7 +159,7 @@ extension AltTextEditorView {
 #Preview {
     struct AltTextPreview: View {
         @State var text = ""
-        let avatar = AvatarImageModel(
+        let avatar = AvatarImageModel.preview_init(
             id: "1",
             source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")
         )

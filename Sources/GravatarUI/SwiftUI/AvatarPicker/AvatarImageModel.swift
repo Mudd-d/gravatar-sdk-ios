@@ -48,7 +48,7 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         return image
     }
 
-    init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, rating: AvatarRating = .g, altText: String = "") {
+    init(id: String, source: Source, state: State, isSelected: Bool, rating: AvatarRating, altText: String) {
         self.id = id
         self.source = source
         self.state = state
@@ -57,7 +57,40 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         self.altText = altText
     }
 
-    func settingStatus(to newStatus: State) -> AvatarImageModel {
-        AvatarImageModel(id: id, source: source, state: newStatus, isSelected: isSelected, rating: rating, altText: altText)
+    func updating(_ callback: (inout Builder) -> Void) -> AvatarImageModel {
+        var builder = Builder(self)
+        callback(&builder)
+        return builder.build()
+    }
+}
+
+extension AvatarImageModel {
+    struct Builder {
+        var id: String
+        var source: Source
+        var isSelected: Bool
+        var state: State
+        var altText: String
+        var rating: AvatarRating
+
+        fileprivate init(_ model: AvatarImageModel) {
+            self.id = model.id
+            self.source = model.source
+            self.isSelected = model.isSelected
+            self.state = model.state
+            self.altText = model.altText
+            self.rating = model.rating
+        }
+
+        fileprivate func build() -> AvatarImageModel {
+            .init(id: id, source: source, state: state, isSelected: isSelected, rating: rating, altText: altText)
+        }
+    }
+}
+
+extension AvatarImageModel {
+    /// This is meant to be used in previews and unit tests only.
+    static func preview_init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, rating: AvatarRating = .g) -> Self {
+        AvatarImageModel(id: id, source: source, state: state, isSelected: isSelected, rating: rating, altText: "")
     }
 }
