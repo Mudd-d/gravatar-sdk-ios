@@ -17,7 +17,7 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
     let source: Source
     let isSelected: Bool
     let state: State
-    let altText: String?
+    let altText: String
     let rating: AvatarRating
 
     var url: URL? {
@@ -48,7 +48,7 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
         return image
     }
 
-    init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, rating: AvatarRating = .g, altText: String? = nil) {
+    init(id: String, source: Source, state: State = .loaded, isSelected: Bool = false, rating: AvatarRating = .g, altText: String = "") {
         self.id = id
         self.source = source
         self.state = state
@@ -59,9 +59,5 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
 
     func settingStatus(to newStatus: State) -> AvatarImageModel {
         AvatarImageModel(id: id, source: source, state: newStatus, isSelected: isSelected, altText: altText)
-    }
-
-    func updating(altText: String) -> AvatarImageModel {
-        AvatarImageModel(id: id, source: source, state: state, isSelected: isSelected, altText: altText)
     }
 }
