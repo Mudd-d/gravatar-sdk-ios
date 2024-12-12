@@ -139,9 +139,8 @@ final class AvatarServiceTests: XCTestCase {
 
         let referenceAvatar = try decoder.decode(Avatar.self, from: data)
         let avatar = try await service.update(
-            nil,
             rating: .g,
-            avatarID: AvatarIdentifier.email("test@example.com").id,
+            avatarID: AvatarIdentifier.email("test@example.com"),
             accessToken: "faketoken"
         )
 
@@ -154,9 +153,8 @@ final class AvatarServiceTests: XCTestCase {
 
         do {
             try await service.update(
-                nil,
                 rating: .g,
-                avatarID: AvatarIdentifier.email("test@example.com").id,
+                avatarID: AvatarIdentifier.email("test@example.com"),
                 accessToken: "faketoken"
             )
         } catch APIError.responseError(reason: .invalidHTTPStatusCode(let response, _)) {
