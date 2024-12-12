@@ -6,14 +6,14 @@ struct AvatarImageModelTests {
     @Test("Check URL exists")
     func testURLExists() async throws {
         let imageURL = "https://example.com/avatar.jpg"
-        let model = AvatarImageModel(id: "someID", source: .remote(url: imageURL))
+        let model = AvatarImageModel.preview_init(id: "someID", source: .remote(url: imageURL))
         #expect(model.url?.absoluteString == imageURL)
         #expect(model.localImage == nil)
     }
 
     @Test("Check local image exists")
     func testLocalImageExists() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage))
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage))
         #expect(model.localImage != nil)
         #expect(model.localUIImage != nil)
         #expect(model.url == nil)
@@ -21,7 +21,7 @@ struct AvatarImageModelTests {
 
     @Test("Check state change from loading to loaded")
     func testStateChangeLoadingLoaded() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
         let loadedModel = model.settingStatus(to: .loaded)
@@ -30,7 +30,7 @@ struct AvatarImageModelTests {
 
     @Test("Check state change from loading to error")
     func testStateChangeLoadingError() async throws {
-        let model = AvatarImageModel(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
+        let model = AvatarImageModel.preview_init(id: "someID", source: .local(image: ImageHelper.testImage), state: .loading)
         #expect(model.state == .loading)
 
         let loadedModel = model.settingStatus(to: .error(supportsRetry: true, errorMessage: "Some Error"))

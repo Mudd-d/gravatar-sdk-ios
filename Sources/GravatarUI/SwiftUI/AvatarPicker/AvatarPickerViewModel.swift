@@ -207,7 +207,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         let localID = UUID().uuidString
 
-        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, rating: .g)
+        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, isSelected: false, rating: .g, altText: "")
         grid.append(localImageModel)
 
         await doUpload(squareImage: image, localID: localID, accessToken: authToken)
@@ -287,11 +287,14 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private func handleUploadError(imageID: String, squareImage: UIImage, supportsRetry: Bool, errorMessage: String) {
+        let storedModel = grid.model(with: imageID)
         let newModel = AvatarImageModel(
             id: imageID,
             source: .local(image: squareImage),
             state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage),
-            rating: grid.model(with: imageID)?.rating ?? .g
+            isSelected: false,
+            rating: storedModel?.rating ?? .g,
+            altText: storedModel?.altText ?? ""
         )
         grid.replaceModel(withID: imageID, with: newModel)
     }
