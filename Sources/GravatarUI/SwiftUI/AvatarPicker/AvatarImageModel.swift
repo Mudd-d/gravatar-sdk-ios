@@ -58,6 +58,6 @@ struct AvatarImageModel: Hashable, Identifiable, Sendable {
     }
 
     func settingStatus(to newStatus: State) -> AvatarImageModel {
-        AvatarImageModel(id: id, source: source, state: newStatus, isSelected: isSelected, altText: altText)
+        AvatarImageModel(id: id, source: source, state: newStatus, isSelected: isSelected, rating: rating, altText: altText)
     }
 }
