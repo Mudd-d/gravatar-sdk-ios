@@ -48,6 +48,7 @@ struct AltTextEditorView: View {
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
             actionButtonDisabled: false,
+            shouldEmitInnerHeight: false,
             onDoneButtonPressed: {
                 onCancel()
             }

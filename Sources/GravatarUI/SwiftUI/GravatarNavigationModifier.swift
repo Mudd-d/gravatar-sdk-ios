@@ -4,6 +4,7 @@ struct GravatarNavigationModifier: ViewModifier {
     var title: String?
     var doneButtonTitle: String?
     var actionButtonDisabled: Bool
+    var shouldEmitInnerHeight: Bool
 
     @State private var safariURL: URL?
 
@@ -43,10 +44,12 @@ struct GravatarNavigationModifier: ViewModifier {
                     // This works to detect the navigation bar height.
                     // AFAIU, SwiftUI calculates the `safeAreaInsets.top` based on the actual visible content area.
                     // When a NavigationView is present, it accounts for the navigation bar being part of that system-provided safe area.
-                    Color.clear.preference(
-                        key: InnerHeightPreferenceKey.self,
-                        value: geometry.safeAreaInsets.top
-                    )
+                    if shouldEmitInnerHeight {
+                        Color.clear.preference(
+                            key: InnerHeightPreferenceKey.self,
+                            value: geometry.safeAreaInsets.top
+                        )
+                    }
                 }
             }
             .fullScreenCover(item: $safariURL) { url in
@@ -80,6 +83,7 @@ extension View {
         title: String? = nil,
         doneButtonTitle: String? = nil,
         actionButtonDisabled: Bool,
+        shouldEmitInnerHeight: Bool = true,
         onActionButtonPressed: (() -> Void)? = nil,
         onDoneButtonPressed: (() -> Void)? = nil
     ) -> some View {
@@ -88,6 +92,7 @@ extension View {
                 title: title,
                 doneButtonTitle: doneButtonTitle,
                 actionButtonDisabled: actionButtonDisabled,
+                shouldEmitInnerHeight: shouldEmitInnerHeight,
                 onActionButtonPressed: onActionButtonPressed,
                 onDoneButtonPressed: onDoneButtonPressed
             )
