@@ -43,7 +43,9 @@ struct Toast: View {
         )
         .cornerRadius(4)
         .foregroundColor(foregroundColor)
-        .shadow(radius: 3, y: 3)
+        .if(toast.shouldShowShadow, transform: { view in
+            view.shadow(radius: 3, y: 3)
+        })
         .zIndex(1)
     }
 

@@ -24,6 +24,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
+    @State private var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -77,6 +78,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         ZStack {
             VStack(spacing: 0) {
                 EmailText(email: model.email)
+                    .accumulateIntrinsicHeight()
+                noSelectedAvatarWarning()
                     .accumulateIntrinsicHeight()
                 profileView()
                     .accumulateIntrinsicHeight()
@@ -168,6 +171,12 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
         }
+        .onChange(of: model.selectedAvatarURL) { _ in
+            updateShouldDisplayNoSelectedAvatarWarning()
+        }
+        .onChange(of: model.grid.avatars.count) { _ in
+            updateShouldDisplayNoSelectedAvatarWarning()
+        }
         .sheet(item: $shareSheetItem) { item in
             ShareSheet(items: [item.fileURL])
                 .colorScheme(colorScheme)
@@ -186,6 +195,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
+    }
+
+    private func updateShouldDisplayNoSelectedAvatarWarning() {
+        shouldDisplayNoSelectedAvatarWarning = model.selectedAvatarURL == nil && model.grid.avatars.count > 0
     }
 
     private func header() -> some View {
@@ -399,15 +412,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     func notifyAvatarSelection() {
-        if let avatarUpdatedHandler {
-            // Delay to wait until the server has updated the selected avatar before updating the UI.
-            // Without the delay the cache busting remains insufficient to capture the new avatar.
-            // With less than 800 ms, we can still see the issue.
-            // Hopefully, we can remove this delay soon.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                avatarUpdatedHandler()
-            }
-        }
+        avatarUpdatedHandler?()
     }
 
     private func content() -> some View {
@@ -440,6 +445,23 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     private func openProfileEditInSafari() {
         guard let url = URL(string: "https://gravatar.com/profile") else { return }
         safariURL = url
+    }
+
+    @ViewBuilder
+    private func noSelectedAvatarWarning() -> some View {
+        if shouldDisplayNoSelectedAvatarWarning {
+            Toast(toast: .init(
+                message: Localized.noImageSelectedMessage,
+                type: .warning,
+                shouldShowShadow: false
+            )) { _ in
+                withAnimation {
+                    shouldDisplayNoSelectedAvatarWarning = false
+                }
+            }
+            .padding(.horizontal, Constants.horizontalPadding)
+            .padding(.bottom, .DS.Padding.single)
+        }
     }
 
     @ViewBuilder
@@ -537,7 +559,11 @@ private enum AvatarPicker {
             value: "Delete",
             comment: "The title button which confirms the avatar deletion."
         )
-
+        static let noImageSelectedMessage = SDKLocalizedString(
+            "AvatarPicker.NoImageSelected.message",
+            value: "No image selected. Please select one or the default will be used.",
+            comment: "Message displayed when no image is selected"
+        )
         enum Header {
             static let title = SDKLocalizedString(
                 "AvatarPicker.Header.title",
