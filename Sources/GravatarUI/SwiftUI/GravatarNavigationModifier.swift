@@ -6,6 +6,7 @@ struct GravatarNavigationModifier: ViewModifier {
     var actionButtonDisabled: Bool
     var shouldEmitInnerHeight: Bool
 
+    @Environment(\.colorScheme) var colorScheme
     @State private var safariURL: URL?
 
     var onActionButtonPressed: (() -> Void)? = nil
@@ -52,10 +53,7 @@ struct GravatarNavigationModifier: ViewModifier {
                     }
                 }
             }
-            .fullScreenCover(item: $safariURL) { url in
-                SafariView(url: url)
-                    .edgesIgnoringSafeArea(.all)
-            }
+            .presentSafariView(url: $safariURL, colorScheme: colorScheme)
     }
 
     private func openProfileEditInSafari() {

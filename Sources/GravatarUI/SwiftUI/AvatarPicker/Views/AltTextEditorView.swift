@@ -11,6 +11,8 @@ struct AltTextEditorView: View {
         altText.count > 0
     }
 
+    @Environment(\.colorScheme) var colorScheme
+
     @State var altText: String = ""
     @State var charCount: Int = 0
     @State var safariURL: URL? = nil
@@ -55,10 +57,7 @@ struct AltTextEditorView: View {
                 onCancel()
             }
         )
-        .fullScreenCover(item: $safariURL) { url in
-            SafariView(url: url)
-                .edgesIgnoringSafeArea(.all)
-        }
+        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
     }
 
     var altTextField: some View {

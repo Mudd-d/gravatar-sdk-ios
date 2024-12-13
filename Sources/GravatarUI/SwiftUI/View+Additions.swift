@@ -151,4 +151,12 @@ extension View {
             self
         }
     }
+
+    func presentSafariView(url: Binding<URL?>, colorScheme: ColorScheme) -> some View {
+        self.sheet(item: url) { url in
+            SafariView(url: url)
+                .edgesIgnoringSafeArea(.all)
+                .colorScheme(colorScheme)
+        }
+    }
 }

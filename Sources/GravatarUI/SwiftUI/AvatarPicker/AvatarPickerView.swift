@@ -158,10 +158,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 isPresented = false
             }
         )
-        .fullScreenCover(item: $safariURL) { url in
-            SafariView(url: url)
-                .edgesIgnoringSafeArea(.all)
-        }
+        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .onChange(of: authToken ?? "") { newValue in
             model.update(authToken: newValue)
         }
