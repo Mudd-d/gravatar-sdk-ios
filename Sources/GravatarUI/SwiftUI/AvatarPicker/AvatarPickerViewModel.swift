@@ -354,7 +354,7 @@ class AvatarPickerViewModel: ObservableObject {
         } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
             handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarDeletionError)
         } catch {
-            handleError(message: Localized.avatarDeletionError)
+            handleError(message: Localized.avatarAltTextError)
         }
 
         func handleError(message: String) {
