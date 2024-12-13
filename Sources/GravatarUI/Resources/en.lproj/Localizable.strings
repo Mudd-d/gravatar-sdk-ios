@@ -79,6 +79,9 @@
 /* Title appearing in the header of a view that allows users to manage their avatars */
 "AvatarPicker.Header.title" = "Avatars";
 
+/* Message displayed when no image is selected */
+"AvatarPicker.NoImageSelected.message" = "No image selected. Please select one or the default will be used.";
+
 /* Error message to show when the upload fails because the image is too big. */
 "AvatarPicker.Upload.Error.ImageTooBig.Error" = "The provided image exceeds the maximum size: 10MB";
 
