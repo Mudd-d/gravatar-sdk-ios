@@ -19,7 +19,9 @@ struct AvatarPickerAvatarView: View {
         ZStack(alignment: .bottomTrailing) {
             AvatarView(
                 url: avatar.url,
-                placeholder: avatar.localImage,
+                placeholderView: {
+                    avatar.localImage?.resizable()
+                },
                 loadingView: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
