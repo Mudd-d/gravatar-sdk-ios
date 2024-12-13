@@ -24,6 +24,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
+    @State private var altTextEditorAvatar: AvatarImageModel?
     @State private var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
@@ -152,19 +153,12 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .preference(key: VerticalSizeClassPreferenceKey.self, value: verticalSizeClass)
         .gravatarNavigation(
-            title: Constants.title,
             actionButtonDisabled: model.profileModel?.profileURL == nil,
-            onActionButtonPressed: {
-                openProfileEditInSafari()
-            },
             onDoneButtonPressed: {
                 isPresented = false
             }
         )
-        .fullScreenCover(item: $safariURL) { url in
-            SafariView(url: url)
-                .edgesIgnoringSafeArea(.all)
-        }
+        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .onChange(of: authToken ?? "") { newValue in
             model.update(authToken: newValue)
         }
@@ -195,6 +189,18 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
+        .sheet(item: $altTextEditorAvatar) { avatarToEdit in
+            NavigationView {
+                AltTextEditorView(avatar: avatarToEdit, email: model.email, altText: avatarToEdit.altText) { newText in
+                    altTextEditorAvatar = nil
+                    Task {
+                        await model.update(altText: newText, for: avatarToEdit)
+                    }
+                } onCancel: {
+                    altTextEditorAvatar = nil
+                }
+            }.colorScheme(colorScheme)
+        }
     }
 
     private func updateShouldDisplayNoSelectedAvatarWarning() {
@@ -396,11 +402,17 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
                 }
             }
+        case .altText:
+            showAltTextEditor(with: avatar)
         case .rating(let rating):
             Task {
-                await model.setRating(rating, for: avatar)
+                await model.update(rating: rating, for: avatar)
             }
         }
+    }
+
+    func showAltTextEditor(with avatar: AvatarImageModel) {
+        altTextEditorAvatar = avatar
     }
 
     func selectAvatar(with id: String) {
@@ -440,11 +452,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     private func openProfileInSafari() {
         safariURL = model.profileModel?.profileURL
-    }
-
-    private func openProfileEditInSafari() {
-        guard let url = URL(string: "https://gravatar.com/profile") else { return }
-        safariURL = url
     }
 
     @ViewBuilder
@@ -513,7 +520,6 @@ private enum AvatarPicker {
     enum Constants {
         static let horizontalPadding: CGFloat = .DS.Padding.double
         static let lightModeShadowColor = Color(uiColor: UIColor.rgba(25, 30, 35, alpha: 0.2))
-        static let title: String = "Gravatar" // defined here to avoid translations
         static let vStackVerticalSpacing: CGFloat = .DS.Padding.medium
         static let profileViewTopSpacing: CGFloat = .DS.Padding.double
     }
@@ -681,15 +687,15 @@ private enum AvatarPicker {
     }
 
     let avatarImageModels: [AvatarImageModel] = [
-        .init(id: "0", source: .local(image: UIImage()), state: .loading),
-        .init(id: "1", source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")),
-        .init(id: "2", source: .remote(url: "https://gravatar.com/userimage/110207384/db73834576b01b69dd8da1e29877ca07.jpeg?size=256")),
-        .init(id: "3", source: .remote(url: "https://gravatar.com/userimage/110207384/3f7095bf2580265d1801d128c6410016.jpeg?size=256")),
-        .init(id: "4", source: .remote(url: "https://gravatar.com/userimage/110207384/fbbd335e57862e19267679f19b4f9db8.jpeg?size=256")),
-        .init(id: "5", source: .remote(url: "https://gravatar.com/userimage/110207384/96c6950d6d8ce8dd1177a77fe738101e.jpeg?size=256")),
-        .init(id: "6", source: .remote(url: "https://gravatar.com/userimage/110207384/4a4f9385b0a6fa5c00342557a098f480.jpeg?size=256")),
-        .init(id: "7", source: .local(image: UIImage()), state: .error(supportsRetry: true, errorMessage: "Something went wrong.")),
-        .init(id: "8", source: .local(image: UIImage()), state: .error(supportsRetry: false, errorMessage: "Something went wrong.")),
+        .preview_init(id: "0", source: .local(image: UIImage()), state: .loading),
+        .preview_init(id: "1", source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")),
+        .preview_init(id: "2", source: .remote(url: "https://gravatar.com/userimage/110207384/db73834576b01b69dd8da1e29877ca07.jpeg?size=256")),
+        .preview_init(id: "3", source: .remote(url: "https://gravatar.com/userimage/110207384/3f7095bf2580265d1801d128c6410016.jpeg?size=256")),
+        .preview_init(id: "4", source: .remote(url: "https://gravatar.com/userimage/110207384/fbbd335e57862e19267679f19b4f9db8.jpeg?size=256")),
+        .preview_init(id: "5", source: .remote(url: "https://gravatar.com/userimage/110207384/96c6950d6d8ce8dd1177a77fe738101e.jpeg?size=256")),
+        .preview_init(id: "6", source: .remote(url: "https://gravatar.com/userimage/110207384/4a4f9385b0a6fa5c00342557a098f480.jpeg?size=256")),
+        .preview_init(id: "7", source: .local(image: UIImage()), state: .error(supportsRetry: true, errorMessage: "Something went wrong.")),
+        .preview_init(id: "8", source: .local(image: UIImage()), state: .error(supportsRetry: false, errorMessage: "Something went wrong.")),
     ]
     let selectedImageID = "5"
     let profileModel = PreviewModel()

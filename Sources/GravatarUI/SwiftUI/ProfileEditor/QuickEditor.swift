@@ -16,10 +16,6 @@ public enum QuickEditorScope: Sendable {
     }
 }
 
-private enum QuickEditorConstants {
-    static let title: String = "Gravatar" // defined here to avoid translations
-}
-
 struct QuickEditor<ImageEditor: ImageEditorView>: View {
     fileprivate typealias Constants = QuickEditorConstants
 
@@ -123,7 +119,6 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 ProgressView()
             }
         }.gravatarNavigation(
-            title: Constants.title,
             actionButtonDisabled: true,
             onDoneButtonPressed: {
                 isPresented = false
@@ -162,7 +157,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     }
 }
 
-extension QuickEditorConstants {
+enum QuickEditorConstants {
     enum ErrorView {
         static func title(for oauthError: OAuthError?) -> String {
             switch oauthError {
