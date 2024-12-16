@@ -163,6 +163,42 @@ final class AvatarServiceTests: XCTestCase {
             XCTFail(error.localizedDescription)
         }
     }
+
+    func testSetAltTextReturnsAvatar() async throws {
+        let data = Bundle.setAltTextJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let referenceAvatar = try decoder.decode(Avatar.self, from: data)
+        let avatar = try await service.update(
+            altText: "Updated alt text",
+            avatarID: AvatarIdentifier.email("test@example.com"),
+            accessToken: "faketoken"
+        )
+
+        XCTAssertEqual(avatar, referenceAvatar)
+    }
+
+    func testSetAltTextSendsCorrectDataToTheServer() async throws {
+        let data = Bundle.setAltTextJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+        let expectedAltText = "Updated alt text"
+
+        try await service.update(
+            altText: expectedAltText,
+            avatarID: AvatarIdentifier.email("test@example.com"),
+            accessToken: "faketoken"
+        )
+
+        let requestBody = await session.request!.httpBody!
+        let requestBody1 = try JSONDecoder().decode(UpdateAvatarRequest.self, from: requestBody)
+        XCTAssertEqual(requestBody1.rating, nil)
+        XCTAssertEqual(requestBody1.altText, expectedAltText)
+    }
 }
 
 private func avatarService(with session: URLSessionProtocol, cache: ImageCaching? = nil) -> AvatarService {
