@@ -1,10 +1,13 @@
-/* Translation-Revision-Date: 2024-11-28 09:54:02+0000 */
+/* Translation-Revision-Date: 2024-12-05 15:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: nl */
 
 /* An option in the avatar menu that deletes the avatar */
 "AvatarPicker.AvatarAction.delete" = "Verwijderen";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "Delen";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "Login vereist";
@@ -51,6 +54,12 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Laten we je avatar instellen";
 
+/* The title button which confirms the avatar deletion. */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Verwijderen";
+
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "Weet je zeker dat je deze afbeelding wilt verwijderen?";
+
 /* The title of the dismiss button on a confirmation dialog. */
 "AvatarPicker.Dismiss.title" = "Negeren";
 
@@ -74,6 +83,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Profiel bekijken →";
+
+/* This error message shows when the user attempts to delete an avatar and fails. */
+"AvatarPickerViewModel.Delete.Error" = "Oeps, er is een fout opgetreden bij het verwijderen van de afbeelding.";
+
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "Oeps, er is iets misgegaan terwijl je je avatar probeerde aan te passen.";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "Oeps, er is iets misgegaan terwijl je je avatar probeerde aan te passen.";

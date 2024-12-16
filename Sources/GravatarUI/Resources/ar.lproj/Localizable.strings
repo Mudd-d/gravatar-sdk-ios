@@ -1,10 +1,13 @@
-/* Translation-Revision-Date: 2024-11-28 18:54:02+0000 */
+/* Translation-Revision-Date: 2024-12-03 20:54:03+0000 */
 /* Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ar */
 
 /* An option in the avatar menu that deletes the avatar */
 "AvatarPicker.AvatarAction.delete" = "حذف";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "مشاركة...";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "يلزم تسجيل الدخول";
@@ -51,6 +54,12 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "لنقم بإعداد الأفاتار الخاص بك";
 
+/* The title button which confirms the avatar deletion. */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "حذف";
+
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "هل أنت متأكد من رغبتك في حذف هذه الصورة؟";
+
 /* The title of the dismiss button on a confirmation dialog. */
 "AvatarPicker.Dismiss.title" = "تجاهل";
 
@@ -74,6 +83,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "عرض الملف الشخصي ←";
+
+/* This error message shows when the user attempts to delete an avatar and fails. */
+"AvatarPickerViewModel.Delete.Error" = "عذرًا، كان هناك خطأ في أثناء حذف الصورة.";
+
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "عذرًا، حدث خطأ ما في أثناء محاولة مشاركة صورتك الرمزية.";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "عذرًا، حدث خطأ ما في أثناء محاولة تغيير صورتك الرمزية.";
