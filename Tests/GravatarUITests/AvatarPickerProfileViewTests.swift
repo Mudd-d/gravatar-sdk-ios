@@ -5,32 +5,35 @@ import XCTest
 
 final class AvatarPickerProfileViewTests: XCTestCase {
     override func invokeTest() {
-        withSnapshotTesting(record: .failed) {
+        withSnapshotTesting(record: .all) {
             super.invokeTest()
         }
     }
 
     @MainActor
     func testAvatarPickerProfileView() throws {
-        let testView = AvatarPickerProfileView(
-            avatarURL: .constant(nil),
-            model: .constant(
-                .init(
-                    displayName: "Shelly Kimbrough",
-                    location: "San Antonio, TX",
-                    profileURL: URL(string: "https://gravatar.com")
+        let testView =
+            VStack(alignment: .leading, content: {
+                AvatarPickerProfileView(
+                    avatarURL: .constant(nil),
+                    model: .constant(
+                        .init(
+                            displayName: "Shelly Kimbrough",
+                            location: "San Antonio, TX",
+                            profileURL: URL(string: "https://gravatar.com")
+                        )
+                    ),
+                    isLoading: .constant(false)
                 )
-            ),
-            isLoading: .constant(false)
-        )
-        // put a border around so the bounds can be visible in the snapshots.
-        .markBounds()
+                .frame(maxWidth: .infinity, alignment: .leading)
+            })
+            .frame(minWidth: 300)
 
         assertSnapshots(
             of: testView,
             as: [
-                .testStrategy(userInterfaceStyle: .light),
-                .testStrategy(userInterfaceStyle: .dark),
+                .testStrategy(userInterfaceStyle: .light, layout: .sizeThatFits),
+                .testStrategy(userInterfaceStyle: .dark, layout: .sizeThatFits),
             ]
         )
     }
