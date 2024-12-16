@@ -63,10 +63,10 @@ struct AvatarImageModelTests {
         #expect(updatedModel.altText == newAltText)
 
         switch updatedModel.source {
-            case .local:
-                #expect(Bool(true))
-            default:
-                #expect(Bool(false), "The source should be .local")
+        case .local:
+            #expect(Bool(true))
+        default:
+            #expect(Bool(false), "The source should be .local")
         }
     }
 
@@ -76,8 +76,6 @@ struct AvatarImageModelTests {
         let altText = "altText"
 
         let model = AvatarImageModel(id: id, source: .remote(url: ""), state: .loaded, isSelected: true, rating: .g, altText: altText)
-
-
 
         let updatedModel = model.updating {
             $0.isSelected = false
@@ -90,10 +88,10 @@ struct AvatarImageModelTests {
         #expect(updatedModel.altText == altText)
 
         switch updatedModel.source {
-            case .remote:
-                #expect(Bool(true))
-            default:
-                #expect(Bool(false), "The source should be .remote")
+        case .remote:
+            #expect(Bool(true))
+        default:
+            #expect(Bool(false), "The source should be .remote")
         }
     }
 }
