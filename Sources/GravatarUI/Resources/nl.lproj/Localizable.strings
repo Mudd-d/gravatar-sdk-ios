@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-05 15:54:02+0000 */
+/* Translation-Revision-Date: 2024-12-16 11:02:40+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: nl */
@@ -130,5 +130,5 @@
 "SystemImagePickerView.Source.PhotoLibrary.title" = "Een foto kiezen";
 
 /* An option to show the image playground */
-"SystemImagePickerView.Source.Playground.title" = "Speeltuin";
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

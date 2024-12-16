@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-14 10:10:31+0000 */
+/* Translation-Revision-Date: 2024-12-16 11:17:20+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: sv_SE */
@@ -151,5 +151,5 @@
 "SystemImagePickerView.Source.PhotoLibrary.title" = "Välj ett foto";
 
 /* An option to show the image playground */
-"SystemImagePickerView.Source.Playground.title" = "Lekplats";
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

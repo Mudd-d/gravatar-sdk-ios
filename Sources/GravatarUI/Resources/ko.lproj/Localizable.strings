@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-04 09:54:11+0000 */
+/* Translation-Revision-Date: 2024-12-16 11:32:24+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ko_KR */
@@ -130,5 +130,5 @@
 "SystemImagePickerView.Source.PhotoLibrary.title" = "사진 선택";
 
 /* An option to show the image playground */
-"SystemImagePickerView.Source.Playground.title" = "플레이그라운드";
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 
