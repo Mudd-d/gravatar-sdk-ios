@@ -48,6 +48,10 @@ extension Bundle {
         testsBundle.jsonData(forResource: "avatarSetRatingResponse")
     }
 
+    public static var setAltTextJsonData: Data {
+        testsBundle.jsonData(forResource: "avatarSetAltTextResponse")
+    }
+
     public static var getAvatarsJsonData: Data {
         testsBundle.jsonData(forResource: "avatarsResponse")
     }
