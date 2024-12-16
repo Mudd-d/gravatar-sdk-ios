@@ -5,7 +5,7 @@ import XCTest
 
 final class AvatarPickerProfileViewTests: XCTestCase {
     override func invokeTest() {
-        withSnapshotTesting(record: .all) {
+        withSnapshotTesting(record: .failed) {
             super.invokeTest()
         }
     }
