@@ -58,7 +58,7 @@ struct AvatarGrid<ImageEditor: ImageEditorView>: View {
 
 #Preview {
     let newAvatarModel: @Sendable (UIImage?) -> AvatarImageModel = { image in
-        AvatarImageModel(id: UUID().uuidString, source: .local(image: image ?? UIImage()))
+        AvatarImageModel.preview_init(id: UUID().uuidString, source: .local(image: image ?? UIImage()))
     }
     let initialAvatarCell = newAvatarModel(nil)
     let grid = AvatarGridModel(

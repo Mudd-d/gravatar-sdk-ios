@@ -128,6 +128,77 @@ final class AvatarServiceTests: XCTestCase {
         XCTAssertEqual(request?.url?.query, expectedQuery)
         XCTAssertNotNil(imageResponse.image)
     }
+
+    func testSetRatingReturnsAvatar() async throws {
+        let data = Bundle.setRatingJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let referenceAvatar = try decoder.decode(Avatar.self, from: data)
+        let avatar = try await service.update(
+            rating: .g,
+            avatarID: AvatarIdentifier.email("test@example.com"),
+            accessToken: "faketoken"
+        )
+
+        XCTAssertEqual(avatar, referenceAvatar)
+    }
+
+    func testSetRatingHandlesError() async {
+        let session = URLSessionMock(returnData: Data(), response: .errorResponse(code: 403))
+        let service = avatarService(with: session)
+
+        do {
+            try await service.update(
+                rating: .g,
+                avatarID: AvatarIdentifier.email("test@example.com"),
+                accessToken: "faketoken"
+            )
+        } catch APIError.responseError(reason: .invalidHTTPStatusCode(let response, _)) {
+            XCTAssertEqual(response.statusCode, 403)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
+    func testSetAltTextReturnsAvatar() async throws {
+        let data = Bundle.setAltTextJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+
+        let referenceAvatar = try decoder.decode(Avatar.self, from: data)
+        let avatar = try await service.update(
+            altText: "Updated alt text",
+            avatarID: AvatarIdentifier.email("test@example.com"),
+            accessToken: "faketoken"
+        )
+
+        XCTAssertEqual(avatar, referenceAvatar)
+    }
+
+    func testSetAltTextSendsCorrectDataToTheServer() async throws {
+        let data = Bundle.setAltTextJsonData
+        let session = URLSessionMock(returnData: data, response: .successResponse())
+        let service = avatarService(with: session)
+        let expectedAltText = "Updated alt text"
+
+        try await service.update(
+            altText: expectedAltText,
+            avatarID: AvatarIdentifier.email("test@example.com"),
+            accessToken: "faketoken"
+        )
+
+        let requestBody = await session.request!.httpBody!
+        let requestBody1 = try JSONDecoder().decode(UpdateAvatarRequest.self, from: requestBody)
+        XCTAssertEqual(requestBody1.rating, nil)
+        XCTAssertEqual(requestBody1.altText, expectedAltText)
+    }
 }
 
 private func avatarService(with session: URLSessionProtocol, cache: ImageCaching? = nil) -> AvatarService {

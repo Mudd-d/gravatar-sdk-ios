@@ -142,4 +142,21 @@ extension View {
             self
         }
     }
+
+    @ViewBuilder
+    func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+
+    func presentSafariView(url: Binding<URL?>, colorScheme: ColorScheme) -> some View {
+        self.sheet(item: url) { url in
+            SafariView(url: url)
+                .edgesIgnoringSafeArea(.all)
+                .colorScheme(colorScheme)
+        }
+    }
 }

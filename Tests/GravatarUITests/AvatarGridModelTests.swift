@@ -3,11 +3,11 @@ import TestHelpers
 import Testing
 
 let initialAvatars: [AvatarImageModel] = [
-    .init(id: "0", source: .remote(url: "https://example.com/1.jpg")),
-    .init(id: "1", source: .remote(url: "https://example.com/1.jpg"), isSelected: true),
-    .init(id: "2", source: .remote(url: "https://example.com/1.jpg")),
-    .init(id: "3", source: .remote(url: "https://example.com/1.jpg")),
-    .init(id: "4", source: .remote(url: "https://example.com/1.jpg")),
+    .preview_init(id: "0", source: .remote(url: "https://example.com/1.jpg")),
+    .preview_init(id: "1", source: .remote(url: "https://example.com/1.jpg"), isSelected: true),
+    .preview_init(id: "2", source: .remote(url: "https://example.com/1.jpg")),
+    .preview_init(id: "3", source: .remote(url: "https://example.com/1.jpg")),
+    .preview_init(id: "4", source: .remote(url: "https://example.com/1.jpg")),
 ]
 
 let initiallySelectedAvatarID = "1"
@@ -26,7 +26,7 @@ struct AvatarGridModelTests {
 
     @Test("Test append function")
     func testAvatarGridModelAppend() async throws {
-        let appendedAvatar = AvatarImageModel(id: "new", source: .remote(url: "https://example.com/1.jpg"))
+        let appendedAvatar = AvatarImageModel.preview_init(id: "new", source: .remote(url: "https://example.com/1.jpg"))
         model.append(appendedAvatar)
 
         #expect(model.index(of: "new") == 0)
@@ -102,7 +102,7 @@ struct AvatarGridModelTests {
 
     @Test("Test insert function")
     func testAvatarGridModelInsert() async throws {
-        let toInsert = AvatarImageModel(id: "new", source: .remote(url: "https://example.com"))
+        let toInsert = AvatarImageModel.preview_init(id: "new", source: .remote(url: "https://example.com"))
         model.insert(toInsert, at: 2)
 
         #expect(model.index(of: "new") == 2)
