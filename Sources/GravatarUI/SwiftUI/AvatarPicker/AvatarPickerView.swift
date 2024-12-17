@@ -190,18 +190,26 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
-        .sheet(item: $altTextEditorAvatar) { avatarToEdit in
-            NavigationView {
-                AltTextEditorView(avatar: avatarToEdit, email: model.email, altText: avatarToEdit.altText) { newText in
-                    altTextEditorAvatar = nil
-                    Task {
-                        await model.update(altText: newText, for: avatarToEdit)
+
+        .altTextSheet(
+            isPresented: Binding(
+                get: { altTextEditorAvatar != nil },
+                set: { if !$0 { altTextEditorAvatar = nil } }
+            ),
+            model: altTextEditorAvatar,
+            email: model.email,
+            onSave: { newAltText, modifiedModel in
+                altTextEditorAvatar = nil
+                Task {
+                    if let modifiedModel {
+                        await model.update(altText: newAltText, for: modifiedModel)
                     }
-                } onCancel: {
-                    altTextEditorAvatar = nil
                 }
-            }.colorScheme(colorScheme)
-        }
+            },
+            onCancel: {
+                altTextEditorAvatar = nil
+            }
+        )
     }
 
     private func updateShouldDisplayNoSelectedAvatarWarning() {

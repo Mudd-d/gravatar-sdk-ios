@@ -97,6 +97,25 @@ extension View {
         }
     }
 
+    func altTextSheet(
+        isPresented: Binding<Bool>,
+        model: AvatarImageModel?,
+        email: Email?,
+        onSave: @escaping (String, AvatarImageModel?) -> Void,
+        onCancel: @escaping () -> Void
+    ) -> some View {
+        let altTextEditor = NavigationView {
+            AltTextEditorView(avatar: model, email: email, onSave: { text in
+                onSave(text, model)
+            }, onCancel: onCancel)
+        }
+        if #available(iOS 16.0, *) {
+            return modifier(AltTextModalPresentationModifier(isPresented: isPresented, modalView: altTextEditor))
+        } else {
+            return modifier(ModalPresentationModifier(isPresented: isPresented, onDismiss: onCancel, modalView: altTextEditor))
+        }
+    }
+
     func presentationContentInteraction(shouldPrioritizeScrolling: Bool) -> some View {
         if #available(iOS 16.4, *) {
             let behavior: PresentationContentInteraction = shouldPrioritizeScrolling ? .scrolls : .automatic

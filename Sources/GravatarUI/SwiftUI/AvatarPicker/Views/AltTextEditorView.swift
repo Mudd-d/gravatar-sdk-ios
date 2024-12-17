@@ -29,20 +29,20 @@ struct AltTextEditorView: View {
             }
             VStack(alignment: .leading) {
                 HStack {
-                    titleText
-                    Spacer()
-                    altTextHelpButton
+                    titleText.accumulateAltTextIntrinsicHeight()
+                    Spacer().accumulateAltTextIntrinsicHeight()
+                    altTextHelpButton.accumulateAltTextIntrinsicHeight()
                 }
                 ZStack(alignment: .bottomTrailing) {
                     HStack(alignment: .top) {
-                        imageView
-                        altTextField
+                        imageView.accumulateAltTextIntrinsicHeight()
+                        altTextField.accumulateAltTextIntrinsicHeight()
                     }
                     if shouldShowCharCount {
-                        characterCountText
+                        characterCountText.accumulateAltTextIntrinsicHeight()
                     }
                 }
-                actionButton
+                actionButton.accumulateAltTextIntrinsicHeight()
             }
             .padding()
             .avatarPickerBorder(colorScheme: .light)
@@ -153,6 +153,12 @@ extension AltTextEditorView {
             value: "What is alt text?",
             comment: "Title for Help button which opens a view explaining what alt text is."
         )
+    }
+}
+
+private extension View {
+    func accumulateAltTextIntrinsicHeight() -> some View {
+        self.accumulateIntrinsicHeight(key: AltTextHeightPreferenceKey.self)
     }
 }
 
