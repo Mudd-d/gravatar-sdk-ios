@@ -4,13 +4,13 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
     var title: String?
     var doneButtonTitle: String?
     var actionButtonDisabled: Bool
-    var shouldEmitInnerHeight: Bool
 
     @Environment(\.colorScheme) var colorScheme
     @State private var safariURL: URL?
 
     var onActionButtonPressed: (() -> Void)? = nil
     var onDoneButtonPressed: (() -> Void)? = nil
+    var preferenceKey: K.Type
 
     func body(content: Content) -> some View {
         content
@@ -45,12 +45,10 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
                     // This works to detect the navigation bar height.
                     // AFAIU, SwiftUI calculates the `safeAreaInsets.top` based on the actual visible content area.
                     // When a NavigationView is present, it accounts for the navigation bar being part of that system-provided safe area.
-                    if shouldEmitInnerHeight {
-                        Color.clear.preference(
-                            key: InnerHeightPreferenceKey.self,
-                            value: geometry.safeAreaInsets.top
-                        )
-                    }
+                    Color.clear.preference(
+                        key: preferenceKey,
+                        value: geometry.safeAreaInsets.top
+                    )
                 }
             }
             .presentSafariView(url: $safariURL, colorScheme: colorScheme)
@@ -89,9 +87,9 @@ extension View {
                 title: title,
                 doneButtonTitle: doneButtonTitle,
                 actionButtonDisabled: actionButtonDisabled,
-                shouldEmitInnerHeight: shouldEmitInnerHeight,
                 onActionButtonPressed: onActionButtonPressed,
-                onDoneButtonPressed: onDoneButtonPressed
+                onDoneButtonPressed: onDoneButtonPressed,
+                preferenceKey: preferenceKey
             )
         )
     }
