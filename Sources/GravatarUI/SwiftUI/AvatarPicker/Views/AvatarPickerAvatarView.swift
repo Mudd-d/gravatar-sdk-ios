@@ -19,7 +19,9 @@ struct AvatarPickerAvatarView: View {
         ZStack(alignment: .bottomTrailing) {
             AvatarView(
                 url: avatar.url,
-                placeholder: avatar.localImage,
+                placeholderView: {
+                    avatar.localImage?.resizable()
+                },
                 loadingView: {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
@@ -89,6 +91,7 @@ struct AvatarPickerAvatarView: View {
                 }
             }
             Section {
+                button(for: .altText)
                 Menu {
                     ForEach(AvatarRating.allCases, id: \.self) { rating in
                         button(for: .rating(rating), isSelected: rating == avatar.rating)
@@ -122,7 +125,7 @@ struct AvatarPickerAvatarView: View {
                 } else {
                     Text(buttonTitle)
                 }
-            case .delete, .playground, .share:
+            case .altText, .delete, .playground, .share:
                 label(forAction: action)
             }
         }
@@ -173,7 +176,7 @@ extension AvatarRating {
 }
 
 #Preview {
-    let avatar = AvatarImageModel(
+    let avatar = AvatarImageModel.preview_init(
         id: "1",
         source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256"),
         rating: .pg

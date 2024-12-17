@@ -231,7 +231,7 @@ final class AvatarPickerViewModelTests {
                 }
             }.store(in: &cancellables)
 
-            await model.setRating(.pg, for: avatar)
+            await model.update(rating: .pg, for: avatar)
         }
         let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
         #expect(resultAvatar.rating == .pg)
@@ -259,11 +259,67 @@ final class AvatarPickerViewModelTests {
                 }
             }.store(in: &cancellables)
 
-            await model.setRating(.pg, for: avatar)
+            await model.update(rating: .pg, for: avatar)
         }
 
         let resultAvatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }))
         #expect(resultAvatar.rating == .g, "The rating should not be changed")
+    }
+
+    @Test
+    func testUpdateAltText() async throws {
+        let newAltText = "Updated Alt Text"
+        await model.refresh()
+        let avatar = model.grid.avatars[0]
+
+        await confirmToasts { message, type in
+            #expect(message?.contains(AvatarPickerViewModel.Localized.avatarAltTextSuccess) == true)
+            #expect(type == .info)
+        } trigger: {
+            let success = await model.update(altText: newAltText, for: avatar)
+            #expect(success)
+        }
+
+        let updatedAvatar = model.grid.avatars[0]
+        #expect(updatedAvatar.altText == newAltText)
+    }
+
+    @Test(
+        "Handle avatar alt text change: Failure",
+        arguments: [HTTPStatus.unauthorized, .forbidden]
+    )
+    func testUpdateAltTextError(httpStatus: HTTPStatus) async throws {
+        model = Self.createModel(session: .init(returnErrorCode: httpStatus.rawValue))
+        await model.refresh()
+        let avatar = model.grid.avatars[0]
+        let originalAltText = avatar.altText
+
+        await confirmToasts { message, type in
+            #expect(message == AvatarPickerViewModel.Localized.avatarAltTextError)
+            #expect(type == .error)
+        } trigger: {
+            let success = await model.update(altText: "Updated alt text", for: avatar)
+            #expect(success == false)
+        }
+
+        let updatedAvatar = model.grid.avatars[0]
+        #expect(updatedAvatar.altText == originalAltText, "Alt text should not have changed")
+    }
+}
+
+extension AvatarPickerViewModelTests {
+    func confirmToasts(_ callback: @escaping (String?, ToastType?) -> Void, trigger: () async -> Void) async {
+        await confirmation { confirmation in
+            model.toastManager.$toasts.sink { toasts in
+                #expect(toasts.count <= 1)
+                if toasts.count == 1 {
+                    callback(toasts.first?.message, toasts.first?.type)
+                    confirmation.confirm()
+                }
+            }.store(in: &cancellables)
+
+            await trigger()
+        }
     }
 }
 
@@ -284,6 +340,14 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
                 return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
             } else {
                 return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse()) // Avatar data
+            }
+        }
+
+        if request.isSetAvatarAltTextRequest {
+            if let returnErrorCode {
+                return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
+            } else {
+                return (Bundle.setAltTextJsonData, HTTPURLResponse.successResponse()) // Avatar data
             }
         }
 
@@ -321,7 +385,22 @@ extension URLRequest {
     fileprivate var isSetAvatarRatingRequest: Bool {
         guard self.httpMethod == "PATCH",
               self.isAvatarsRequest,
-              self.httpBody.isDecodable(asType: UpdateAvatarRequest.self)
+              self.httpBody.isDecodable(asType: UpdateAvatarRequest.self),
+              let decodedBody: UpdateAvatarRequest = try? self.httpBody?.decode(),
+              decodedBody.rating != nil
+        else {
+            return false
+        }
+        return true
+    }
+
+    fileprivate var isSetAvatarAltTextRequest: Bool {
+        guard
+            self.httpMethod == "PATCH",
+            self.isAvatarsRequest,
+            self.httpBody.isDecodable(asType: UpdateAvatarRequest.self),
+            let decodedBody: UpdateAvatarRequest = try? self.httpBody?.decode(),
+            decodedBody.altText != nil
         else {
             return false
         }

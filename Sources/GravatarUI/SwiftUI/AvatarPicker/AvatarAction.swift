@@ -6,6 +6,7 @@ enum AvatarAction: Identifiable {
     case delete
     case rating(AvatarRating)
     case playground
+    case altText
 
     var id: String {
         switch self {
@@ -13,6 +14,7 @@ enum AvatarAction: Identifiable {
         case .delete: "delete"
         case .rating(let rating): rating.rawValue
         case .playground: "playground"
+        case .altText: "altText"
         }
     }
 
@@ -24,6 +26,8 @@ enum AvatarAction: Identifiable {
             Image(systemName: "square.and.arrow.up")
         case .playground:
             Image(systemName: "apple.image.playground")
+        case .altText:
+            Image(systemName: "text.below.photo")
         case .rating:
             Image(systemName: "star.leadinghalf.filled")
         }
@@ -49,6 +53,12 @@ enum AvatarAction: Identifiable {
                 value: "Playground",
                 comment: "An option to show the image playground"
             )
+        case .altText:
+            SDKLocalizedString(
+                "AvatarPicker.AvatarAction.altText",
+                value: "Alt Text",
+                comment: "An option in the avatar menu that edits the avatar's Alt Text."
+            )
         case .rating(let rating):
             String(
                 format: SDKLocalizedString(
@@ -65,7 +75,7 @@ enum AvatarAction: Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share, .rating, .playground:
+        case .share, .rating, .playground, .altText:
             nil
         }
     }
