@@ -26,7 +26,7 @@ final class AvatarPickerViewModelTests {
             imageDownloader: imageDownloader
         )
     }
-    
+
     static func createImageModel(id: String, source: AvatarImageModel.Source, isSelected: Bool = false) -> AvatarImageModel {
         .init(
             id: id,
@@ -297,7 +297,7 @@ final class AvatarPickerViewModelTests {
         #expect(await model.delete(avatarToDelete) == false, "Delete request should fail")
         #expect(model.grid.index(of: avatarToDelete.id) != nil, "Deleting avatar should not have been deleted")
     }
-    
+
     @Test("Handle avatar rating change: Success")
     func changeAvatarRatingSucceeds() async throws {
         let testAvatarID = "991a7b71cf9f34..."
@@ -427,7 +427,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
                 return (Data("".utf8), HTTPURLResponse.successResponse())
             }
         }
-        
+
         if request.isSetAvatarRatingRequest {
             if let returnErrorCode {
                 return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
@@ -435,7 +435,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
                 return (Bundle.setRatingJsonData, HTTPURLResponse.successResponse()) // Avatar data
             }
         }
-        
+
         if request.isSetAvatarAltTextRequest {
             if let returnErrorCode {
                 return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
@@ -444,7 +444,7 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
             }
         }
 
-         if request.isProfilesRequest {
+        if request.isProfilesRequest {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
         } else if request.isAvatarsRequest == true {
             return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
@@ -479,12 +479,13 @@ extension URLRequest {
 
     fileprivate var isDeleteAvatarRequest: Bool {
         guard self.httpMethod == "DELETE",
-              self.isAvatarsRequest else {
+              self.isAvatarsRequest
+        else {
             return false
         }
         return true
     }
-    
+
     fileprivate var isSetAvatarRatingRequest: Bool {
         guard self.httpMethod == "PATCH",
               self.isAvatarsRequest,
