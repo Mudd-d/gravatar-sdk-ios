@@ -23,38 +23,34 @@ struct AltTextEditorView: View {
     let onCancel: () -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                ScrollView {
-                    VStack {
-                        if let email {
-                            EmailText(email: email)
-                        }
-                        VStack(alignment: .leading) {
-                            HStack {
-                                titleText
-                                Spacer()
-                                altTextHelpButton
-                            }
-                            ZStack(alignment: .bottomTrailing) {
-                                HStack(alignment: .top) {
-                                    imageView
-                                    altTextField
-                                }
-                                if shouldShowCharCount {
-                                    characterCountText
-                                }
-                            }
-                            Spacer()
-                            actionButton
-                        }
-                        .padding()
-                        .avatarPickerBorder(colorScheme: .light)
-                    }
-                    .padding(.bottom)
-                    .padding(.horizontal)
+        ScrollView {
+            VStack {
+                if let email {
+                    EmailText(email: email)
                 }
+                VStack(alignment: .leading) {
+                    HStack {
+                        titleText
+                        Spacer()
+                        altTextHelpButton
+                    }
+                    ZStack(alignment: .bottomTrailing) {
+                        HStack(alignment: .top) {
+                            imageView
+                            altTextField
+                        }
+                        if shouldShowCharCount {
+                            characterCountText
+                        }
+                    }
+                    Spacer()
+                    actionButton
+                }
+                .padding()
+                .avatarPickerBorder(colorScheme: .light)
             }
+            .padding(.bottom)
+            .padding(.horizontal)
         }
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
