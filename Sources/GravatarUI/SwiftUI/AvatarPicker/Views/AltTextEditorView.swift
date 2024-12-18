@@ -23,9 +23,37 @@ struct AltTextEditorView: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack {
-            if let email {
-                EmailText(email: email)
+        GeometryReader { geometry in
+            ZStack {
+                ScrollView {
+                    VStack {
+                        if let email {
+                            EmailText(email: email)
+                        }
+                        VStack(alignment: .leading) {
+                            HStack {
+                                titleText
+                                Spacer()
+                                altTextHelpButton
+                            }
+                            ZStack(alignment: .bottomTrailing) {
+                                HStack(alignment: .top) {
+                                    imageView
+                                    altTextField
+                                }
+                                if shouldShowCharCount {
+                                    characterCountText
+                                }
+                            }
+                            Spacer()
+                            actionButton
+                        }
+                        .padding()
+                        .avatarPickerBorder(colorScheme: .light)
+                    }
+                    .padding(.bottom)
+                    .padding(.horizontal)
+                }
             }
             VStack(alignment: .leading) {
                 HStack {
@@ -48,7 +76,6 @@ struct AltTextEditorView: View {
             .avatarPickerBorder(colorScheme: .light)
             Spacer()
         }
-        .padding()
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
             actionButtonDisabled: false,
