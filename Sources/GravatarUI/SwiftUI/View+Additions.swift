@@ -111,13 +111,15 @@ extension View {
                 altTextEditor.presentationDetents([.height(AltTextEditorView.Constants.sheetHeight)])
             }
         } else {
-            return modifier(ModalPresentationModifier(
-                isPresented: Binding(
-                    get: { model.wrappedValue != nil },
-                    set: { if !$0 { model.wrappedValue = nil }}
-                ),
-                onDismiss: onCancel,
-                modalView: altTextEditor)
+            return modifier(
+                ModalPresentationModifier(
+                    isPresented: Binding(
+                        get: { model.wrappedValue != nil },
+                        set: { if !$0 { model.wrappedValue = nil }}
+                    ),
+                    onDismiss: onCancel,
+                    modalView: altTextEditor
+                )
             )
         }
     }
