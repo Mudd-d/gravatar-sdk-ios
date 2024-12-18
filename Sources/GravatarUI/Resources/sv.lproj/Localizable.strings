@@ -1,7 +1,25 @@
-/* Translation-Revision-Date: 2024-11-28 14:35:33+0000 */
+/* Translation-Revision-Date: 2024-12-16 11:17:20+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: sv_SE */
+
+/* Title for Cancel button */
+"AltText.Editor.cancelButtonTitle" = "Avbryt";
+
+/* Title for Save button */
+"AltText.Editor.saveButtonTitle" = "Spara";
+
+/* Rating that indicates that the avatar is suitable for everyone */
+"Avatar.Rating.G.subtitle" = "Allmänt";
+
+/* Rating that indicates that the avatar may not be suitable for children */
+"Avatar.Rating.PG.subtitle" = "Föräldravägledning";
+
+/* Rating that indicates that the avatar may not be suitable for children */
+"Avatar.Rating.R.subtitle" = "Begränsad";
+
+/* Rating that indicates that the avatar is obviously and extremely unsuitable for children */
+"Avatar.Rating.X.subtitle" = "Extrem";
 
 /* An option in the avatar menu that deletes the avatar */
 "AvatarPicker.AvatarAction.delete" = "Ta bort";
@@ -54,7 +72,7 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Låt oss konfigurera din profilbild";
 
-/* The title button which confirms the avatar deletion */
+/* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Ta bort";
 
 /* Title of the confirmation dialog to delete an avatar */
@@ -68,6 +86,9 @@
 
 /* Title appearing in the header of a view that allows users to manage their avatars */
 "AvatarPicker.Header.title" = "Profilbilder";
+
+/* Message displayed when no image is selected */
+"AvatarPicker.NoImageSelected.message" = "Ingen bild vald. Välj en eller så kommer standard att användas.";
 
 /* Error message to show when the upload fails because the image is too big. */
 "AvatarPicker.Upload.Error.ImageTooBig.Error" = "Den tillhandahållna bilden överskrider den maximala storleken: 10 MB";
@@ -84,7 +105,7 @@
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Visa profil →";
 
-/* This error message shows when the user attempts to delete an avatar and fails */
+/* This error message shows when the user attempts to delete an avatar and fails. */
 "AvatarPickerViewModel.Delete.Error" = "Hoppsan, det uppstod ett fel när bilden skulle tas bort.";
 
 /* This error message shows when the user attempts to share an avatar and fails. */
@@ -130,5 +151,5 @@
 "SystemImagePickerView.Source.PhotoLibrary.title" = "Välj ett foto";
 
 /* An option to show the image playground */
-"SystemImagePickerView.Source.Playground.title" = "Lekplats";
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

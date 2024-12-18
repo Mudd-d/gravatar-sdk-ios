@@ -54,7 +54,7 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Avatarınızı oluşturalım";
 
-/* The title button which confirms the avatar deletion */
+/* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Sil";
 
 /* Title of the confirmation dialog to delete an avatar */
@@ -84,7 +84,7 @@
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Profili görüntüle →";
 
-/* This error message shows when the user attempts to delete an avatar and fails */
+/* This error message shows when the user attempts to delete an avatar and fails. */
 "AvatarPickerViewModel.Delete.Error" = "Hay aksi, görseli silerken bir hata oluştu.";
 
 /* This error message shows when the user attempts to share an avatar and fails. */
