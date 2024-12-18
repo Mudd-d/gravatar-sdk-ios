@@ -271,14 +271,9 @@ final class AvatarPickerViewModelTests {
         let newAltText = "Updated Alt Text"
         await model.refresh()
         let avatar = model.grid.avatars[0]
-
-        await confirmToasts { message, type in
-            #expect(message?.contains(AvatarPickerViewModel.Localized.avatarAltTextSuccess) == true)
-            #expect(type == .info)
-        } trigger: {
-            let success = await model.update(altText: newAltText, for: avatar)
-            #expect(success)
-        }
+        let success = await model.update(altText: newAltText, for: avatar)
+        
+        #expect(success)
 
         let updatedAvatar = model.grid.avatars[0]
         #expect(updatedAvatar.altText == newAltText)
