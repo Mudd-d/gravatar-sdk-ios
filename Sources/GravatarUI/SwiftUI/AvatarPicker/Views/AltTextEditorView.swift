@@ -14,6 +14,8 @@ struct AltTextEditorView: View {
     @State var charCount: Int = 0
     @State var safariURL: URL? = nil
     @State var isLoading: Bool = false
+    @ObservedObject var toastManager: ToastManager = .init()
+
 
     @FocusState var focused: Bool
 
@@ -25,38 +27,41 @@ struct AltTextEditorView: View {
         // This avoids a UI problem while scrolling down the sheet whith the keyboard being present.
         // GeometryReader also has the same effect. For now we want the content to scroll when the content grows.
         ScrollView {
-            VStack {
-                EmailText(email: email)
-                VStack(alignment: .leading) {
-                    HStack {
-                        titleText
+            ZStack {
+                VStack {
+                    EmailText(email: email)
+                    VStack(alignment: .leading) {
+                        HStack {
+                            titleText
+                            Spacer()
+                            altTextHelpButton
+                        }
+                        ZStack(alignment: .bottomTrailing) {
+                            HStack(alignment: .top) {
+                                imageView
+                                altTextField
+                            }
+                            if shouldShowCharCount {
+                                characterCountText
+                            }
+                        }
                         Spacer()
-                        altTextHelpButton
-                    }
-                    ZStack(alignment: .bottomTrailing) {
-                        HStack(alignment: .top) {
-                            imageView
-                            altTextField
+                        ZStack(alignment: .center) {
+                            actionButton
+                            if isLoading {
+                                ProgressView()
+                            }
                         }
-                        if shouldShowCharCount {
-                            characterCountText
-                        }
+                        .disabled(isLoading)
+                        .padding(.top)
                     }
-                    Spacer()
-                    ZStack(alignment: .center) {
-                        actionButton
-                        if isLoading {
-                            ProgressView()
-                        }
-                    }
-                    .disabled(isLoading)
-                    .padding(.top)
+                    .padding()
+                    .avatarPickerBorder(colorScheme: .light)
                 }
-                .padding()
-                .avatarPickerBorder(colorScheme: .light)
+                .padding(.bottom)
+                .padding(.horizontal)
+                errorToast
             }
-            .padding(.bottom)
-            .padding(.horizontal)
         }
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
@@ -143,6 +148,11 @@ struct AltTextEditorView: View {
             .aspectRatio(1, contentMode: .fill)
             .shape(RoundedRectangle(cornerRadius: AvatarGridConstants.avatarCornerRadius))
     }
+
+    var errorToast: some View {
+        ToastContainerView(toastManager: toastManager)
+            .padding(.horizontal)
+    }
 }
 
 extension AltTextEditorView {
@@ -191,15 +201,19 @@ extension AltTextEditorView {
             id: "1",
             source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")
         )
+        @ObservedObject var toast = ToastManager()
 
         var body: some View {
             NavigationView {
                 AltTextEditorView(
                     avatar: avatar,
-                    email: .init("some@email.com")
+                    email: .init("some@email.com"),
+                    toastManager: toast
                 ) { _ in
                     try? await Task.sleep(nanoseconds: 1_000_000_000)
-                } onCancel: {}
+                } onCancel: {
+                    toast.showToast("Error", type: .error)
+                }
             }
         }
     }

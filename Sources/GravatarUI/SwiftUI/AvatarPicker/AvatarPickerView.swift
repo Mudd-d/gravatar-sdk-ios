@@ -193,6 +193,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .altTextSheet(
             model: $altTextEditorAvatar,
             email: model.email,
+            toastManager: model.toastManager,
             onSave: { modifiedModel in
                 if await model.update(altText: modifiedModel.altText, for: modifiedModel) {
                     altTextEditorAvatar = nil

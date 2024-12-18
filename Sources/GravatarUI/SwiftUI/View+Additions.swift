@@ -100,13 +100,14 @@ extension View {
     func altTextSheet(
         model: Binding<AvatarImageModel?>,
         email: Email,
+        toastManager: ToastManager,
         onSave: @escaping (AvatarImageModel) async -> Void,
         onCancel: @escaping () -> Void
     ) -> some View {
 
         func altTextEditor(with model: AvatarImageModel) -> some View {
             NavigationView {
-                AltTextEditorView(avatar: model, email: email, onSave: onSave, onCancel: onCancel)
+                AltTextEditorView(avatar: model, email: email, toastManager: toastManager, onSave: onSave, onCancel: onCancel)
             }
         }
 
