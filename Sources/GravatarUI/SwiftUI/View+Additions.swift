@@ -99,24 +99,25 @@ extension View {
 
     func altTextSheet(
         model: Binding<AvatarImageModel?>,
-        email: Email?,
+        email: Email,
         onSave: @escaping (AvatarImageModel) -> Void,
         onCancel: @escaping () -> Void
     ) -> some View {
-        let altTextEditor = NavigationView {
-            AltTextEditorView(avatar: model.wrappedValue, email: email, onSave: onSave, onCancel: onCancel)
+
+        func altTextEditor(with model: AvatarImageModel) -> some View {
+            NavigationView {
+                AltTextEditorView(avatar: model, email: email, onSave: onSave, onCancel: onCancel)
+            }
         }
+
         if #available(iOS 16.0, *) {
-            return self.sheet(item: model, onDismiss: onCancel) { _ in
-                altTextEditor.presentationDetents([.height(AltTextEditorView.Constants.sheetHeight)])
+            return self.sheet(item: model, onDismiss: onCancel) { selectedModel in
+                altTextEditor(with: selectedModel).presentationDetents([.height(AltTextEditorView.Constants.sheetHeight)])
             }
         } else {
             return modifier(
-                ModalPresentationModifier(
-                    isPresented: Binding(
-                        get: { model.wrappedValue != nil },
-                        set: { if !$0 { model.wrappedValue = nil }}
-                    ),
+                ModalItemPresentationModifier(
+                    item: model,
                     onDismiss: onCancel,
                     modalView: altTextEditor
                 )

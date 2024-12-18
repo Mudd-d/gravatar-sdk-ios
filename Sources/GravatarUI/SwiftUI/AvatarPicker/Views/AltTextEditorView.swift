@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
-    let email: Email?
+    let email: Email
 
     var shouldShowCharCount: Bool {
         altText.count > 0
@@ -25,9 +25,7 @@ struct AltTextEditorView: View {
         // GeometryReader also has the same effect. For now we want the content to scroll when the content grows.
         ScrollView {
             VStack {
-                if let email {
-                    EmailText(email: email)
-                }
+                EmailText(email: email)
                 VStack(alignment: .leading) {
                     HStack {
                         titleText

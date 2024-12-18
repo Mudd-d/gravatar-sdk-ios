@@ -656,7 +656,7 @@ private enum AvatarPicker {
 #Preview("Existing elements") {
     struct PreviewModel: ProfileSummaryModel {
         var avatarIdentifier: Gravatar.AvatarIdentifier? {
-            .email("xxx@gmail.com")
+            .email("some@email.com")
         }
 
         var displayName: String {
