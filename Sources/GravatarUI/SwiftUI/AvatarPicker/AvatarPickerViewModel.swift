@@ -344,8 +344,7 @@ class AvatarPickerViewModel: ObservableObject {
     func update(altText: String, for avatar: AvatarImageModel) async -> Bool {
         guard let token = self.authToken else { return false }
         do {
-            let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
-            toastManager.showToast(Localized.avatarAltTextSuccess + "\n\n \"\(altText)\"")
+            let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id + "2"), accessToken: token)
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }

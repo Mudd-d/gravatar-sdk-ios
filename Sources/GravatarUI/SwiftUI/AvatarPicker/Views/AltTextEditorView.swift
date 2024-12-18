@@ -13,10 +13,11 @@ struct AltTextEditorView: View {
     @State var altText: String = ""
     @State var charCount: Int = 0
     @State var safariURL: URL? = nil
+    @State var isLoading: Bool = false
 
     @FocusState var focused: Bool
 
-    let onSave: (AvatarImageModel) -> Void
+    let onSave: (AvatarImageModel) async -> Void
     let onCancel: () -> Void
 
     var body: some View {
@@ -42,7 +43,14 @@ struct AltTextEditorView: View {
                         }
                     }
                     Spacer()
-                    actionButton
+                    ZStack(alignment: .center) {
+                        actionButton
+                        if isLoading {
+                            ProgressView()
+                        }
+                    }
+                    .disabled(isLoading)
+                    .padding(.top)
                 }
                 .padding()
                 .avatarPickerBorder(colorScheme: .light)
@@ -52,8 +60,8 @@ struct AltTextEditorView: View {
         }
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
+            doneButtonDisabled: isLoading,
             actionButtonDisabled: false,
-            shouldEmitInnerHeight: false,
             onDoneButtonPressed: {
                 onCancel()
             },
@@ -97,11 +105,16 @@ struct AltTextEditorView: View {
     var actionButton: some View {
         Button {
             if let avatar {
-                onSave(avatar.updating { $0.altText = altText })
+                isLoading = true
+                Task {
+                    await onSave(avatar.updating { $0.altText = altText })
+                    isLoading = false
+                }
             }
         } label: {
             CTAButtonView(Localized.saveButtonTitle)
-        }.padding(.top)
+        }
+        .disabled(isLoading)
     }
 
     var characterCountText: some View {
@@ -180,10 +193,14 @@ extension AltTextEditorView {
         )
 
         var body: some View {
-            AltTextEditorView(
-                avatar: avatar,
-                email: .init("some@email.com")
-            ) { _ in } onCancel: {}
+            NavigationView {
+                AltTextEditorView(
+                    avatar: avatar,
+                    email: .init("some@email.com")
+                ) { _ in
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                } onCancel: {}
+            }
         }
     }
 

@@ -100,7 +100,7 @@ extension View {
     func altTextSheet(
         model: Binding<AvatarImageModel?>,
         email: Email,
-        onSave: @escaping (AvatarImageModel) -> Void,
+        onSave: @escaping (AvatarImageModel) async -> Void,
         onCancel: @escaping () -> Void
     ) -> some View {
 
