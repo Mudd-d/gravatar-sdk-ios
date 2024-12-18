@@ -190,20 +190,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
-
         .altTextSheet(
-            isPresented: Binding(
-                get: { altTextEditorAvatar != nil },
-                set: { if !$0 { altTextEditorAvatar = nil } }
-            ),
-            model: altTextEditorAvatar,
+            model: $altTextEditorAvatar,
             email: model.email,
-            onSave: { newAltText, modifiedModel in
+            onSave: { modifiedModel in
                 altTextEditorAvatar = nil
                 Task {
-                    if let modifiedModel {
-                        await model.update(altText: newAltText, for: modifiedModel)
-                    }
+                    await model.update(altText: modifiedModel.altText, for: modifiedModel)
                 }
             },
             onCancel: {

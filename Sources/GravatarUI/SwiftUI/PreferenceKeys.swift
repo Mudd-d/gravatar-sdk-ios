@@ -8,11 +8,9 @@ struct InnerHeightPreferenceKey: PreferenceKey {
     }
 }
 
-struct AltTextHeightPreferenceKey: PreferenceKey {
+struct ConstantHeightPreferenceKey: PreferenceKey {
     static let defaultValue: CGFloat = .zero
-    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-        value += nextValue()
-    }
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {}
 }
 
 protocol SizeClassPreferenceKey: PreferenceKey {}
