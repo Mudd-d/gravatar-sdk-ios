@@ -3,9 +3,6 @@ import SwiftUI
 struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
     let email: Email?
-    let imageSize: CGFloat = 96
-    let minLength: CGFloat = 96
-    let characterLimit: Int = 100
 
     var shouldShowCharCount: Bool {
         altText.count > 0
@@ -19,58 +16,68 @@ struct AltTextEditorView: View {
 
     @FocusState var focused: Bool
 
-    let onSave: (String) -> Void
+    let onSave: (AvatarImageModel) -> Void
     let onCancel: () -> Void
 
     var body: some View {
-        VStack {
-            if let email {
-                EmailText(email: email)
-            }
-            VStack(alignment: .leading) {
-                HStack {
-                    titleText
+        // Scroll view helps detaching the height of the child view from the height of the parent view.
+        // This avoids a UI problem while scrolling down the sheet whith the keyboard being present.
+        // GeometryReader also has the same effect. For now we want the content to scroll when the content grows.
+        ScrollView {
+            VStack {
+                if let email {
+                    EmailText(email: email)
+                }
+                VStack(alignment: .leading) {
+                    HStack {
+                        titleText
+                        Spacer()
+                        altTextHelpButton
+                    }
+                    ZStack(alignment: .bottomTrailing) {
+                        HStack(alignment: .top) {
+                            imageView
+                            altTextField
+                        }
+                        if shouldShowCharCount {
+                            characterCountText
+                        }
+                    }
                     Spacer()
-                    altTextHelpButton
+                    actionButton
                 }
-                ZStack(alignment: .bottomTrailing) {
-                    HStack(alignment: .top) {
-                        imageView
-                        altTextField
-                    }
-                    if shouldShowCharCount {
-                        characterCountText
-                    }
-                }
-                actionButton
+                .padding()
+                .avatarPickerBorder(colorScheme: .light)
             }
-            .padding()
-            .avatarPickerBorder(colorScheme: .light)
-            Spacer()
+            .padding(.bottom)
+            .padding(.horizontal)
         }
-        .padding()
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
             actionButtonDisabled: false,
             shouldEmitInnerHeight: false,
             onDoneButtonPressed: {
                 onCancel()
-            }
+            },
+            preferenceKey: ConstantHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .onAppear {
+            altText = avatar?.altText ?? ""
+        }
     }
 
     var altTextField: some View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: $altText)
                 .multilineTextAlignment(.leading)
-                .frame(maxHeight: 100)
+                .frame(height: 100)
                 .font(.footnote)
                 .focused($focused)
                 .onAppear { focused = true }
                 .onChange(of: altText) { _ in
                     // Crops text to fit char limit.
-                    altText = String(altText.prefix(characterLimit))
+                    altText = String(altText.prefix(Constants.characterLimit))
                 }
             if altText.count == 0 {
                 Text(Localized.altTextPlaceholder)
@@ -91,7 +98,9 @@ struct AltTextEditorView: View {
 
     var actionButton: some View {
         Button {
-            onSave(altText)
+            if let avatar {
+                onSave(avatar.updating { $0.altText = altText })
+            }
         } label: {
             CTAButtonView(Localized.saveButtonTitle)
         }.padding(.top)
@@ -100,7 +109,7 @@ struct AltTextEditorView: View {
     var characterCountText: some View {
         Text("\(altText.count)")
             .font(.callout)
-            .foregroundColor(altText.count >= characterLimit ? .red : .secondary)
+            .foregroundColor(altText.count >= Constants.characterLimit ? .red : .secondary)
     }
 
     var altTextHelpButton: some View {
@@ -112,13 +121,13 @@ struct AltTextEditorView: View {
     var imageView: some View {
         AvatarView(
             url: avatar?.url,
-            placeholder: avatar?.localImage,
+            placeholderView: { avatar?.localImage?.resizable() },
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
             }
         ).scaledToFill()
-            .frame(width: imageSize, height: imageSize)
+            .frame(width: Constants.imageSize, height: Constants.imageSize)
             .background(Color(UIColor.secondarySystemBackground))
             .aspectRatio(1, contentMode: .fill)
             .shape(RoundedRectangle(cornerRadius: AvatarGridConstants.avatarCornerRadius))
@@ -152,6 +161,15 @@ extension AltTextEditorView {
             value: "What is alt text?",
             comment: "Title for Help button which opens a view explaining what alt text is."
         )
+    }
+}
+
+extension AltTextEditorView {
+    enum Constants {
+        static let sheetHeight: CGFloat = 330
+        fileprivate static let imageSize: CGFloat = 96
+        fileprivate static let minLength: CGFloat = 96
+        fileprivate static let characterLimit: Int = 100
     }
 }
 

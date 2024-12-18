@@ -156,7 +156,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             actionButtonDisabled: model.profileModel?.profileURL == nil,
             onDoneButtonPressed: {
                 isPresented = false
-            }
+            },
+            preferenceKey: InnerHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .onChange(of: authToken ?? "") { newValue in
@@ -189,18 +190,19 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
-        .sheet(item: $altTextEditorAvatar) { avatarToEdit in
-            NavigationView {
-                AltTextEditorView(avatar: avatarToEdit, email: model.email, altText: avatarToEdit.altText) { newText in
-                    altTextEditorAvatar = nil
-                    Task {
-                        await model.update(altText: newText, for: avatarToEdit)
-                    }
-                } onCancel: {
-                    altTextEditorAvatar = nil
+        .altTextSheet(
+            model: $altTextEditorAvatar,
+            email: model.email,
+            onSave: { modifiedModel in
+                altTextEditorAvatar = nil
+                Task {
+                    await model.update(altText: modifiedModel.altText, for: modifiedModel)
                 }
-            }.colorScheme(colorScheme)
-        }
+            },
+            onCancel: {
+                altTextEditorAvatar = nil
+            }
+        )
     }
 
     private func updateShouldDisplayNoSelectedAvatarWarning() {
