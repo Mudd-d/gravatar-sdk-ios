@@ -23,32 +23,38 @@ struct AltTextEditorView: View {
     let onCancel: () -> Void
 
     var body: some View {
-        VStack {
-            if let email {
-                EmailText(email: email)
-            }
-            VStack(alignment: .leading) {
-                HStack {
-                    titleText.accumulateAltTextIntrinsicHeight()
-                    Spacer().accumulateAltTextIntrinsicHeight()
-                    altTextHelpButton.accumulateAltTextIntrinsicHeight()
-                }
-                ZStack(alignment: .bottomTrailing) {
-                    HStack(alignment: .top) {
-                        imageView.accumulateAltTextIntrinsicHeight()
-                        altTextField.accumulateAltTextIntrinsicHeight()
+        GeometryReader { geometry in
+            ZStack {
+                VStack {
+                    if let email {
+                        EmailText(email: email)
                     }
-                    if shouldShowCharCount {
-                        characterCountText.accumulateAltTextIntrinsicHeight()
+                    VStack(alignment: .leading) {
+                        HStack {
+                            titleText
+                            Spacer()
+                            altTextHelpButton
+                        }
+                        ZStack(alignment: .bottomTrailing) {
+                            HStack(alignment: .top) {
+                                imageView
+                                altTextField
+                            }
+                            if shouldShowCharCount {
+                                characterCountText
+                            }
+                        }
+                        actionButton
                     }
+                    .padding()
+                    .avatarPickerBorder(colorScheme: .light)
+                    
+                    Spacer()
                 }
-                actionButton.accumulateAltTextIntrinsicHeight()
             }
-            .padding()
-            .avatarPickerBorder(colorScheme: .light)
-            Spacer()
         }
-        .padding()
+        .padding(.horizontal)
+        .padding(.vertical, 0)
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
             actionButtonDisabled: false,
@@ -65,7 +71,7 @@ struct AltTextEditorView: View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: $altText)
                 .multilineTextAlignment(.leading)
-                .frame(maxHeight: 100)
+                .frame(height: 100)
                 .font(.footnote)
                 .focused($focused)
                 .onAppear { focused = true }
@@ -113,7 +119,7 @@ struct AltTextEditorView: View {
     var imageView: some View {
         AvatarView(
             url: avatar?.url,
-            placeholder: avatar?.localImage,
+            placeholderView: { avatar?.localImage?.resizable() },
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())

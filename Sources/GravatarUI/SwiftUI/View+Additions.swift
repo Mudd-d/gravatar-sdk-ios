@@ -110,7 +110,13 @@ extension View {
             }, onCancel: onCancel)
         }
         if #available(iOS 16.0, *) {
-            return modifier(AltTextModalPresentationModifier(isPresented: isPresented, modalView: altTextEditor))
+            return self
+                .sheet(isPresented: isPresented, onDismiss: onCancel) {
+                    altTextEditor
+                       .presentationDetents([.height(330)])
+                }
+                
+         //   return modifier(AltTextModalPresentationModifier(isPresented: isPresented, modalView: altTextEditor))
         } else {
             return modifier(ModalPresentationModifier(isPresented: isPresented, onDismiss: onCancel, modalView: altTextEditor))
         }
