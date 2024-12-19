@@ -4,10 +4,6 @@ struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
     let email: Email
 
-    var shouldShowCharCount: Bool {
-        altText.count > 0
-    }
-
     @Environment(\.colorScheme) var colorScheme
 
     @State var altText: String = ""
@@ -41,19 +37,12 @@ struct AltTextEditorView: View {
                                 imageView
                                 altTextField
                             }
-                            if shouldShowCharCount {
-                                characterCountText
-                            }
+                            characterCountText
                         }
                         Spacer()
-                        ZStack(alignment: .center) {
-                            actionButton
-                            if isLoading {
-                                ProgressView()
-                            }
-                        }
-                        .disabled(isLoading)
-                        .padding(.top)
+                        actionButton
+                            .disabled(isLoading)
+                            .padding(.top)
                     }
                     .padding()
                     .avatarPickerBorder(colorScheme: .light)
@@ -80,16 +69,19 @@ struct AltTextEditorView: View {
 
     var altTextField: some View {
         ZStack(alignment: .topLeading) {
-            TextEditor(text: $altText)
-                .multilineTextAlignment(.leading)
-                .frame(height: 100)
-                .font(.footnote)
-                .focused($focused)
-                .onAppear { focused = true }
-                .onChange(of: altText) { _ in
-                    // Crops text to fit char limit.
-                    altText = String(altText.prefix(Constants.characterLimit))
+            TextEditor(text: Binding(
+                get: {
+                    String(altText.prefix(Constants.characterLimit))
+                },
+                set: { newValue in
+                    altText = String(newValue.prefix(Constants.characterLimit))
                 }
+            ))
+            .multilineTextAlignment(.leading)
+            .frame(height: 100)
+            .font(.footnote)
+            .focused($focused)
+            .onAppear { focused = true }
             if altText.count == 0 {
                 Text(Localized.altTextPlaceholder)
                     .padding(8)
@@ -108,23 +100,29 @@ struct AltTextEditorView: View {
     }
 
     var actionButton: some View {
-        Button {
-            if let avatar {
-                isLoading = true
-                Task {
-                    await onSave(avatar.updating { $0.altText = altText })
-                    isLoading = false
+        ZStack(alignment: .center) {
+            Button {
+                if let avatar {
+                    isLoading = true
+                    Task {
+                        await onSave(avatar.updating { $0.altText = altText })
+                        isLoading = false
+                    }
                 }
+            } label: {
+                CTAButtonView(Localized.saveButtonTitle)
             }
-        } label: {
-            CTAButtonView(Localized.saveButtonTitle)
+            .disabled(isLoading)
+            if isLoading {
+                ProgressView()
+            }
         }
-        .disabled(isLoading)
     }
 
     var characterCountText: some View {
-        Text("\(altText.count)")
+        Text("\(Constants.characterLimit - altText.count)")
             .font(.callout)
+            .monospacedDigit()
             .foregroundColor(altText.count >= Constants.characterLimit ? .red : .secondary)
     }
 
