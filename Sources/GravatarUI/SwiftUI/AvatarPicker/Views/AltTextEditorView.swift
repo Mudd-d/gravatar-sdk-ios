@@ -70,17 +70,19 @@ struct AltTextEditorView: View {
     var altTextField: some View {
         ZStack(alignment: .topLeading) {
             TextEditor(text: Binding(
-                get: {
-                    String(altText.prefix(Constants.characterLimit))
-                },
-                set: { newValue in
-                    altText = String(newValue.prefix(Constants.characterLimit))
+                get: { altText.normalizedAltText },
+                set: { newAltText in
+                    if newAltText.contains("\n") {
+                        focused = false
+                    }
+                    altText = newAltText.normalizedAltText
                 }
             ))
             .multilineTextAlignment(.leading)
             .frame(height: 100)
             .font(.footnote)
             .focused($focused)
+            .submitLabel(.done)
             .onAppear { focused = true }
             if altText.count == 0 {
                 Text(Localized.altTextPlaceholder)
@@ -189,6 +191,13 @@ extension AltTextEditorView {
         fileprivate static let imageSize: CGFloat = 96
         fileprivate static let minLength: CGFloat = 96
         fileprivate static let characterLimit: Int = 100
+    }
+}
+
+extension String {
+    fileprivate var normalizedAltText: String {
+        String(self.prefix(AltTextEditorView.Constants.characterLimit))
+            .replacingOccurrences(of: "\n", with: "")
     }
 }
 
