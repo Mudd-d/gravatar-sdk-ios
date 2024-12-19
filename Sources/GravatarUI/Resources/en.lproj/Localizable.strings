@@ -1,3 +1,18 @@
+/* Title for Cancel button. */
+"AltText.Editor.cancelButtonTitle" = "Cancel";
+
+/* Title for Help button which opens a view explaining what alt text is. */
+"AltText.Editor.helpButtonTitle" = "What is alt text?";
+
+/* Placeholder text for Alt Text editor text field. */
+"AltText.Editor.placeholder" = "Write alt text...";
+
+/* Title for Save button. */
+"AltText.Editor.saveButtonTitle" = "Save";
+
+/* The title of Alt Text editor screen. */
+"AltText.Editor.title" = "Alt Text";
+
 /* Rating that indicates that the avatar is suitable for everyone */
 "Avatar.Rating.G.subtitle" = "General";
 
@@ -9,6 +24,9 @@
 
 /* Rating that indicates that the avatar is obviously and extremely unsuitable for children */
 "Avatar.Rating.X.subtitle" = "Extreme";
+
+/* An option in the avatar menu that edits the avatar's Alt Text. */
+"AvatarPicker.AvatarAction.altText" = "Alt Text";
 
 /* An option in the avatar menu that deletes the avatar */
 "AvatarPicker.AvatarAction.delete" = "Delete";
@@ -97,6 +115,12 @@
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "View profile →";
 
+/* This error message shows when the user attempts to change the alt text of an avatar and fails. */
+"AvatarPickerViewModel.AltText.Error" = "Oops, something didn't quite work out while trying to update the alt text.";
+
+/* This confirmation message shows when the user has updated the alt text. */
+"AvatarPickerViewModel.AltText.Success" = "Image alt text was changed successfully.";
+
 /* This error message shows when the user attempts to delete an avatar and fails. */
 "AvatarPickerViewModel.Delete.Error" = "Oops, there was an error deleting the image.";
 
@@ -151,23 +175,3 @@
 /* An option to show the image playground */
 "SystemImagePickerView.Source.Playground.title" = "Playground";
 
-/* The title of Alt Text editor screen */
-"AltText.Editor.title" = "Alt Text";
-
-/* Placeholder text for Alt Text editor text field */
-"AltText.Editor.placeholder" = "Write alt text...";
-
-/* Title for Save button */
-"AltText.Editor.saveButtonTitle" = "Save";
-
-/* Title for Cancel button */
-"AltText.Editor.cancelButtonTitle" = "Cancel";
-
-/* This confirmation message shows when the user has updated the alt text */
-"AvatarPickerViewModel.AltText.Success" = "Image alt text was changed successfully.";
-
-/* This error message shows when the user attempts to change the alt text of an avatar and fails */
-"AvatarPickerViewModel.AltText.Error" = "Oops, something didn't quite work out while trying to update the alt text.";
-
-/* Title for Help button which opens a view explaining what alt text is */
-"AltText.Editor.helpButtonTitle" = "What is alt text?";
