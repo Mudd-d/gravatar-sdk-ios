@@ -24,9 +24,14 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @State private var isAuthenticating: Bool = true
     @State private var oauthError: OAuthError?
     @Binding private var isPresented: Bool
+    // Declare "@StateObject"s as private to prevent setting them from a
+    // memberwise initializer, which can conflict with the storage
+    // management that SwiftUI provides.
+    // https://developer.apple.com/documentation/swiftui/stateobject
+    @StateObject private var model: AvatarPickerViewModel
+
     private let externalToken: String?
     private var token: String? { externalToken ?? fetchedToken }
-    private var tokenBinding: Binding<String?> { externalToken != nil ? .constant(externalToken) : $fetchedToken }
     private let scope: QuickEditorScopeType
     private let email: Email
     private let customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -49,6 +54,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         self.contentLayoutProvider = contentLayoutProvider
         self.externalToken = token
         self.avatarUpdatedHandler = avatarUpdatedHandler
+        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: token))
     }
 
     let authorizationFinishedNotification = NotificationCenter.default.publisher(for: .authorizationFinished)
@@ -69,6 +75,11 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             oauthError = error
             onAuthenticationFinished()
         }
+        .onChange(of: token) { newValue in
+            if let newValue {
+                model.update(authToken: newValue)
+            }
+        }
     }
 
     @MainActor
@@ -76,8 +87,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         switch scope {
         case .avatarPicker:
             AvatarPickerView(
-                email: email,
-                authToken: tokenBinding,
+                model: model,
                 isPresented: $isPresented,
                 contentLayoutProvider: contentLayoutProvider,
                 customImageEditor: customImageEditor,

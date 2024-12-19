@@ -10,13 +10,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    // Declare "@StateObject"s as private to prevent setting them from a
-    // memberwise initializer, which can conflict with the storage
-    // management that SwiftUI provides.
-    // https://developer.apple.com/documentation/swiftui/stateobject
-    @StateObject private var model: AvatarPickerViewModel
+    @ObservedObject var model: AvatarPickerViewModel
     @Binding var isPresented: Bool
-    @Binding var authToken: String?
 
     @State private var safariURL: URL?
     @State private var uploadError: FailedUploadInfo?
@@ -33,8 +28,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     var avatarUpdatedHandler: (() -> Void)?
 
     init(
-        email: Email,
-        authToken: Binding<String?>,
+        model: AvatarPickerViewModel,
         isPresented: Binding<Bool>,
         contentLayoutProvider: AvatarPickerContentLayoutProviding = AvatarPickerContentLayoutType.vertical,
         customImageEditor: ImageEditorBlock<ImageEditor>? = nil as NoCustomEditorBlock?,
@@ -46,8 +40,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = authToken
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: authToken.wrappedValue))
+        self.model = model
     }
 
     fileprivate init(
@@ -65,13 +58,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = .constant(nil)
-        self._model = StateObject(
-            wrappedValue: AvatarPickerViewModel(
-                avatarImageModels: avatarImageModels,
-                selectedImageID: selectedImageID,
-                profileModel: profileModel
-            )
+        self.model = AvatarPickerViewModel(
+            avatarImageModels: avatarImageModels,
+            selectedImageID: selectedImageID,
+            profileModel: profileModel
         )
     }
 
@@ -160,9 +150,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             preferenceKey: InnerHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
-        .onChange(of: authToken ?? "") { newValue in
-            model.update(authToken: newValue)
-        }
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
         }
@@ -717,5 +704,5 @@ private enum AvatarPicker {
 
 #Preview("Load from network") {
     /// Enter valid email and auth token.
-    AvatarPickerView<NoCustomEditor>(email: .init(""), authToken: .constant(""), isPresented: .constant(true))
+    AvatarPickerView<NoCustomEditor>(model: AvatarPickerViewModel(email: .init(""), authToken: ""), isPresented: .constant(true))
 }
