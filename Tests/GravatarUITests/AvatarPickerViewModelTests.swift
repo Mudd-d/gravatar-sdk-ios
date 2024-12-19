@@ -27,6 +27,17 @@ final class AvatarPickerViewModelTests {
         )
     }
 
+    static func createImageModel(id: String, source: AvatarImageModel.Source, isSelected: Bool = false) -> AvatarImageModel {
+        .init(
+            id: id,
+            source: source,
+            state: .loaded,
+            isSelected: isSelected,
+            rating: .g,
+            altText: "fake alt text"
+        )
+    }
+
     @Test
     func testFirstAvatarsAreLoaded() async throws {
         await confirmation { confirmation in
@@ -213,6 +224,80 @@ final class AvatarPickerViewModelTests {
         }
     }
 
+    @Test
+    func testDeleteAvatar() async throws {
+        await model.refresh()
+        let avatarToDelete = model.grid.avatars.last!
+        #expect(await model.delete(avatarToDelete), "Avatar deletion should be successfull")
+        #expect(model.grid.index(of: avatarToDelete.id) == nil, "Deleted avatar should not be on the grid")
+    }
+
+    @Test
+    func testDeletingNonExistentAvatarFails() async throws {
+        await model.refresh()
+        let avatarToDelete = Self.createImageModel(id: "someID", source: .remote(url: ""))
+        #expect(await model.delete(avatarToDelete) == false, "Avatar deletion should not succeed")
+    }
+
+    @Test
+    func testDeleteSelectedAvatar() async throws {
+        await model.refresh()
+        let selectedAvatar = model.grid.selectedAvatar!
+
+        await confirmation { confirmation in
+            model.$selectedAvatarURL.dropFirst(2).sink { url in
+                #expect(url == nil)
+                confirmation.confirm()
+            }.store(in: &cancellables)
+
+            #expect(await model.delete(selectedAvatar))
+        }
+
+        #expect(model.grid.selectedAvatar == nil)
+        #expect(model.selectedAvatarURL == nil)
+    }
+
+    @Test("Test success deletion when the response is a 404 error")
+    func testDeleteError404() async throws {
+        let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
+        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model.grid.setAvatars([avatarToDelete])
+
+        #expect(await model.delete(avatarToDelete))
+        #expect(model.grid.index(of: avatarToDelete.id) == nil)
+    }
+
+    @Test("Test success deletion of selected avatar when the response is a 404 error")
+    func testDeleteSelectedAvatarError404() async throws {
+        let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""), isSelected: true)
+        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model.grid.setAvatars([avatarToDelete])
+        #expect(model.grid.selectedAvatar != nil)
+
+        await confirmation { confirmation in
+            model.$selectedAvatarURL.dropFirst(1).sink { url in
+                #expect(url == nil)
+                confirmation.confirm()
+            }.store(in: &cancellables)
+
+            #expect(await model.delete(avatarToDelete))
+        }
+
+        #expect(model.grid.selectedAvatar == nil)
+        #expect(model.selectedAvatarURL == nil)
+        #expect(model.grid.index(of: avatarToDelete.id) == nil)
+    }
+
+    @Test("Test error deletion when the response is an error different to 404")
+    func testDeleteErrorFails() async throws {
+        let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
+        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.unauthorized.rawValue))
+        model.grid.setAvatars([avatarToDelete])
+
+        #expect(await model.delete(avatarToDelete) == false, "Delete request should fail")
+        #expect(model.grid.index(of: avatarToDelete.id) != nil, "Deleting avatar should not have been deleted")
+    }
+
     @Test("Handle avatar rating change: Success")
     func changeAvatarRatingSucceeds() async throws {
         let testAvatarID = "991a7b71cf9f34..."
@@ -330,6 +415,14 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
             return (Bundle.postAvatarSelectedJsonData, HTTPURLResponse.successResponse()) // Avatars data
         }
 
+        if request.isDeleteAvatarRequest {
+            if let returnErrorCode {
+                return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
+            } else {
+                return (Data("".utf8), HTTPURLResponse.successResponse())
+            }
+        }
+
         if request.isSetAvatarRatingRequest {
             if let returnErrorCode {
                 return (Data("".utf8), HTTPURLResponse.errorResponse(code: returnErrorCode))
@@ -350,6 +443,8 @@ final class URLSessionAvatarPickerMock: URLSessionProtocol {
             return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
         } else if request.isAvatarsRequest == true {
             return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
+        } else if let returnErrorCode {
+            return ("{\"error\":\"error\"".data(using: .utf8)!, HTTPURLResponse.errorResponse(code: returnErrorCode))
         }
 
         fatalError("Request not mocked: \(request.url?.absoluteString ?? "unknown request")")
@@ -375,6 +470,15 @@ extension URLRequest {
 
     fileprivate var isProfilesRequest: Bool {
         self.url?.absoluteString.contains(RequestType.profiles.rawValue) == true
+    }
+
+    fileprivate var isDeleteAvatarRequest: Bool {
+        guard self.httpMethod == "DELETE",
+              self.isAvatarsRequest
+        else {
+            return false
+        }
+        return true
     }
 
     fileprivate var isSetAvatarRatingRequest: Bool {
