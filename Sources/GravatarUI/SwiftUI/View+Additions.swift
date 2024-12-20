@@ -104,7 +104,6 @@ extension View {
         onSave: @escaping (AvatarImageModel) async -> Void,
         onCancel: @escaping () -> Void
     ) -> some View {
-
         func altTextEditor(with model: AvatarImageModel) -> some View {
             NavigationView {
                 AltTextEditorView(avatar: model, email: email, toastManager: toastManager, onSave: onSave, onCancel: onCancel)

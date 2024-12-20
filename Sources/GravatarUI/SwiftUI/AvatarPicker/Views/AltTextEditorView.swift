@@ -12,7 +12,6 @@ struct AltTextEditorView: View {
     @State var isLoading: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
 
-
     @FocusState var focused: Bool
 
     let onSave: (AvatarImageModel) async -> Void

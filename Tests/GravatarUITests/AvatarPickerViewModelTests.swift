@@ -357,7 +357,7 @@ final class AvatarPickerViewModelTests {
         await model.refresh()
         let avatar = model.grid.avatars[0]
         let success = await model.update(altText: newAltText, for: avatar)
-        
+
         #expect(success)
 
         let updatedAvatar = model.grid.avatars[0]
