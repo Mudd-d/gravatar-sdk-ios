@@ -8,12 +8,8 @@ class AvatarPickerViewModel: ObservableObject {
     private let avatarService: AvatarService
     private let imageDownloader: ImageDownloader
 
-    private(set) var email: Email? {
+    private(set) var email: Email {
         didSet {
-            guard let email else {
-                avatarIdentifier = nil
-                return
-            }
             avatarIdentifier = .email(email)
         }
     }
@@ -82,13 +78,19 @@ class AvatarPickerViewModel: ObservableObject {
             self.selectedAvatarResult = .success(selectedImageID)
         }
 
+        self.email = .init("some@email.com")
+
         grid.setAvatars(avatarImageModels)
         grid.selectAvatar(withID: selectedImageID)
         gridResponseStatus = .success(())
 
         if let profileModel {
             self.profileResult = .success(profileModel)
-            self.profileModel = .init(displayName: profileModel.displayName, location: profileModel.location, profileURL: profileModel.profileURL)
+            self.profileModel = .init(
+                displayName: profileModel.displayName,
+                location: profileModel.location,
+                profileURL: profileModel.profileURL
+            )
             switch profileModel.avatarIdentifier {
             case .email(let email):
                 self.email = email
@@ -100,7 +102,6 @@ class AvatarPickerViewModel: ObservableObject {
 
     func selectAvatar(with id: String) async -> Avatar? {
         guard
-            let email,
             let authToken,
             grid.selectedAvatar?.id != id,
             grid.model(with: id)?.state == .loaded
@@ -167,7 +168,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchAvatars() async {
-        guard let authToken, let email else { return }
+        guard let authToken else { return }
 
         do {
             isAvatarsLoading = true
@@ -186,7 +187,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchProfile() async {
-        guard let email else { return }
         do {
             isProfileLoading = true
             let profile = try await profileService.fetch(with: .email(email))
@@ -229,7 +229,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
-        guard let email else { return }
         do {
             let avatar = try await avatarService.upload(
                 squareImage,
@@ -346,7 +345,6 @@ class AvatarPickerViewModel: ObservableObject {
         guard let token = self.authToken else { return false }
         do {
             let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
-            toastManager.showToast(Localized.avatarAltTextSuccess + "\n\n \"\(altText)\"")
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }

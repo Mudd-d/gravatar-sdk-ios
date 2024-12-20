@@ -3,6 +3,7 @@ import SwiftUI
 struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value == CGFloat {
     var title: String?
     var doneButtonTitle: String?
+    var doneButtonDisabled: Bool
     var actionButtonDisabled: Bool
 
     @Environment(\.colorScheme) var colorScheme
@@ -38,6 +39,7 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
                         Text(doneButtonTitle ?? GravatarNavigationModifierConstants.Localized.doneButtonTitle)
                             .tint(Color(UIColor.gravatarBlue))
                     }
+                    .disabled(doneButtonDisabled)
                 }
             }
             .background {
@@ -76,8 +78,8 @@ extension View {
     func gravatarNavigation<K>(
         title: String? = nil,
         doneButtonTitle: String? = nil,
+        doneButtonDisabled: Bool = false,
         actionButtonDisabled: Bool,
-        shouldEmitInnerHeight: Bool = true,
         onActionButtonPressed: (() -> Void)? = nil,
         onDoneButtonPressed: (() -> Void)? = nil,
         preferenceKey: K.Type
@@ -86,6 +88,7 @@ extension View {
             GravatarNavigationModifier<K>(
                 title: title,
                 doneButtonTitle: doneButtonTitle,
+                doneButtonDisabled: doneButtonDisabled,
                 actionButtonDisabled: actionButtonDisabled,
                 onActionButtonPressed: onActionButtonPressed,
                 onDoneButtonPressed: onDoneButtonPressed,

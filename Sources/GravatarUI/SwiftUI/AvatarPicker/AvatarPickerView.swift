@@ -193,10 +193,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .altTextSheet(
             model: $altTextEditorAvatar,
             email: model.email,
+            toastManager: model.toastManager,
             onSave: { modifiedModel in
-                altTextEditorAvatar = nil
-                Task {
-                    await model.update(altText: modifiedModel.altText, for: modifiedModel)
+                if await model.update(altText: modifiedModel.altText, for: modifiedModel) {
+                    altTextEditorAvatar = nil
                 }
             },
             onCancel: {
@@ -656,7 +656,7 @@ private enum AvatarPicker {
 #Preview("Existing elements") {
     struct PreviewModel: ProfileSummaryModel {
         var avatarIdentifier: Gravatar.AvatarIdentifier? {
-            .email("xxx@gmail.com")
+            .email("some@email.com")
         }
 
         var displayName: String {
