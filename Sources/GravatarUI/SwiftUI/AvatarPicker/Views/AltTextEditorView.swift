@@ -20,7 +20,7 @@ struct AltTextEditorView: View {
 
     var body: some View {
         // Scroll view helps detaching the height of the child view from the height of the parent view.
-        // This avoids a UI problem while scrolling down the sheet whith the keyboard being present.
+        // This avoids a UI problem while scrolling down the sheet with the keyboard being present.
         // GeometryReader also has the same effect. For now we want the content to scroll when the content grows.
         ScrollView {
             ZStack {
