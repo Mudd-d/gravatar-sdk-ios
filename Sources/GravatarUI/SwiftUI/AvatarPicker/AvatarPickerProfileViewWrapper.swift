@@ -28,9 +28,6 @@ struct AvatarPickerProfileViewWrapper: View {
                 .cornerRadius(8)
                 .shadow(color: profileShadowColor, radius: profileShadowRadius, y: 3)
         })
-        .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
-        .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
-        .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
     }
 
     @ViewBuilder

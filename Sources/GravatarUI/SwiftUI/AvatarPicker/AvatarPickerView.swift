@@ -468,6 +468,9 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             isLoading: $model.isProfileLoading,
             safariURL: $safariURL
         )
+        .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
+        .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
+        .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
     }
 }
 

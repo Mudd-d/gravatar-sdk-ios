@@ -20,9 +20,11 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     fileprivate typealias Constants = QuickEditorConstants
 
     @Environment(\.oauthSession) private var oauthSession
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State private var fetchedToken: String?
     @State private var isAuthenticating: Bool = true
     @State private var oauthError: OAuthError?
+    @State private var safariURL: URL?
     @Binding private var isPresented: Bool
     // Declare "@StateObject"s as private to prevent setting them from a
     // memberwise initializer, which can conflict with the storage
@@ -66,7 +68,6 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 editorView(with: token)
             } else {
                 noticeView()
-                    .accumulateIntrinsicHeight()
             }
         }.onReceive(authorizationFinishedNotification) { _ in
             onAuthenticationFinished()
@@ -102,9 +103,20 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     @MainActor
     func noticeView() -> some View {
-        VStack {
+        VStack(spacing: 0) {
             if !isAuthenticating {
                 EmailText(email: email)
+                    .accumulateIntrinsicHeight()
+                AvatarPickerProfileViewWrapper(
+                    avatarURL: $model.selectedAvatarURL,
+                    model: $model.profileModel,
+                    isLoading: $model.isProfileLoading,
+                    safariURL: $safariURL
+                )
+                .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
+                .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
+                .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
+                .accumulateIntrinsicHeight()
                 ContentLoadingErrorView(
                     title: Constants.ErrorView.title(for: oauthError),
                     subtext: Constants.ErrorView.subtext(for: oauthError),
@@ -123,18 +135,23 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                         trailing: .DS.Padding.double
                     )
                 )
-                .padding(.horizontal, .DS.Padding.double)
-                Spacer()
+                .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
+                .padding(.bottom, .DS.Padding.double)
+                .accumulateIntrinsicHeight()
+                Spacer(minLength: 0)
             } else {
                 ProgressView()
+                    .accumulateIntrinsicHeight()
             }
-        }.gravatarNavigation(
+        }
+        .gravatarNavigation(
             actionButtonDisabled: true,
             onDoneButtonPressed: {
                 isPresented = false
             },
             preferenceKey: InnerHeightPreferenceKey.self
         )
+        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .task {
             performAuthentication()
         }
