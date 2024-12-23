@@ -462,50 +462,18 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     @ViewBuilder
     private func profileView() -> some View {
-        VStack(alignment: .leading, content: {
-            AvatarPickerProfileView(
-                avatarURL: $model.selectedAvatarURL,
-                model: $model.profileModel,
-                isLoading: $model.isProfileLoading
-            ) {
-                openProfileInSafari()
-            }.frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.init(
-                    top: .DS.Padding.single,
-                    leading: Constants.horizontalPadding,
-                    bottom: .DS.Padding.single,
-                    trailing: Constants.horizontalPadding
-                ))
-                .background(profileBackground)
-                .cornerRadius(8)
-                .shadow(color: profileShadowColor, radius: profileShadowRadius, y: 3)
-        })
-        .padding(.top, Constants.profileViewTopSpacing / 2)
-        .padding(.bottom, Constants.vStackVerticalSpacing)
-        .padding(.horizontal, Constants.horizontalPadding)
-    }
-
-    @ViewBuilder
-    private var profileBackground: some View {
-        if colorScheme == .dark {
-            Color(UIColor.systemBackground).colorInvert().opacity(0.09)
-        } else {
-            Color(UIColor.systemBackground)
-        }
-    }
-
-    private var profileShadowColor: Color {
-        colorScheme == .light ? Constants.lightModeShadowColor : .clear
-    }
-
-    private var profileShadowRadius: CGFloat {
-        colorScheme == .light ? 30 : 0
+        AvatarPickerProfileViewWrapper(
+            avatarURL: $model.selectedAvatarURL,
+            model: $model.profileModel,
+            isLoading: $model.isProfileLoading,
+            safariURL: $safariURL
+        )
     }
 }
 
 // MARK: - Localized Strings
 
-private enum AvatarPicker {
+enum AvatarPicker {
     enum Constants {
         static let horizontalPadding: CGFloat = .DS.Padding.double
         static let lightModeShadowColor = Color(uiColor: UIColor.rgba(25, 30, 35, alpha: 0.2))
