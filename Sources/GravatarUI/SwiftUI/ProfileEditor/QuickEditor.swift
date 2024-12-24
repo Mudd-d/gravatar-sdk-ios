@@ -1,3 +1,4 @@
+import Gravatar
 import SwiftUI
 
 @available(iOS, deprecated: 16.0, renamed: "QuickEditorScope")
@@ -105,39 +106,56 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     func noticeView() -> some View {
         VStack(spacing: 0) {
             if !isAuthenticating {
-                EmailText(email: email)
-                    .accumulateIntrinsicHeight()
-                AvatarPickerProfileViewWrapper(
-                    avatarURL: $model.selectedAvatarURL,
-                    model: $model.profileModel,
-                    isLoading: $model.isProfileLoading,
-                    safariURL: $safariURL
-                )
-                .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
-                .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
-                .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
-                .accumulateIntrinsicHeight()
-                ContentLoadingErrorView(
-                    title: Constants.ErrorView.title(for: oauthError),
-                    subtext: Constants.ErrorView.subtext(for: oauthError),
-                    image: nil,
-                    actionButton: {
-                        Button {
-                            performAuthentication()
-                        } label: {
-                            CTAButtonView(Constants.ErrorView.buttonTitle(for: oauthError))
+                VStack(spacing: 0) {
+                    EmailText(email: email)
+                    if shouldShowIntro {
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(QuickEditorConstants.Localized.MissingToken.headline)
+                                .font(.title)
+                                .fontWeight(.heavy)
+                                .foregroundColor(Color(UIColor.label))
+
+                            Text(String(format: QuickEditorConstants.Localized.MissingToken.subheadline, BundleInfo.appName ?? ""))
+                                .font(.footnote)
+                                .foregroundColor(Color(UIColor.secondaryLabel))
+                                .padding(.top, .DS.Padding.half)
                         }
-                    },
-                    innerPadding: .init(
-                        top: .DS.Padding.double,
-                        leading: .DS.Padding.double,
-                        bottom: .DS.Padding.double,
-                        trailing: .DS.Padding.double
+                        .padding(.top, .DS.Padding.split)
+                        .padding(.bottom, .DS.Padding.split)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    AvatarPickerProfileViewWrapper(
+                        avatarURL: $model.selectedAvatarURL,
+                        model: $model.profileModel,
+                        isLoading: $model.isProfileLoading,
+                        safariURL: $safariURL
                     )
-                )
+                    .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
+                    .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
+                    ContentLoadingErrorView(
+                        title: Constants.ErrorView.title(for: oauthError),
+                        subtext: Constants.ErrorView.subtext(for: oauthError),
+                        image: nil,
+                        actionButton: {
+                            Button {
+                                performAuthentication()
+                            } label: {
+                                CTAButtonView(Constants.ErrorView.buttonTitle(for: oauthError))
+                            }
+                        },
+                        innerPadding: .init(
+                            top: .DS.Padding.double,
+                            leading: .DS.Padding.double,
+                            bottom: .DS.Padding.double,
+                            trailing: .DS.Padding.double
+                        )
+                    )
+                    .padding(.bottom, .DS.Padding.double)
+                }
                 .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
-                .padding(.bottom, .DS.Padding.double)
                 .accumulateIntrinsicHeight()
+
+                // We don't want to include this into intrinsic height calculation so not adding `.accumulateIntrinsicHeight()` here.
                 Spacer(minLength: 0)
             } else {
                 ProgressView()
@@ -152,6 +170,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             preferenceKey: InnerHeightPreferenceKey.self
         )
         .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .task(id: email) {
+            await model.fetchProfile()
+        }
         .task {
             performAuthentication()
         }
@@ -183,16 +204,25 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
         }
         isAuthenticating = false
     }
+
+    var shouldShowIntro: Bool {
+        switch oauthError {
+        case .loggedInWithWrongEmail:
+            false
+        default:
+            token == nil
+        }
+    }
 }
 
 enum QuickEditorConstants {
     enum ErrorView {
-        static func title(for oauthError: OAuthError?) -> String {
+        static func title(for oauthError: OAuthError?) -> String? {
             switch oauthError {
             case .loggedInWithWrongEmail:
                 Localized.WrongEmailError.title
             default:
-                Localized.LogInError.title
+                nil
             }
         }
 
@@ -201,12 +231,12 @@ enum QuickEditorConstants {
             case .loggedInWithWrongEmail(let email):
                 String(format: Localized.WrongEmailError.subtext, email)
             default:
-                Localized.LogInError.subtext
+                Localized.MissingToken.subtext
             }
         }
 
         static func buttonTitle(for oauthError: OAuthError?) -> String {
-            Localized.LogInError.buttonTitle
+            Localized.MissingToken.buttonTitle
         }
     }
 
@@ -224,23 +254,29 @@ enum QuickEditorConstants {
             )
         }
 
-        enum LogInError {
-            static let title = SDKLocalizedString(
-                "AvatarPicker.ContentLoading.Failure.LogInError.title",
-                value: "Login required",
-                comment: "Title of a message advising the user that something went wrong while trying to log in."
+        enum MissingToken {
+            static let headline = SDKLocalizedString(
+                "AvatarPicker.ContentLoading.Failure.MissingToken.headline",
+                value: "Edit your Profile",
+                comment: "Headline of an intro screen for editing a user's profile."
+            )
+
+            static let subheadline = SDKLocalizedString(
+                "AvatarPicker.ContentLoading.Failure.MissingToken.subheadline",
+                value: "Enhance your %@ profile with Gravatar.",
+                comment: "Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services."
             )
 
             static let buttonTitle = SDKLocalizedString(
-                "AvatarPicker.ContentLoading.Failure.SessionExpired.LogInError.buttonTitle",
-                value: "Log in",
-                comment: "Title of a button that will begin the process of authenticating the user, appearing beneath a message stating that a previous log in attept has failed."
+                "AvatarPicker.Continue.title",
+                value: "Continue",
+                comment: "Title of a button that will proceed with the action."
             )
 
             static let subtext = SDKLocalizedString(
-                "AvatarPicker.ContentLoading.Failure.SessionExpired.LogInError.subtext",
-                value: "To modify your Gravatar profile, you need to log in first.",
-                comment: "A message describing the error and advising the user to login again to resolve the issue"
+                "AvatarPicker.ContentLoading.Failure.MissingToken.subtext",
+                value: "Manage your profile for the web in one place.",
+                comment: "A message that informs the user about Gravatar."
             )
         }
     }
