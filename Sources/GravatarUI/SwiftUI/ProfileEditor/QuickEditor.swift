@@ -163,7 +163,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             }
         }
         .gravatarNavigation(
-            actionButtonDisabled: true,
+            actionButtonDisabled: model.profileModel?.profileURL == nil,
             onDoneButtonPressed: {
                 isPresented = false
             },
