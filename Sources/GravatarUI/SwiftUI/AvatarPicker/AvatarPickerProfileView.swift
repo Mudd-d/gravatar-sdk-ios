@@ -11,6 +11,15 @@ struct AvatarPickerProfileView: View {
         var displayName: String
         var location: String
         var profileURL: URL?
+        var pronunciation: String
+        var pronouns: String
+
+        var profileDetails: String? {
+            let joinedFields = [pronunciation, pronouns, location]
+                .filter { !$0.isEmpty }
+                .joined(separator: "・")
+            return joinedFields.isEmpty ? nil : joinedFields
+        }
     }
 
     @Binding var avatarURL: URL?
@@ -24,25 +33,27 @@ struct AvatarPickerProfileView: View {
     var body: some View {
         HStack(alignment: .center, spacing: .DS.Padding.single) {
             avatarView()
-            if let model {
+            if model == nil && isLoading {
+                emptyViews()
+            } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(model.displayName)
+                    Text(model?.displayName ?? Localized.namePlaceholder)
                         .font(.title3)
                         .fontWeight(.bold)
-                    if !model.location.isEmpty {
-                        Text(model.location)
-                            .font(.footnote)
-                            .foregroundColor(Color(UIColor.secondaryLabel))
+                    if let model {
+                        if let details = model.profileDetails {
+                            secondaryText(text: details)
+                        }
+                        Button(Localized.viewProfileButtonTitle) {
+                            viewProfileAction?()
+                        }
+                        .font(.footnote)
+                        .foregroundColor(Color(UIColor.label))
+                        .padding(.init(top: .DS.Padding.half, leading: 0, bottom: 0, trailing: 0))
+                    } else {
+                        secondaryText(text: Localized.profileDetailsPlaceholder)
                     }
-                    Button(Localized.viewProfileButtonTitle) {
-                        viewProfileAction?()
-                    }
-                    .font(.footnote)
-                    .foregroundColor(Color(UIColor.label))
-                    .padding(.init(top: .DS.Padding.half, leading: 0, bottom: 0, trailing: 0))
                 }
-            } else {
-                emptyViews()
             }
         }
         .onChange(of: isLoading) { newValue in
@@ -55,6 +66,12 @@ struct AvatarPickerProfileView: View {
             placeholderColorManager.colorScheme = colorScheme
             placeholderColorManager.toggleAnimation(isLoading)
         }
+    }
+
+    private func secondaryText(text: String) -> some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundColor(Color(UIColor.secondaryLabel))
     }
 
     func emptyViews() -> some View {
@@ -124,6 +141,16 @@ extension AvatarPickerProfileView {
             value: "View profile →",
             comment: "Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view"
         )
+        static let namePlaceholder = SDKLocalizedString(
+            "AvatarPickerProfile.Name.placeholder",
+            value: "Your Name",
+            comment: "Placeholder text for the name field"
+        )
+        static let profileDetailsPlaceholder = SDKLocalizedString(
+            "AvatarPickerProfile.ProfileFields.placeholder",
+            value: "Job, location, pronouns etc.",
+            comment: "Placeholder text for some profile fields."
+        )
     }
 }
 
@@ -136,7 +163,9 @@ extension AvatarPickerProfileView {
             .init(
                 displayName: "Shelly Kimbrough",
                 location: "San Antonio, TX",
-                profileURL: URL(string: "https://gravatar.com")
+                profileURL: URL(string: "https://gravatar.com"),
+                pronunciation: "SHEL-ee",
+                pronouns: "she/her"
             )
         ),
         isLoading: .constant(false)
