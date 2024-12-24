@@ -4,7 +4,8 @@ import SwiftUI
 struct AvatarPickerProfileViewWrapper: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
 
-    @Binding var avatarURL: URL?
+    @Binding var avatarID: AvatarIdentifier?
+    @Binding var forceRefreshAvatar: Bool
     @Binding var model: AvatarPickerProfileView.Model?
     @Binding var isLoading: Bool
     @Binding var safariURL: URL?
@@ -12,7 +13,8 @@ struct AvatarPickerProfileViewWrapper: View {
     public var body: some View {
         VStack(alignment: .leading, content: {
             AvatarPickerProfileView(
-                avatarURL: $avatarURL,
+                avatarID: $avatarID,
+                forceRefreshAvatar: $forceRefreshAvatar,
                 model: $model,
                 isLoading: $isLoading
             ) {

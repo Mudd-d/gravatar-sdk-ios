@@ -413,6 +413,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     func notifyAvatarSelection() {
+        // Trigger the inner avatar refresh
+        model.forceRefreshAvatar = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            // Reset the flag with a small delay otherwise the system ignores the value change.
+            model.forceRefreshAvatar = false
+        }
+        // Notify the main app
         avatarUpdatedHandler?()
     }
 
@@ -463,7 +470,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @ViewBuilder
     private func profileView() -> some View {
         AvatarPickerProfileViewWrapper(
-            avatarURL: $model.selectedAvatarURL,
+            avatarID: $model.avatarIdentifier,
+            forceRefreshAvatar: $model.forceRefreshAvatar,
             model: $model.profileModel,
             isLoading: $model.isProfileLoading,
             safariURL: $safariURL

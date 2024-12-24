@@ -22,7 +22,19 @@ struct AvatarPickerProfileView: View {
         }
     }
 
-    @Binding var avatarURL: URL?
+    @Binding var avatarID: AvatarIdentifier?
+    private var avatarURL: URL? {
+        guard let avatarID else { return nil }
+        return AvatarURL(
+            with: avatarID,
+            options: .init(
+                preferredSize: .points(Constants.avatarLength),
+                defaultAvatarOption: .status404
+            )
+        )?.url
+    }
+
+    @Binding var forceRefreshAvatar: Bool
     @Binding var model: Model?
     @Binding var isLoading: Bool
     @StateObject private var placeholderColorManager: ProfileViewPlaceholderColorManager = .init()
@@ -95,6 +107,7 @@ struct AvatarPickerProfileView: View {
                     .foregroundColor(avatarTint)
                     .background(Color(UIColor.systemBackground))
             },
+            forceRefresh: $forceRefreshAvatar,
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
@@ -158,7 +171,8 @@ extension AvatarPickerProfileView {
 
 #Preview {
     AvatarPickerProfileView(
-        avatarURL: .constant(nil),
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
         model: .constant(
             .init(
                 displayName: "Shelly Kimbrough",
@@ -173,9 +187,19 @@ extension AvatarPickerProfileView {
 }
 
 #Preview("Empty") {
-    AvatarPickerProfileView(avatarURL: .constant(nil), model: .constant(nil), isLoading: .constant(false))
+    AvatarPickerProfileView(
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
+        model: .constant(nil),
+        isLoading: .constant(false)
+    )
 }
 
 #Preview("Empty & Loading") {
-    AvatarPickerProfileView(avatarURL: .constant(nil), model: .constant(nil), isLoading: .constant(true))
+    AvatarPickerProfileView(
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
+        model: .constant(nil),
+        isLoading: .constant(true)
+    )
 }

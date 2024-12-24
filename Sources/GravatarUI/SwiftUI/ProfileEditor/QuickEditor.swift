@@ -125,7 +125,8 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     AvatarPickerProfileViewWrapper(
-                        avatarURL: $model.selectedAvatarURL,
+                        avatarID: $model.avatarIdentifier,
+                        forceRefreshAvatar: $model.forceRefreshAvatar,
                         model: $model.profileModel,
                         isLoading: $model.isProfileLoading,
                         safariURL: $safariURL
