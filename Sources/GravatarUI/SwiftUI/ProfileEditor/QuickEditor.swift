@@ -22,8 +22,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
 
     @Environment(\.oauthSession) private var oauthSession
     @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @AppStorage("QuickEditor.startOAuthOnAppear") private var startOAuthOnAppear: Bool = false
     @State private var fetchedToken: String?
-    @State private var isAuthenticating: Bool = true
+    @State private var isAuthenticating: Bool = false
     @State private var oauthError: OAuthError?
     @State private var safariURL: URL?
     @Binding private var isPresented: Bool
@@ -139,6 +140,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                         image: nil,
                         actionButton: {
                             Button {
+                                startOAuthOnAppear = true
                                 performAuthentication()
                             } label: {
                                 CTAButtonView(Constants.ErrorView.buttonTitle(for: oauthError))
@@ -175,7 +177,9 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             await model.fetchProfile()
         }
         .task {
-            performAuthentication()
+            if startOAuthOnAppear {
+                performAuthentication()
+            }
         }
     }
 
