@@ -158,7 +158,10 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
                 .accumulateIntrinsicHeight()
 
-                // We don't want to include this into intrinsic height calculation so not adding `.accumulateIntrinsicHeight()` here.
+                // Do not use `.accumulateIntrinsicHeight()` on `Spacer()`
+                // Spacer's height will auto-increase and fill the gap that is
+                // left from the default initial height of the bottom sheet,
+                // causing the bottom sheet to stuck in that height.
                 Spacer(minLength: 0)
             } else {
                 ProgressView()
