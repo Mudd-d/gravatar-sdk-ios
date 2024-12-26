@@ -107,54 +107,20 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     func noticeView() -> some View {
         VStack(spacing: 0) {
             if !isAuthenticating {
-                VStack(spacing: 0) {
-                    EmailText(email: email)
-                    if shouldShowIntro {
-                        VStack(alignment: .leading, spacing: 0) {
-                            Text(QuickEditorConstants.Localized.MissingToken.headline)
-                                .font(.title)
-                                .fontWeight(.heavy)
-                                .foregroundColor(Color(UIColor.label))
-
-                            Text(String(format: QuickEditorConstants.Localized.MissingToken.subheadline, BundleInfo.appName ?? ""))
-                                .font(.footnote)
-                                .foregroundColor(Color(UIColor.secondaryLabel))
-                                .padding(.top, .DS.Padding.half)
-                        }
-                        .padding(.top, .DS.Padding.split)
-                        .padding(.bottom, .DS.Padding.split)
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                QuickEditorNoticeView(
+                    email: email,
+                    token: Binding(
+                        get: { token },
+                        set: { fetchedToken = $0 }
+                    ),
+                    oauthError: $oauthError,
+                    model: model,
+                    safariURL: $safariURL,
+                    proceedAction: {
+                        startOAuthOnAppear = true
+                        performAuthentication()
                     }
-                    AvatarPickerProfileViewWrapper(
-                        avatarID: $model.avatarIdentifier,
-                        forceRefreshAvatar: $model.forceRefreshAvatar,
-                        model: $model.profileModel,
-                        isLoading: $model.isProfileLoading,
-                        safariURL: $safariURL
-                    )
-                    .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
-                    .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
-                    ContentLoadingErrorView(
-                        title: Constants.ErrorView.title(for: oauthError),
-                        subtext: Constants.ErrorView.subtext(for: oauthError),
-                        image: nil,
-                        actionButton: {
-                            Button {
-                                startOAuthOnAppear = true
-                                performAuthentication()
-                            } label: {
-                                CTAButtonView(Constants.ErrorView.buttonTitle(for: oauthError))
-                            }
-                        },
-                        innerPadding: .init(
-                            top: .DS.Padding.double,
-                            leading: .DS.Padding.double,
-                            bottom: .DS.Padding.double,
-                            trailing: .DS.Padding.double
-                        )
-                    )
-                    .padding(.bottom, .DS.Padding.double)
-                }
+                )
                 .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
                 .accumulateIntrinsicHeight()
 
@@ -211,15 +177,6 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             oauthError = nil
         }
         isAuthenticating = false
-    }
-
-    var shouldShowIntro: Bool {
-        switch oauthError {
-        case .loggedInWithWrongEmail:
-            false
-        default:
-            token == nil
-        }
     }
 }
 
