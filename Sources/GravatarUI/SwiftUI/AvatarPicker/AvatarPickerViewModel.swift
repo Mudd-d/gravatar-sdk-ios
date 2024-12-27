@@ -274,6 +274,14 @@ class AvatarPickerViewModel: ObservableObject {
                 grid.selectAvatar(withID: avatar.id)
                 self.selectedAvatarURL = URL(string: avatar.url)
                 self.backendSelectedAvatarURL = URL(string: avatar.url)
+                switch profileResult {
+                case .failure:
+                    // Serverside creates a new profile on the first successful
+                    // avatar upload so we refresh the profile.
+                    await fetchProfile()
+                default:
+                    break
+                }
             }
         } catch ImageUploadError.responseError(reason: let .invalidHTTPStatusCode(response, errorPayload))
             where response.statusCode == HTTPStatus.badRequest.rawValue || response.statusCode == HTTPStatus.payloadTooLarge.rawValue
