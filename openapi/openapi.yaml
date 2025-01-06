@@ -61,13 +61,6 @@ components:
             - PG
             - R
             - X
-        updated_date:
-          type: string
-          format: date-time
-          description: Date and time when the image was last updated.
-          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$
-          examples:
-            - '2021-10-01T12:00:00Z'
         alt_text:
           type: string
           description: Alternative text description of the image.
@@ -82,6 +75,21 @@ components:
             email's avatar.
           examples:
             - true
+        updated_date:
+          type: string
+          format: date-time
+          description: Date and time when the image was last updated.
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$
+          examples:
+            - '2021-10-01T12:00:00Z'
+    AvatarRating:
+      type: string
+      description: Rating associated with the image.
+      enum:
+        - G
+        - PG
+        - R
+        - X
     Link:
       type: object
       description: A link the user has added to their profile.
@@ -341,6 +349,19 @@ components:
             authenticated API requests.
           examples:
             - false
+        header_image:
+          type: string
+          description: The header image used in the main profile card.
+          examples:
+            - >-
+              url('https://gravatar.com/userimage/209234789/cdebd0ed415kfa2g562ba5c34b1570c2')
+              no-repeat 50% 1% / 100%
+        background_color:
+          type: string
+          description: The profile background color.
+          examples:
+            - rgb(33, 0, 166)
+            - linear-gradient(135deg, rgb(2, 3, 129) 0%, rgb(40, 116, 252) 100%)
         links:
           type: array
           description: >-
@@ -489,7 +510,6 @@ components:
       flows:
         implicit:
           authorizationUrl: https://public-api.wordpress.com/oauth2/authorize
-          tokenUrl: https://public-api.wordpress.com/oauth2/token
           scopes: {}
       description: WordPress OAuth token to authenticate the request.
   responses:
@@ -712,6 +732,80 @@ paths:
                   value:
                     error: Unsupported image type
                     code: unsupported_image
+        '401':
+          description: Not Authorized
+          $ref: '#/components/responses/not_authorized'
+        '403':
+          description: Insufficient Scope
+          $ref: '#/components/responses/insufficient_scope'
+  /me/avatars/{imageId}:
+    delete:
+      summary: Delete avatar
+      description: Deletes a specific avatar for the authenticated user.
+      tags:
+        - avatars
+      operationId: deleteAvatar
+      security:
+        - oauth: []
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          description: The ID of the avatar to delete.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Avatar deleted successfully
+        '401':
+          description: Not Authorized
+          $ref: '#/components/responses/not_authorized'
+        '403':
+          description: Insufficient Scope
+          $ref: '#/components/responses/insufficient_scope'
+    patch:
+      summary: Update avatar data
+      description: Updates the avatar data for a given avatar for the authenticated user.
+      tags:
+        - avatars
+      operationId: updateAvatar
+      security:
+        - oauth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: >-
+                The avatar data to update. Partial updates are supported, so
+                only the provided fields will be updated.
+              properties:
+                rating:
+                  description: Rating associated with the image.
+                  $ref: '#/components/schemas/AvatarRating'
+                alt_text:
+                  type: string
+                  description: Alternative text description of the image.
+                  examples:
+                    - >-
+                      Gravatar's avatar image. Gravatar is a service for
+                      providing globally unique avatars.
+              required: []
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          description: The ID of the avatar to update.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Avatar updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Avatar'
         '401':
           description: Not Authorized
           $ref: '#/components/responses/not_authorized'

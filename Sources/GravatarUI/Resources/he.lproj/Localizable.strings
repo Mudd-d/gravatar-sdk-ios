@@ -1,7 +1,13 @@
-/* Translation-Revision-Date: 2024-10-21 15:54:03+0000 */
+/* Translation-Revision-Date: 2024-12-05 11:54:05+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: he_IL */
+
+/* An option in the avatar menu that deletes the avatar */
+"AvatarPicker.AvatarAction.delete" = "למחוק";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "לשתף...";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "נדרשת התחברות";
@@ -48,6 +54,12 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "זה הזמן להגדיר את צלמית המשתמש שלך";
 
+/* The title button which confirms the avatar deletion. */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "למחוק";
+
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "האם ברצונך למחוק את התמונה הזו?";
+
 /* The title of the dismiss button on a confirmation dialog. */
 "AvatarPicker.Dismiss.title" = "לבטל";
 
@@ -71,6 +83,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "להצגת הפרופיל ←";
+
+/* This error message shows when the user attempts to delete an avatar and fails. */
+"AvatarPickerViewModel.Delete.Error" = "אופס, אירעה שגיאה בעת מחיקת התמונה.";
+
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "אופס, משהו השתבש במהלך הניסיון לשתף את צלמית המשתמש שלך.";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "אופס, משהו השתבש במהלך הניסיון לשנות את צלמית המשתמש שלך.";
@@ -110,4 +128,7 @@
 
 /* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
 "SystemImagePickerView.Source.PhotoLibrary.title" = "לבחור תמונה";
+
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

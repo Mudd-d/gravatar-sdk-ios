@@ -23,8 +23,7 @@ OPENAPI_CLIENT_PROPERTIES ?= projectName=$(OPENAPI_PROJECT_NAME),useSPMFileStruc
 CURRENT_MAKEFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_MAKEFILE_DIR := $(patsubst %/,%,$(dir $(CURRENT_MAKEFILE_PATH)))
 
-SCHEME_DEMO_SWIFTUI = Gravatar-SwiftUI-Demo
-SCHEME_DEMO_UIKIT = Gravatar-UIKit-Demo
+SCHEME_DEMO = "Gravatar Demo"
 
 # If no target is specified, display help
 .DEFAULT_GOAL := help
@@ -43,24 +42,12 @@ dev-demo: # Open an xcode project with the package and a demo project
 test: bundle-install
 	bundle exec fastlane test
 
-build-demo: build-demo-uikit build-demo-swiftui
+build-demo: bundle-install
+	bundle exec fastlane build_demo scheme:$(SCHEME_DEMO)
 
-build-demo-uikit: bundle-install
-	bundle exec fastlane build_demo scheme:$(SCHEME_DEMO_UIKIT)
-
-build-demo-swiftui: bundle-install
-	bundle exec fastlane build_demo scheme:$(SCHEME_DEMO_SWIFTUI)
-
-build-demo-for-distribution: build-demo-for-distribution-swiftui build-demo-for-distribution-uikit
-
-build-demo-for-distribution-swiftui: fetch-code-signing check-build-number setup-secrets
+build-demo-for-distribution: fetch-code-signing check-build-number setup-secrets
 	bundle exec fastlane build_demo_for_distribution \
-		scheme:$(SCHEME_DEMO_SWIFTUI) \
-		build_number:$(BUILD_NUMBER)
-
-build-demo-for-distribution-uikit: fetch-code-signing check-build-number setup-secrets
-	bundle exec fastlane build_demo_for_distribution \
-		scheme:$(SCHEME_DEMO_UIKIT) \
+		scheme:$(SCHEME_DEMO) \
 		build_number:$(BUILD_NUMBER)
 
 check-build-number:
@@ -112,6 +99,8 @@ install-and-generate: $(OPENAPI_GENERATOR_CLONE_DIR) # Clones and setup the open
 	make generate
 
 generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
+	sed -i '' 's|components/schemas/Rating|components/schemas/AvatarRating|g' $(OPENAPI_DIR)/openapi.yaml
+	sed -i '' 's| Rating:| AvatarRating:|g' $(OPENAPI_DIR)/openapi.yaml
 	rm -rf "$(OPENAPI_GENERATED_DIR)"/* && \
 	docker run --rm \
 	-v $(OPENAPI_DIR):/local openapitools/openapi-generator-cli:"$(OPENAPI_GENERATOR_GIT_TAG)" generate \
@@ -122,6 +111,7 @@ generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
 	-p packageName=Gravatar \
 	--additional-properties=useJsonEncodable=false,readonlyProperties=true,$(OPENAPI_CLIENT_PROPERTIES) && \
 	rsync -av --delete "$(OPENAPI_GENERATED_DIR)/Sources/$(OPENAPI_PROJECT_NAME)/Models/" "$(OUTPUT_DIRECTORY)/" && \
+	swift ./access-control-modifier.swift && \
 	make swiftformat && \
     echo "DONE! 🎉"
 

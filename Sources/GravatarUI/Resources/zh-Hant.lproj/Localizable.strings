@@ -1,7 +1,13 @@
-/* Translation-Revision-Date: 2024-10-18 12:54:04+0000 */
+/* Translation-Revision-Date: 2024-12-04 09:54:10+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: zh_TW */
+
+/* An option in the avatar menu that deletes the avatar */
+"AvatarPicker.AvatarAction.delete" = "刪除";
+
+/* An option in the avatar menu that shares the avatar */
+"AvatarPicker.AvatarAction.share" = "分享…";
 
 /* Title of a message advising the user that something went wrong while trying to log in. */
 "AvatarPicker.ContentLoading.Failure.LogInError.title" = "需要登入";
@@ -48,6 +54,12 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "立即設定你的大頭貼";
 
+/* The title button which confirms the avatar deletion. */
+"AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "刪除";
+
+/* Title of the confirmation dialog to delete an avatar */
+"AvatarPicker.Deletion.Confirmation.title" = "你確定要刪除這張圖片嗎？";
+
 /* The title of the dismiss button on a confirmation dialog. */
 "AvatarPicker.Dismiss.title" = "關閉";
 
@@ -71,6 +83,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "檢視個人檔案 →";
+
+/* This error message shows when the user attempts to delete an avatar and fails. */
+"AvatarPickerViewModel.Delete.Error" = "糟糕，刪除圖片時發生錯誤。";
+
+/* This error message shows when the user attempts to share an avatar and fails. */
+"AvatarPickerViewModel.Share.Fail" = "糟糕，嘗試分享大頭貼時發生問題。";
 
 /* This error message shows when the user attempts to pick a different avatar and fails. */
 "AvatarPickerViewModel.Update.Fail" = "糟糕，嘗試變更大頭貼時發生問題。";
@@ -110,4 +128,7 @@
 
 /* An option in a menu that display the user's Photo Library and allow them to choose a photo from it */
 "SystemImagePickerView.Source.PhotoLibrary.title" = "選擇照片";
+
+/* An option to show the image playground */
+"SystemImagePickerView.Source.Playground.title" = "Playground";
 

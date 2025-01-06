@@ -7,6 +7,7 @@ import UIKit
 public struct AvatarService: Sendable {
     private let imageDownloader: ImageDownloader
     private let imageUploader: ImageUploader
+    private let client: URLSessionHTTPClient
 
     /// Creates a new `AvatarService`
     ///
@@ -21,6 +22,7 @@ public struct AvatarService: Sendable {
     public init(urlSession: URLSessionProtocol? = nil, cache: ImageCaching? = nil) {
         self.imageDownloader = ImageDownloadService(urlSession: urlSession, cache: cache)
         self.imageUploader = ImageUploadService(urlSession: urlSession)
+        self.client = URLSessionHTTPClient(urlSession: urlSession)
     }
 
     /// Fetches a Gravatar user profile image using an `AvatarId`, and delivers the image asynchronously. See also: ``ImageDownloadService`` to
@@ -63,12 +65,49 @@ public struct AvatarService: Sendable {
     @discardableResult
     package func upload(_ image: UIImage, accessToken: String, selectionBehavior: AvatarSelection) async throws -> Avatar {
         do {
-            let (data, _) = try await imageUploader.uploadImage(image, accessToken: accessToken, avatarSelection: selectionBehavior, additionalHTTPHeaders: nil)
+            let (data, _) = try await imageUploader.uploadImage(
+                image.squared(),
+                accessToken: accessToken,
+                avatarSelection: selectionBehavior,
+                additionalHTTPHeaders: nil
+            )
             return try data.decode()
         } catch let error as ImageUploadError {
             throw error
         } catch {
             throw ImageUploadError.responseError(reason: .unexpected(error))
+        }
+    }
+
+    package func delete(avatarID: String, accessToken: String) async throws {
+        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID))
+        request.httpMethod = "DELETE"
+        let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
+        do {
+            _ = try await client.data(with: authorizedRequest)
+        } catch {
+            throw error.apiError()
+        }
+    }
+
+    @discardableResult
+    package func update(
+        altText: String? = nil,
+        rating: AvatarRating? = nil,
+        avatarID: AvatarIdentifier,
+        accessToken: String
+    ) async throws -> Avatar {
+        var request = URLRequest(url: .avatarsURL.appendingPathComponent(avatarID.id))
+        request.httpMethod = "PATCH"
+        let updateBody = UpdateAvatarRequest(rating: rating, altText: altText)
+        request.httpBody = try JSONEncoder().encode(updateBody)
+
+        let authorizedRequest = request.settingAuthorizationHeaderField(with: accessToken)
+        do {
+            let (data, _) = try await client.data(with: authorizedRequest)
+            return try data.decode()
+        } catch {
+            throw error.apiError()
         }
     }
 }
