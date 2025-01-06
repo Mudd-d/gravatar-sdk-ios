@@ -1,11 +1,11 @@
 import Foundation
 
-enum BundleInfo {
-    public static var sdkVersion: String? {
+package enum BundleInfo {
+    package static var sdkVersion: String? {
         getInfoValue(forKey: "CFBundleShortVersionString") as? String
     }
 
-    public static var appName: String? {
+    package static var appName: String? {
         Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
     }
 

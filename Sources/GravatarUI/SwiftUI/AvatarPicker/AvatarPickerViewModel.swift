@@ -34,7 +34,13 @@ class AvatarPickerViewModel: ObservableObject {
         didSet {
             switch profileResult {
             case .success(let value):
-                profileModel = .init(displayName: value.displayName, location: value.location, profileURL: value.profileURL)
+                profileModel = .init(
+                    displayName: value.displayName,
+                    location: value.location,
+                    profileURL: value.profileURL,
+                    pronunciation: value.pronunciation,
+                    pronouns: value.pronouns
+                )
             default:
                 profileModel = nil
             }
@@ -44,6 +50,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var isProfileLoading: Bool = false
     @Published private(set) var isAvatarsLoading: Bool = false
     @Published var avatarIdentifier: AvatarIdentifier?
+    @Published var forceRefreshAvatar: Bool = false
     @Published var profileModel: AvatarPickerProfileView.Model?
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
@@ -93,7 +100,9 @@ class AvatarPickerViewModel: ObservableObject {
             self.profileModel = .init(
                 displayName: profileModel.displayName,
                 location: profileModel.location,
-                profileURL: profileModel.profileURL
+                profileURL: profileModel.profileURL,
+                pronunciation: profileModel.pronunciation,
+                pronouns: profileModel.pronouns
             )
             switch profileModel.avatarIdentifier {
             case .email(let email):

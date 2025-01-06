@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentLoadingErrorView<ActionButton: View>: View {
-    let title: String
+    let title: String?
     let subtext: String
     let image: Image?
     let actionButton: () -> ActionButton
@@ -11,14 +11,17 @@ struct ContentLoadingErrorView<ActionButton: View>: View {
     var body: some View {
         VStack {
             VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .foregroundColor(Color(UIColor.label))
-                    .padding(.init(top: 0, leading: 0, bottom: .DS.Padding.half, trailing: 0))
+                if let title {
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(Color(UIColor.label))
+                        .padding(0)
+                }
                 Text(subtext)
                     .font(.subheadline)
                     .foregroundColor(Color(UIColor.secondaryLabel))
+                    .padding(.top, .DS.Padding.half)
 
                 if let image {
                     VStack(alignment: .center, content: {
