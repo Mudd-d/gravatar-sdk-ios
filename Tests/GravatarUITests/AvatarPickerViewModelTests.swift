@@ -63,6 +63,23 @@ final class AvatarPickerViewModelTests {
     }
 
     @Test
+    func testShouldDisplayNoSelectedAvatarWarning() async throws {
+        let avatarStates: [AvatarImageModel.State] = [.loading, .loaded]
+        for state in avatarStates {
+            let model = AvatarPickerViewModel(avatarImageModels: [
+                .init(id: "123", source: .remote(url: "https://example.com"), state: state, isSelected: false, rating: .g, altText: ""),
+            ])
+            #expect(model.shouldDisplayNoSelectedAvatarWarning == (state == .loaded))
+        }
+
+        let model = AvatarPickerViewModel(avatarImageModels: [
+            .init(id: "123", source: .remote(url: "https://example.com"), state: .loaded, isSelected: false, rating: .g, altText: ""),
+        ])
+        model.selectedAvatarURL = nil
+        #expect(model.shouldDisplayNoSelectedAvatarWarning == true)
+    }
+
+    @Test
     func testSelectAvatar() async throws {
         let toSelectID = "9862792c565394..."
         await model.refresh()
