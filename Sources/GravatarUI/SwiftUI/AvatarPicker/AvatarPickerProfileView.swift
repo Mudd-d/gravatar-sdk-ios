@@ -102,9 +102,8 @@ struct AvatarPickerProfileView: View {
         AvatarView(
             url: avatarURL,
             placeholderView: {
-                Image("empty-profile-avatar", bundle: .module)
-                    .renderingMode(.template)
-                    .foregroundColor(avatarTint)
+                Image("qe-intro-empty-profile-avatar", bundle: .module)
+                    .colorScheme(colorScheme)
                     .background(Color(UIColor.systemBackground))
             },
             forceRefresh: $forceRefreshAvatar,
@@ -117,7 +116,7 @@ struct AvatarPickerProfileView: View {
         .frame(width: Constants.avatarLength, height: Constants.avatarLength)
         .background(placeholderColorManager.placeholderColor)
         .aspectRatio(1, contentMode: .fill)
-        .shape(Circle(), borderColor: avatarBorderColor, borderWidth: 1)
+        .shape(Circle())
     }
 
     private var paletteType: PaletteType? {
@@ -128,19 +127,6 @@ struct AvatarPickerProfileView: View {
             .dark
         @unknown default:
             nil
-        }
-    }
-
-    private var avatarTint: Color {
-        let color: UIColor = colorScheme == .dark ? .bovineGray : .porpoiseGray
-        return Color(uiColor: color)
-    }
-
-    private var avatarBorderColor: Color {
-        if let color = paletteType?.palette.avatar.border {
-            Color(uiColor: color)
-        } else {
-            avatarTint
         }
     }
 }
