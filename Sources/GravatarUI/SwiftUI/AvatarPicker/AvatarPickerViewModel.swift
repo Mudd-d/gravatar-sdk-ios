@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Gravatar
 import SwiftUI
@@ -51,7 +52,9 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var avatarIdentifier: AvatarIdentifier?
     @Published var forceRefreshAvatar: Bool = false
     @Published var profileModel: AvatarPickerProfileView.Model?
+    @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         email: Email,
@@ -66,6 +69,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.profileService = profileService ?? ProfileService()
         self.avatarService = avatarService ?? AvatarService()
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        setupCombine()
     }
 
     /// Internal init for previewing purposes. Do not make this public.
@@ -107,6 +111,23 @@ class AvatarPickerViewModel: ObservableObject {
                 break
             }
         }
+        setupCombine()
+    }
+
+    private func setupCombine() {
+        grid.$avatars
+            .map {
+                $0.filter { avatar in
+                    avatar.state == .loaded
+                }.count
+            }
+            .combineLatest($selectedAvatarURL)
+            .map { loadedAvatarCount, selectedAvatarURL in
+                // Determine if the warning should be displayed
+                selectedAvatarURL == nil && loadedAvatarCount > 0
+            }
+            .assign(to: \.shouldDisplayNoSelectedAvatarWarning, on: self)
+            .store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> Avatar? {
