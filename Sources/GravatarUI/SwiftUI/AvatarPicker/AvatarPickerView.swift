@@ -25,7 +25,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
     @State private var altTextEditorAvatar: AvatarImageModel?
-    @State private var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -166,12 +165,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
         }
-        .onChange(of: model.selectedAvatarURL) { _ in
-            updateShouldDisplayNoSelectedAvatarWarning()
-        }
-        .onChange(of: model.grid.avatars.count) { _ in
-            updateShouldDisplayNoSelectedAvatarWarning()
-        }
         .sheet(item: $shareSheetItem) { item in
             ShareSheet(items: [item.fileURL])
                 .colorScheme(colorScheme)
@@ -203,10 +196,6 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 altTextEditorAvatar = nil
             }
         )
-    }
-
-    private func updateShouldDisplayNoSelectedAvatarWarning() {
-        shouldDisplayNoSelectedAvatarWarning = model.selectedAvatarURL == nil && model.grid.avatars.count > 0
     }
 
     private func header() -> some View {
@@ -458,14 +447,14 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     @ViewBuilder
     private func noSelectedAvatarWarning() -> some View {
-        if shouldDisplayNoSelectedAvatarWarning {
+        if model.shouldDisplayNoSelectedAvatarWarning {
             Toast(toast: .init(
                 message: Localized.noImageSelectedMessage,
                 type: .warning,
                 shouldShowShadow: false
             )) { _ in
                 withAnimation {
-                    shouldDisplayNoSelectedAvatarWarning = false
+                    model.shouldDisplayNoSelectedAvatarWarning = false
                 }
             }
             .padding(.horizontal, Constants.horizontalPadding)
