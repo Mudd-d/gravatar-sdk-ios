@@ -72,7 +72,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
                 noticeView()
             }
         }
-        .onAppear() {
+        .onAppear {
             fetchedToken = oauthSession.sessionToken(with: email)?.token
         }
         .onReceive(authorizationFinishedNotification) { _ in
