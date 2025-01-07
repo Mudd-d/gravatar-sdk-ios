@@ -8,6 +8,7 @@ public actor Configuration {
         package var callbackScheme: String {
             callbackURLComponents?.scheme ?? ""
         }
+
         public var callbackURLComponents: URLComponents? {
             URLComponents(string: redirectURI)
         }

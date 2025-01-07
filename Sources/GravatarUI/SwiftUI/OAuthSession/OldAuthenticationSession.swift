@@ -13,13 +13,11 @@ final class OldAuthenticationSession: NSObject, Sendable {
         try await withCheckedThrowingContinuation { continuation in
             let session: ASWebAuthenticationSession
             if #available(iOS 17.4, *) {
-                let callback: ASWebAuthenticationSession.Callback = {
-                    if callbackURLComponents.scheme == "https", let host = callbackURLComponents.host {
-                        return .https(host: host, path: callbackURLComponents.path)
-                    } else {
-                        return .customScheme(callbackURLComponents.scheme ?? "")
-                    }
-                }()
+                let callback: ASWebAuthenticationSession.Callback = if callbackURLComponents.scheme == "https", let host = callbackURLComponents.host {
+                    .https(host: host, path: callbackURLComponents.path)
+                } else {
+                    .customScheme(callbackURLComponents.scheme ?? "")
+                }
 
                 session = ASWebAuthenticationSession(url: url, callback: callback) { callbackURL, error in
                     if let error {
