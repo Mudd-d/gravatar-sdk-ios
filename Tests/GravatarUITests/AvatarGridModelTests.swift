@@ -107,4 +107,24 @@ struct AvatarGridModelTests {
 
         #expect(model.index(of: "new") == 2)
     }
+
+    @Test("Test replace function")
+    func testAvatarGridModelReplace() async throws {
+        let toReplace = AvatarImageModel(id: "new", source: .remote(url: "https://example.com"))
+        model.replaceModel(withID: "0", with: toReplace)
+
+        #expect(model.index(of: "new") == 0)
+    }
+
+    @Test("Test replace with an existing ID")
+    func testAvatarGridModelReplaceWithExistingID() async throws {
+        // An element with ID "4" already exists in the model
+        let toReplace = AvatarImageModel(id: "4", source: .remote(url: "https://example.com"))
+        // Replace an existing element with a new element whose ID is "4".
+        model.replaceModel(withID: "0", with: toReplace)
+        // Check how many items are present with ID == "4"
+        let avatarCount = model.avatars.filter { $0.id == "4" }.count
+        #expect(avatarCount == 1)
+        #expect(model.index(of: "4") == 0)
+    }
 }
