@@ -11,9 +11,30 @@ struct AvatarPickerProfileView: View {
         var displayName: String
         var location: String
         var profileURL: URL?
+        var pronunciation: String
+        var pronouns: String
+
+        var profileDetails: String? {
+            let joinedFields = [pronunciation, pronouns, location]
+                .filter { !$0.isEmpty }
+                .joined(separator: "・")
+            return joinedFields.isEmpty ? nil : joinedFields
+        }
     }
 
-    @Binding var avatarURL: URL?
+    @Binding var avatarID: AvatarIdentifier?
+    private var avatarURL: URL? {
+        guard let avatarID else { return nil }
+        return AvatarURL(
+            with: avatarID,
+            options: .init(
+                preferredSize: .points(Constants.avatarLength),
+                defaultAvatarOption: .status404
+            )
+        )?.url
+    }
+
+    @Binding var forceRefreshAvatar: Bool
     @Binding var model: Model?
     @Binding var isLoading: Bool
     @StateObject private var placeholderColorManager: ProfileViewPlaceholderColorManager = .init()
@@ -24,25 +45,27 @@ struct AvatarPickerProfileView: View {
     var body: some View {
         HStack(alignment: .center, spacing: .DS.Padding.single) {
             avatarView()
-            if let model {
+            if model == nil && isLoading {
+                emptyViews()
+            } else {
                 VStack(alignment: .leading, spacing: 0) {
-                    Text(model.displayName)
+                    Text(model?.displayName ?? Localized.namePlaceholder)
                         .font(.title3)
                         .fontWeight(.bold)
-                    if !model.location.isEmpty {
-                        Text(model.location)
-                            .font(.footnote)
-                            .foregroundColor(Color(UIColor.secondaryLabel))
+                    if let model {
+                        if let details = model.profileDetails {
+                            secondaryText(text: details)
+                        }
+                        Button(Localized.viewProfileButtonTitle) {
+                            viewProfileAction?()
+                        }
+                        .font(.footnote)
+                        .foregroundColor(Color(UIColor.label))
+                        .padding(.init(top: .DS.Padding.half, leading: 0, bottom: 0, trailing: 0))
+                    } else {
+                        secondaryText(text: Localized.profileDetailsPlaceholder)
                     }
-                    Button(Localized.viewProfileButtonTitle) {
-                        viewProfileAction?()
-                    }
-                    .font(.footnote)
-                    .foregroundColor(Color(UIColor.label))
-                    .padding(.init(top: .DS.Padding.half, leading: 0, bottom: 0, trailing: 0))
                 }
-            } else {
-                emptyViews()
             }
         }
         .onChange(of: isLoading) { newValue in
@@ -55,6 +78,12 @@ struct AvatarPickerProfileView: View {
             placeholderColorManager.colorScheme = colorScheme
             placeholderColorManager.toggleAnimation(isLoading)
         }
+    }
+
+    private func secondaryText(text: String) -> some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundColor(Color(UIColor.secondaryLabel))
     }
 
     func emptyViews() -> some View {
@@ -72,7 +101,12 @@ struct AvatarPickerProfileView: View {
     func avatarView() -> some View {
         AvatarView(
             url: avatarURL,
-            placeholder: nil,
+            placeholderView: {
+                Image("qe-intro-empty-profile-avatar", bundle: .module)
+                    .colorScheme(colorScheme)
+                    .background(Color(UIColor.systemBackground))
+            },
+            forceRefresh: $forceRefreshAvatar,
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
@@ -83,6 +117,17 @@ struct AvatarPickerProfileView: View {
         .background(placeholderColorManager.placeholderColor)
         .aspectRatio(1, contentMode: .fill)
         .shape(Circle())
+    }
+
+    private var paletteType: PaletteType? {
+        switch colorScheme {
+        case .light:
+            .light
+        case .dark:
+            .dark
+        @unknown default:
+            nil
+        }
     }
 }
 
@@ -95,6 +140,16 @@ extension AvatarPickerProfileView {
             value: "View profile →",
             comment: "Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view"
         )
+        static let namePlaceholder = SDKLocalizedString(
+            "AvatarPickerProfile.Name.placeholder",
+            value: "Your Name",
+            comment: "Placeholder text for the name field"
+        )
+        static let profileDetailsPlaceholder = SDKLocalizedString(
+            "AvatarPickerProfile.ProfileFields.placeholder",
+            value: "Job, location, pronouns etc.",
+            comment: "Placeholder text for some profile fields."
+        )
     }
 }
 
@@ -102,12 +157,15 @@ extension AvatarPickerProfileView {
 
 #Preview {
     AvatarPickerProfileView(
-        avatarURL: .constant(nil),
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
         model: .constant(
             .init(
                 displayName: "Shelly Kimbrough",
                 location: "San Antonio, TX",
-                profileURL: URL(string: "https://gravatar.com")
+                profileURL: URL(string: "https://gravatar.com"),
+                pronunciation: "SHEL-ee",
+                pronouns: "she/her"
             )
         ),
         isLoading: .constant(false)
@@ -115,9 +173,19 @@ extension AvatarPickerProfileView {
 }
 
 #Preview("Empty") {
-    AvatarPickerProfileView(avatarURL: .constant(nil), model: .constant(nil), isLoading: .constant(false))
+    AvatarPickerProfileView(
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
+        model: .constant(nil),
+        isLoading: .constant(false)
+    )
 }
 
 #Preview("Empty & Loading") {
-    AvatarPickerProfileView(avatarURL: .constant(nil), model: .constant(nil), isLoading: .constant(true))
+    AvatarPickerProfileView(
+        avatarID: .constant(.email("email@domain.com")),
+        forceRefreshAvatar: .constant(false),
+        model: .constant(nil),
+        isLoading: .constant(true)
+    )
 }

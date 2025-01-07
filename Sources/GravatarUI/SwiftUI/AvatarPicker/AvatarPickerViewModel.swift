@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Gravatar
 import SwiftUI
@@ -8,12 +9,8 @@ class AvatarPickerViewModel: ObservableObject {
     private let avatarService: AvatarService
     private let imageDownloader: ImageDownloader
 
-    private(set) var email: Email? {
+    private(set) var email: Email {
         didSet {
-            guard let email else {
-                avatarIdentifier = nil
-                return
-            }
             avatarIdentifier = .email(email)
         }
     }
@@ -37,7 +34,13 @@ class AvatarPickerViewModel: ObservableObject {
         didSet {
             switch profileResult {
             case .success(let value):
-                profileModel = .init(displayName: value.displayName, location: value.location, profileURL: value.profileURL)
+                profileModel = .init(
+                    displayName: value.displayName,
+                    location: value.location,
+                    profileURL: value.profileURL,
+                    pronunciation: value.pronunciation,
+                    pronouns: value.pronouns
+                )
             default:
                 profileModel = nil
             }
@@ -47,8 +50,11 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var isProfileLoading: Bool = false
     @Published private(set) var isAvatarsLoading: Bool = false
     @Published var avatarIdentifier: AvatarIdentifier?
+    @Published var forceRefreshAvatar: Bool = false
     @Published var profileModel: AvatarPickerProfileView.Model?
+    @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         email: Email,
@@ -63,6 +69,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.profileService = profileService ?? ProfileService()
         self.avatarService = avatarService ?? AvatarService()
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        setupCombine()
     }
 
     /// Internal init for previewing purposes. Do not make this public.
@@ -82,13 +89,21 @@ class AvatarPickerViewModel: ObservableObject {
             self.selectedAvatarResult = .success(selectedImageID)
         }
 
+        self.email = .init("some@email.com")
+
         grid.setAvatars(avatarImageModels)
         grid.selectAvatar(withID: selectedImageID)
         gridResponseStatus = .success(())
 
         if let profileModel {
             self.profileResult = .success(profileModel)
-            self.profileModel = .init(displayName: profileModel.displayName, location: profileModel.location, profileURL: profileModel.profileURL)
+            self.profileModel = .init(
+                displayName: profileModel.displayName,
+                location: profileModel.location,
+                profileURL: profileModel.profileURL,
+                pronunciation: profileModel.pronunciation,
+                pronouns: profileModel.pronouns
+            )
             switch profileModel.avatarIdentifier {
             case .email(let email):
                 self.email = email
@@ -96,11 +111,27 @@ class AvatarPickerViewModel: ObservableObject {
                 break
             }
         }
+        setupCombine()
+    }
+
+    private func setupCombine() {
+        grid.$avatars
+            .map {
+                $0.filter { avatar in
+                    avatar.state == .loaded
+                }.count
+            }
+            .combineLatest($selectedAvatarURL)
+            .map { loadedAvatarCount, selectedAvatarURL in
+                // Determine if the warning should be displayed
+                selectedAvatarURL == nil && loadedAvatarCount > 0
+            }
+            .assign(to: \.shouldDisplayNoSelectedAvatarWarning, on: self)
+            .store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> Avatar? {
         guard
-            let email,
             let authToken,
             grid.selectedAvatar?.id != id,
             grid.model(with: id)?.state == .loaded
@@ -167,7 +198,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchAvatars() async {
-        guard let authToken, let email else { return }
+        guard let authToken else { return }
 
         do {
             isAvatarsLoading = true
@@ -186,7 +217,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchProfile() async {
-        guard let email else { return }
         do {
             isProfileLoading = true
             let profile = try await profileService.fetch(with: .email(email))
@@ -207,7 +237,7 @@ class AvatarPickerViewModel: ObservableObject {
 
         let localID = UUID().uuidString
 
-        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading)
+        let localImageModel = AvatarImageModel(id: localID, source: .local(image: image), state: .loading, isSelected: false, rating: .g, altText: "")
         grid.append(localImageModel)
 
         await doUpload(squareImage: image, localID: localID, accessToken: authToken)
@@ -229,7 +259,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
-        guard let email else { return }
         do {
             let avatar = try await avatarService.upload(
                 squareImage,
@@ -287,10 +316,14 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private func handleUploadError(imageID: String, squareImage: UIImage, supportsRetry: Bool, errorMessage: String) {
+        let storedModel = grid.model(with: imageID)
         let newModel = AvatarImageModel(
             id: imageID,
             source: .local(image: squareImage),
-            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage)
+            state: .error(supportsRetry: supportsRetry, errorMessage: errorMessage),
+            isSelected: false,
+            rating: storedModel?.rating ?? .g,
+            altText: storedModel?.altText ?? ""
         )
         grid.replaceModel(withID: imageID, with: newModel)
     }
@@ -335,6 +368,56 @@ class AvatarPickerViewModel: ObservableObject {
         // We need to await them otherwise network requests can be cancelled.
         await avatars
         await profile
+    }
+
+    @discardableResult
+    func update(altText: String, for avatar: AvatarImageModel) async -> Bool {
+        guard let token = self.authToken else { return false }
+        do {
+            let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
+            withAnimation {
+                grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+            }
+            return true
+        } catch APIError.responseError(reason: let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarAltTextError)
+        } catch {
+            handleError(message: Localized.avatarAltTextError)
+        }
+
+        func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
+        }
+
+        return false
+    }
+
+    @discardableResult
+    func update(rating: AvatarRating, for avatar: AvatarImageModel) async -> Bool {
+        guard let authToken else { return false }
+
+        do {
+            let updatedAvatar = try await avatarService.update(
+                rating: rating,
+                avatarID: .hashID(avatar.id),
+                accessToken: authToken
+            )
+            toastManager.showToast(Localized.avatarRatingUpdateSuccess, type: .info)
+            withAnimation {
+                grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
+            }
+            return true
+        } catch APIError.responseError(let reason) where reason.urlSessionErrorLocalizedDescription != nil {
+            handleError(message: reason.urlSessionErrorLocalizedDescription ?? Localized.avatarRatingError)
+        } catch {
+            handleError(message: Localized.avatarRatingError)
+        }
+
+        func handleError(message: String) {
+            toastManager.showToast(message, type: .error)
+        }
+
+        return false
     }
 
     func delete(_ avatar: AvatarImageModel) async -> Bool {
@@ -423,6 +506,26 @@ extension AvatarPickerViewModel {
             value: "Oops, something didn't quite work out while trying to share your avatar.",
             comment: "This error message shows when the user attempts to share an avatar and fails."
         )
+        static let avatarAltTextSuccess = SDKLocalizedString(
+            "AvatarPickerViewModel.AltText.Success",
+            value: "Image alt text was changed successfully.",
+            comment: "This confirmation message shows when the user has updated the alt text."
+        )
+        static let avatarAltTextError = SDKLocalizedString(
+            "AvatarPickerViewModel.AltText.Error",
+            value: "Oops, something didn't quite work out while trying to update the alt text.",
+            comment: "This error message shows when the user attempts to change the alt text of an avatar and fails."
+        )
+        static let avatarRatingUpdateSuccess = SDKLocalizedString(
+            "AvatarPickerViewModel.RatingUpdate.Success",
+            value: "Avatar rating was changed successfully.",
+            comment: "This confirmation message shows when the user picks a different avatar rating and the change was applied successfully."
+        )
+        static let avatarRatingError = SDKLocalizedString(
+            "AvatarPickerViewModel.Rating.Error",
+            value: "Oops, something didn't quite work out while trying to rate your avatar.",
+            comment: "This error message shows when the user attempts to change the rating of an avatar and fails."
+        )
     }
 }
 
@@ -444,5 +547,7 @@ extension AvatarImageModel {
         source = .remote(url: avatar.url(withSize: String(avatarGridItemSize)))
         state = .loaded
         isSelected = avatar.isSelected
+        altText = avatar.altText
+        rating = avatar.avatarRating
     }
 }

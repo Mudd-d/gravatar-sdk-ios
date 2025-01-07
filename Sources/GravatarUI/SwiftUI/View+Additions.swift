@@ -97,6 +97,34 @@ extension View {
         }
     }
 
+    func altTextSheet(
+        model: Binding<AvatarImageModel?>,
+        email: Email,
+        toastManager: ToastManager,
+        onSave: @escaping (AvatarImageModel) async -> Void,
+        onCancel: @escaping () -> Void
+    ) -> some View {
+        func altTextEditor(with model: AvatarImageModel) -> some View {
+            NavigationView {
+                AltTextEditorView(avatar: model, email: email, toastManager: toastManager, onSave: onSave, onCancel: onCancel)
+            }
+        }
+
+        if #available(iOS 16.0, *) {
+            return self.sheet(item: model, onDismiss: onCancel) { selectedModel in
+                altTextEditor(with: selectedModel).presentationDetents([.height(AltTextEditorView.Constants.sheetHeight)])
+            }
+        } else {
+            return modifier(
+                ModalItemPresentationModifier(
+                    item: model,
+                    onDismiss: onCancel,
+                    modalView: altTextEditor
+                )
+            )
+        }
+    }
+
     func presentationContentInteraction(shouldPrioritizeScrolling: Bool) -> some View {
         if #available(iOS 16.4, *) {
             let behavior: PresentationContentInteraction = shouldPrioritizeScrolling ? .scrolls : .automatic
@@ -118,11 +146,11 @@ extension View {
 
     /// Caution: `InnerHeightPreferenceKey` accumulates the values so DO NOT use this on  a View and one of its ancestors at the same time.
     @ViewBuilder
-    func accumulateIntrinsicHeight() -> some View {
+    func accumulateIntrinsicHeight<K>(key: K.Type = InnerHeightPreferenceKey.self) -> some View where K: PreferenceKey, K.Value == CGFloat {
         self.background {
             GeometryReader { proxy in
                 Color.clear.preference(
-                    key: InnerHeightPreferenceKey.self,
+                    key: key,
                     value: proxy.size.height
                 )
             }
@@ -140,6 +168,23 @@ extension View {
             self.imagePlaygroundSheet(isPresented: isPresented, sourceImage: sourceImage, onCompletion: onCompletion, onCancellation: onCancellation)
         } else {
             self
+        }
+    }
+
+    @ViewBuilder
+    func `if`(_ condition: Bool, transform: (Self) -> some View) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+
+    func presentSafariView(url: Binding<URL?>, colorScheme: ColorScheme) -> some View {
+        self.sheet(item: url) { url in
+            SafariView(url: url)
+                .edgesIgnoringSafeArea(.all)
+                .colorScheme(colorScheme)
         }
     }
 }

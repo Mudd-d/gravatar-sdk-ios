@@ -10,13 +10,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    // Declare "@StateObject"s as private to prevent setting them from a
-    // memberwise initializer, which can conflict with the storage
-    // management that SwiftUI provides.
-    // https://developer.apple.com/documentation/swiftui/stateobject
-    @StateObject private var model: AvatarPickerViewModel
+    @ObservedObject var model: AvatarPickerViewModel
     @Binding var isPresented: Bool
-    @Binding var authToken: String?
 
     @State private var safariURL: URL?
     @State private var uploadError: FailedUploadInfo?
@@ -24,6 +19,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
+    @State private var altTextEditorAvatar: AvatarImageModel?
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -31,8 +27,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     var avatarUpdatedHandler: (() -> Void)?
 
     init(
-        email: Email,
-        authToken: Binding<String?>,
+        model: AvatarPickerViewModel,
         isPresented: Binding<Bool>,
         contentLayoutProvider: AvatarPickerContentLayoutProviding = AvatarPickerContentLayoutType.vertical,
         customImageEditor: ImageEditorBlock<ImageEditor>? = nil as NoCustomEditorBlock?,
@@ -44,8 +39,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = authToken
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: authToken.wrappedValue))
+        self.model = model
     }
 
     fileprivate init(
@@ -63,13 +57,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = .constant(nil)
-        self._model = StateObject(
-            wrappedValue: AvatarPickerViewModel(
-                avatarImageModels: avatarImageModels,
-                selectedImageID: selectedImageID,
-                profileModel: profileModel
-            )
+        self.model = AvatarPickerViewModel(
+            avatarImageModels: avatarImageModels,
+            selectedImageID: selectedImageID,
+            profileModel: profileModel
         )
     }
 
@@ -77,6 +68,8 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         ZStack {
             VStack(spacing: 0) {
                 EmailText(email: model.email)
+                    .accumulateIntrinsicHeight()
+                noSelectedAvatarWarning()
                     .accumulateIntrinsicHeight()
                 profileView()
                     .accumulateIntrinsicHeight()
@@ -149,22 +142,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         }
         .preference(key: VerticalSizeClassPreferenceKey.self, value: verticalSizeClass)
         .gravatarNavigation(
-            title: Constants.title,
             actionButtonDisabled: model.profileModel?.profileURL == nil,
-            onActionButtonPressed: {
-                openProfileEditInSafari()
-            },
             onDoneButtonPressed: {
                 isPresented = false
-            }
+            },
+            preferenceKey: InnerHeightPreferenceKey.self
         )
-        .fullScreenCover(item: $safariURL) { url in
-            SafariView(url: url)
-                .edgesIgnoringSafeArea(.all)
-        }
-        .onChange(of: authToken ?? "") { newValue in
-            model.update(authToken: newValue)
-        }
+        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
         }
@@ -186,6 +170,19 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                 uploadImage(image)
             }
         ))
+        .altTextSheet(
+            model: $altTextEditorAvatar,
+            email: model.email,
+            toastManager: model.toastManager,
+            onSave: { modifiedModel in
+                if await model.update(altText: modifiedModel.altText, for: modifiedModel) {
+                    altTextEditorAvatar = nil
+                }
+            },
+            onCancel: {
+                altTextEditorAvatar = nil
+            }
+        )
     }
 
     private func header() -> some View {
@@ -383,7 +380,17 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
                     playgroundInputItem = PlaygroundInputItem(id: avatar.id, image: Image(uiImage: image))
                 }
             }
+        case .altText:
+            showAltTextEditor(with: avatar)
+        case .rating(let rating):
+            Task {
+                await model.update(rating: rating, for: avatar)
+            }
         }
+    }
+
+    func showAltTextEditor(with avatar: AvatarImageModel) {
+        altTextEditorAvatar = avatar
     }
 
     func selectAvatar(with id: String) {
@@ -395,15 +402,14 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     func notifyAvatarSelection() {
-        if let avatarUpdatedHandler {
-            // Delay to wait until the server has updated the selected avatar before updating the UI.
-            // Without the delay the cache busting remains insufficient to capture the new avatar.
-            // With less than 800 ms, we can still see the issue.
-            // Hopefully, we can remove this delay soon.
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                avatarUpdatedHandler()
-            }
+        // Trigger the inner avatar refresh
+        model.forceRefreshAvatar = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            // Reset the flag with a small delay otherwise the system ignores the value change.
+            model.forceRefreshAvatar = false
         }
+        // Notify the main app
+        avatarUpdatedHandler?()
     }
 
     private func content() -> some View {
@@ -433,61 +439,44 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         safariURL = model.profileModel?.profileURL
     }
 
-    private func openProfileEditInSafari() {
-        guard let url = URL(string: "https://gravatar.com/profile") else { return }
-        safariURL = url
+    @ViewBuilder
+    private func noSelectedAvatarWarning() -> some View {
+        if model.shouldDisplayNoSelectedAvatarWarning {
+            Toast(toast: .init(
+                message: Localized.noImageSelectedMessage,
+                type: .warning,
+                shouldShowShadow: false
+            )) { _ in
+                withAnimation {
+                    model.shouldDisplayNoSelectedAvatarWarning = false
+                }
+            }
+            .padding(.horizontal, Constants.horizontalPadding)
+            .padding(.bottom, .DS.Padding.single)
+        }
     }
 
     @ViewBuilder
     private func profileView() -> some View {
-        VStack(alignment: .leading, content: {
-            AvatarPickerProfileView(
-                avatarURL: $model.selectedAvatarURL,
-                model: $model.profileModel,
-                isLoading: $model.isProfileLoading
-            ) {
-                openProfileInSafari()
-            }.frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.init(
-                    top: .DS.Padding.single,
-                    leading: Constants.horizontalPadding,
-                    bottom: .DS.Padding.single,
-                    trailing: Constants.horizontalPadding
-                ))
-                .background(profileBackground)
-                .cornerRadius(8)
-                .shadow(color: profileShadowColor, radius: profileShadowRadius, y: 3)
-        })
-        .padding(.top, Constants.profileViewTopSpacing / 2)
-        .padding(.bottom, Constants.vStackVerticalSpacing)
-        .padding(.horizontal, Constants.horizontalPadding)
-    }
-
-    @ViewBuilder
-    private var profileBackground: some View {
-        if colorScheme == .dark {
-            Color(UIColor.systemBackground).colorInvert().opacity(0.09)
-        } else {
-            Color(UIColor.systemBackground)
-        }
-    }
-
-    private var profileShadowColor: Color {
-        colorScheme == .light ? Constants.lightModeShadowColor : .clear
-    }
-
-    private var profileShadowRadius: CGFloat {
-        colorScheme == .light ? 30 : 0
+        AvatarPickerProfileViewWrapper(
+            avatarID: $model.avatarIdentifier,
+            forceRefreshAvatar: $model.forceRefreshAvatar,
+            model: $model.profileModel,
+            isLoading: $model.isProfileLoading,
+            safariURL: $safariURL
+        )
+        .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
+        .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
+        .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
     }
 }
 
 // MARK: - Localized Strings
 
-private enum AvatarPicker {
+enum AvatarPicker {
     enum Constants {
         static let horizontalPadding: CGFloat = .DS.Padding.double
         static let lightModeShadowColor = Color(uiColor: UIColor.rgba(25, 30, 35, alpha: 0.2))
-        static let title: String = "Gravatar" // defined here to avoid translations
         static let vStackVerticalSpacing: CGFloat = .DS.Padding.medium
         static let profileViewTopSpacing: CGFloat = .DS.Padding.double
     }
@@ -533,7 +522,11 @@ private enum AvatarPicker {
             value: "Delete",
             comment: "The title button which confirms the avatar deletion."
         )
-
+        static let noImageSelectedMessage = SDKLocalizedString(
+            "AvatarPicker.NoImageSelected.message",
+            value: "No image selected. Please select one or the default will be used.",
+            comment: "Message displayed when no image is selected"
+        )
         enum Header {
             static let title = SDKLocalizedString(
                 "AvatarPicker.Header.title",
@@ -618,7 +611,7 @@ private enum AvatarPicker {
 #Preview("Existing elements") {
     struct PreviewModel: ProfileSummaryModel {
         var avatarIdentifier: Gravatar.AvatarIdentifier? {
-            .email("xxx@gmail.com")
+            .email("some@email.com")
         }
 
         var displayName: String {
@@ -651,15 +644,15 @@ private enum AvatarPicker {
     }
 
     let avatarImageModels: [AvatarImageModel] = [
-        .init(id: "0", source: .local(image: UIImage()), state: .loading),
-        .init(id: "1", source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")),
-        .init(id: "2", source: .remote(url: "https://gravatar.com/userimage/110207384/db73834576b01b69dd8da1e29877ca07.jpeg?size=256")),
-        .init(id: "3", source: .remote(url: "https://gravatar.com/userimage/110207384/3f7095bf2580265d1801d128c6410016.jpeg?size=256")),
-        .init(id: "4", source: .remote(url: "https://gravatar.com/userimage/110207384/fbbd335e57862e19267679f19b4f9db8.jpeg?size=256")),
-        .init(id: "5", source: .remote(url: "https://gravatar.com/userimage/110207384/96c6950d6d8ce8dd1177a77fe738101e.jpeg?size=256")),
-        .init(id: "6", source: .remote(url: "https://gravatar.com/userimage/110207384/4a4f9385b0a6fa5c00342557a098f480.jpeg?size=256")),
-        .init(id: "7", source: .local(image: UIImage()), state: .error(supportsRetry: true, errorMessage: "Something went wrong.")),
-        .init(id: "8", source: .local(image: UIImage()), state: .error(supportsRetry: false, errorMessage: "Something went wrong.")),
+        .preview_init(id: "0", source: .local(image: UIImage()), state: .loading),
+        .preview_init(id: "1", source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")),
+        .preview_init(id: "2", source: .remote(url: "https://gravatar.com/userimage/110207384/db73834576b01b69dd8da1e29877ca07.jpeg?size=256")),
+        .preview_init(id: "3", source: .remote(url: "https://gravatar.com/userimage/110207384/3f7095bf2580265d1801d128c6410016.jpeg?size=256")),
+        .preview_init(id: "4", source: .remote(url: "https://gravatar.com/userimage/110207384/fbbd335e57862e19267679f19b4f9db8.jpeg?size=256")),
+        .preview_init(id: "5", source: .remote(url: "https://gravatar.com/userimage/110207384/96c6950d6d8ce8dd1177a77fe738101e.jpeg?size=256")),
+        .preview_init(id: "6", source: .remote(url: "https://gravatar.com/userimage/110207384/4a4f9385b0a6fa5c00342557a098f480.jpeg?size=256")),
+        .preview_init(id: "7", source: .local(image: UIImage()), state: .error(supportsRetry: true, errorMessage: "Something went wrong.")),
+        .preview_init(id: "8", source: .local(image: UIImage()), state: .error(supportsRetry: false, errorMessage: "Something went wrong.")),
     ]
     let selectedImageID = "5"
     let profileModel = PreviewModel()
@@ -679,5 +672,5 @@ private enum AvatarPicker {
 
 #Preview("Load from network") {
     /// Enter valid email and auth token.
-    AvatarPickerView<NoCustomEditor>(email: .init(""), authToken: .constant(""), isPresented: .constant(true))
+    AvatarPickerView<NoCustomEditor>(model: AvatarPickerViewModel(email: .init(""), authToken: ""), isPresented: .constant(true))
 }

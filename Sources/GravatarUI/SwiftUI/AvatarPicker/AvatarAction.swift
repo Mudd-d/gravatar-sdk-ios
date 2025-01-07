@@ -1,23 +1,22 @@
 import Foundation
 import SwiftUI
 
-enum AvatarAction: String, CaseIterable, Identifiable {
+enum AvatarAction: Identifiable {
     case share
     case delete
+    case rating(AvatarRating)
     case playground
+    case altText
 
-    static var allCases: [AvatarAction] {
-        var cases: [AvatarAction] = []
-        if #available(iOS 18.2, *) {
-            if EnvironmentValues().supportsImagePlayground {
-                cases.append(.playground)
-            }
+    var id: String {
+        switch self {
+        case .share: "share"
+        case .delete: "delete"
+        case .rating(let rating): rating.rawValue
+        case .playground: "playground"
+        case .altText: "altText"
         }
-        cases.append(contentsOf: [.share, .delete])
-        return cases
     }
-
-    var id: String { rawValue }
 
     var icon: Image {
         switch self {
@@ -27,6 +26,10 @@ enum AvatarAction: String, CaseIterable, Identifiable {
             Image(systemName: "square.and.arrow.up")
         case .playground:
             Image(systemName: "apple.image.playground")
+        case .altText:
+            Image(systemName: "text.below.photo")
+        case .rating:
+            Image(systemName: "star.leadinghalf.filled")
         }
     }
 
@@ -50,6 +53,21 @@ enum AvatarAction: String, CaseIterable, Identifiable {
                 value: "Playground",
                 comment: "An option to show the image playground"
             )
+        case .altText:
+            SDKLocalizedString(
+                "AvatarPicker.AvatarAction.altText",
+                value: "Alt Text",
+                comment: "An option in the avatar menu that edits the avatar's Alt Text."
+            )
+        case .rating(let rating):
+            String(
+                format: SDKLocalizedString(
+                    "AvatarPicker.AvatarAction.rate",
+                    value: "Rating: %@",
+                    comment: "An option in the avatar menu that shows the current rating, and allows the user to change that rating. The rating is used to indicate the appropriateness of an avatar for different audiences, and follows the US system of Motion Picture ratings: G, PG, R, and X."
+                ),
+                rating.rawValue
+            )
         }
     }
 
@@ -57,7 +75,7 @@ enum AvatarAction: String, CaseIterable, Identifiable {
         switch self {
         case .delete:
             .destructive
-        case .share, .playground:
+        case .share, .rating, .playground, .altText:
             nil
         }
     }
