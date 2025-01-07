@@ -71,7 +71,11 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             } else {
                 noticeView()
             }
-        }.onReceive(authorizationFinishedNotification) { _ in
+        }
+        .onAppear() {
+            fetchedToken = oauthSession.sessionToken(with: email)?.token
+        }
+        .onReceive(authorizationFinishedNotification) { _ in
             onAuthenticationFinished()
         }.onReceive(authorizationErrorNotification) { notification in
             guard let error = notification.object as? OAuthError else { return }
