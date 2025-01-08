@@ -29,14 +29,8 @@ struct ContentView: View {
             }
             .navigationTitle("Gravatar SwiftUI Demo")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if let onDismiss {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Dismiss") {
-                            onDismiss()
-                        }
-                    }
-                }
+            .toolbar<DemoToolbarContentView> {
+                DemoToolbarContentView(onDismiss: onDismiss)
             }
         }
     }
@@ -56,4 +50,16 @@ struct ContentView: View {
 
 #Preview {
     ContentView(onDismiss: nil)
+}
+
+struct DemoToolbarContentView: ToolbarContent {
+    let onDismiss: (() -> Void)?
+
+    @ToolbarContentBuilder @MainActor @preconcurrency var body: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Dismiss") {
+                onDismiss?()
+            }
+        }
+    }
 }
