@@ -62,15 +62,19 @@ struct AvatarPickerModalPresentationModifier<ModalView: View>: ViewModifier, Mod
                 modalView
                     .frame(minHeight: Constants.bottomSheetMinHeight)
                     .onPreferenceChange(InnerHeightPreferenceKey.self) { newHeight in
-                        if shouldAcceptHeight(newHeight) {
-                            sheetHeight = newHeight
+                        Task { @MainActor in
+                            if shouldAcceptHeight(newHeight) {
+                                sheetHeight = newHeight
+                            }
+                            updateDetents()
                         }
-                        updateDetents()
                     }
                     .onPreferenceChange(VerticalSizeClassPreferenceKey.self) { newSizeClass in
-                        guard newSizeClass != nil else { return }
-                        self.verticalSizeClass = newSizeClass
-                        updateDetents()
+                        Task { @MainActor in
+                            guard newSizeClass != nil else { return }
+                            self.verticalSizeClass = newSizeClass
+                            updateDetents()
+                        }
                     }
                     .presentationDetents(presentationDetents)
                     .presentationContentInteraction(shouldPrioritizeScrolling: prioritizeScrollOverResize)

@@ -119,11 +119,15 @@ private class InnerHeightUIHostingController: UIHostingController<AnyView> {
         weak var weakSelf: InnerHeightUIHostingController?
         super.init(rootView: AnyView(
             rootView
-                .onPreferenceChange(InnerHeightPreferenceKey.self) {
-                    weakSelf?._innerSwiftUIContentHeight = $0
+                .onPreferenceChange(InnerHeightPreferenceKey.self) { newHeight in
+                    Task { @MainActor in
+                        weakSelf?._innerSwiftUIContentHeight = newHeight
+                    }
                 }
                 .onPreferenceChange(VerticalSizeClassPreferenceKey.self) { newSizeClass in
-                    weakSelf?._innerVerticalSizeClass = newSizeClass
+                    Task { @MainActor in
+                        weakSelf?._innerVerticalSizeClass = newSizeClass
+                    }
                 }
         ))
         weakSelf = self
