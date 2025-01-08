@@ -12,29 +12,21 @@ final class OldAuthenticationSession: NSObject, Sendable {
     func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL {
         try await withCheckedThrowingContinuation { continuation in
             let session: ASWebAuthenticationSession
+            let completionHandler = authSessionCompletionHandler(with: continuation)
+
             if #available(iOS 17.4, *) {
-                let callback: ASWebAuthenticationSession.Callback = if callbackURLComponents.scheme == "https", let host = callbackURLComponents.host {
-                    .https(host: host, path: callbackURLComponents.path)
-                } else {
-                    .customScheme(callbackURLComponents.scheme ?? "")
-                }
-
-                session = ASWebAuthenticationSession(url: url, callback: callback) { callbackURL, error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else if let callbackURL {
-                        continuation.resume(returning: callbackURL)
-                    }
-                }
-
+                let callback = authSessionCallback(with: callbackURLComponents)
+                session = ASWebAuthenticationSession(
+                    url: url,
+                    callback: callback,
+                    completionHandler: completionHandler
+                )
             } else {
-                session = ASWebAuthenticationSession(url: url, callbackURLScheme: callbackURLComponents.scheme) { callbackURL, error in
-                    if let error {
-                        continuation.resume(throwing: error)
-                    } else if let callbackURL {
-                        continuation.resume(returning: callbackURL)
-                    }
-                }
+                session = ASWebAuthenticationSession(
+                    url: url,
+                    callbackURLScheme: callbackURLComponents.scheme,
+                    completionHandler: completionHandler
+                )
             }
 
             Task {
@@ -55,11 +47,30 @@ final class OldAuthenticationSession: NSObject, Sendable {
             session.cancel()
         }
     }
+
+    @available(iOS 17.4, *)
+    private func authSessionCallback(with components: URLComponents) -> ASWebAuthenticationSession.Callback {
+        if components.scheme == "https", let host = components.host {
+            .https(host: host, path: components.path)
+        } else {
+            .customScheme(components.scheme ?? "")
+        }
+    }
+
+    private func authSessionCompletionHandler(with continuation: CheckedContinuation<URL, any Error>) -> ASWebAuthenticationSession.CompletionHandler {
+        { callbackURL, error in
+            if let error {
+                continuation.resume(throwing: error)
+            } else if let callbackURL {
+                continuation.resume(returning: callbackURL)
+            }
+        }
+    }
 }
 
 // `ASWebAuthenticationSession` is not thread safe. `SessionStorage` helps to silence some warnings (Swift 6 errors),
 // but we are still importing `AuthenticationServices` as `@preconcurrency`.
-//On the other hand, there won't be more than one attempt of oauth at a time, which reduces possible concurrency issues.
+// On the other hand, there won't be more than one attempt of oauth at a time, which reduces possible concurrency issues.
 private actor SessionStorage {
     var current: ASWebAuthenticationSession?
 
