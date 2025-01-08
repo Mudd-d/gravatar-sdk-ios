@@ -9,7 +9,7 @@ public actor Configuration {
             callbackURLComponents?.scheme ?? ""
         }
 
-        public var callbackURLComponents: URLComponents? {
+        package var callbackURLComponents: URLComponents? {
             URLComponents(string: redirectURI)
         }
 
