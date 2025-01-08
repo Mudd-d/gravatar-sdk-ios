@@ -132,7 +132,7 @@ private class AuthenticationSessionMock: AuthenticationSession, @unchecked Senda
         self.authenticateCalledExpectation = authenticateCalledExpectation
     }
 
-    func authenticate(using url: URL, callbackURLScheme: String) async throws -> URL {
+    func authenticate(using url: URL, callbackURLComponents: URLComponents) async throws -> URL {
         authenticateCalledExpectation.fulfill()
         guard let _ = try await task?.value else {
             fatalError()
