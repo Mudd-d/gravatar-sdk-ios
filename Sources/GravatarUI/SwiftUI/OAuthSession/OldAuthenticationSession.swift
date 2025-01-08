@@ -29,12 +29,8 @@ final class OldAuthenticationSession: NSObject, Sendable {
                 )
             }
 
-            Task {
-                await sessionStorage.save(session)
-            }
-
             Task { @MainActor in
-                guard let session = await sessionStorage.restore() else { return }
+                await sessionStorage.save(session)
                 session.presentationContextProvider = self
                 session.start()
             }
