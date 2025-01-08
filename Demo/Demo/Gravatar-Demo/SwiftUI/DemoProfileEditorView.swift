@@ -84,7 +84,7 @@ struct DemoProfileEditorView: View {
             updateHasSession(with: email)
             requestProfile()
         }
-        .onChange(of: email) { _, newValue in
+        .onChange(of: email) { newValue in
             updateHasSession(with: newValue)
             requestProfile()
         }

@@ -35,7 +35,7 @@ struct QEColorSchemePickerRow: View {
                 }
             }
             .pickerStyle(MenuPickerStyle())
-            .onChange(of: options) { oldValue, newValue in
+            .onChange(of: options) { newValue in
                 self.selectedScheme = newValue.colorScheme
             }
         }
