@@ -8,7 +8,7 @@ struct AvatarPickerProfileViewWrapper: View {
     @Binding var forceRefreshAvatar: Bool
     @Binding var model: AvatarPickerProfileView.Model?
     @Binding var isLoading: Bool
-    @Binding var safariURL: URL?
+    @Binding var safariURL: IdentifiableURL?
 
     public var body: some View {
         VStack(alignment: .leading, content: {
@@ -18,7 +18,7 @@ struct AvatarPickerProfileViewWrapper: View {
                 model: $model,
                 isLoading: $isLoading
             ) {
-                safariURL = model?.profileURL
+                safariURL = IdentifiableURL(url: model?.profileURL)
             }.frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.init(
                     top: .DS.Padding.single,

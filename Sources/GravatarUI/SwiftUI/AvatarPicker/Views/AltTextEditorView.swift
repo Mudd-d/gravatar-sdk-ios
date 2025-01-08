@@ -9,7 +9,7 @@ struct AltTextEditorView: View {
 
     @State var altText: String = ""
     @State var charCount: Int = 0
-    @State var safariURL: URL? = nil
+    @State var safariURL: IdentifiableURL? = nil
     @State var isLoading: Bool = false
     @ObservedObject var toastManager: ToastManager
 
@@ -87,7 +87,7 @@ struct AltTextEditorView: View {
             },
             preferenceKey: ConstantHeightPreferenceKey.self
         )
-        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
         .onAppear {
             altText = avatar?.altText ?? ""
         }
@@ -157,7 +157,7 @@ struct AltTextEditorView: View {
 
     var altTextHelpButton: some View {
         Button(Localized.helpButtonTitle) {
-            safariURL = URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars")
+            safariURL = IdentifiableURL(url: URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars"))
         }.font(.footnote)
     }
 

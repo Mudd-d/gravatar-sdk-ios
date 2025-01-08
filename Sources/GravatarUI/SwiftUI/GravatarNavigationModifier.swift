@@ -7,7 +7,7 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
     var actionButtonDisabled: Bool
 
     @Environment(\.colorScheme) var colorScheme
-    @State private var safariURL: URL?
+    @State private var safariURL: IdentifiableURL?
 
     var onActionButtonPressed: (() -> Void)? = nil
     var onDoneButtonPressed: (() -> Void)? = nil
@@ -53,11 +53,11 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
                     )
                 }
             }
-            .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+            .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
     }
 
     private func openProfileEditInSafari() {
-        guard let url = URL(string: "https://gravatar.com/profile") else { return }
+        guard let url = IdentifiableURL(url: URL(string: "https://gravatar.com/profile")) else { return }
         safariURL = url
     }
 }
