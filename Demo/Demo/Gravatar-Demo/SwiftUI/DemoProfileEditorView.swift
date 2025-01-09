@@ -70,7 +70,6 @@ struct DemoProfileEditorView: View {
                     }
                 }
 
-
             if hasSession {
                 Button("Log out") {
                     oauthSession.deleteSession(with: .init(email))
