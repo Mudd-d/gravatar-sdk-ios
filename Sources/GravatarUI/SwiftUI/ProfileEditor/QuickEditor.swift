@@ -26,7 +26,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
     @State private var fetchedToken: String?
     @State private var isAuthenticating: Bool = false
     @State private var oauthError: OAuthError?
-    @State private var safariURL: URL?
+    @State private var safariURL: IdentifiableURL?
     @Binding private var isPresented: Bool
     // Declare "@StateObject"s as private to prevent setting them from a
     // memberwise initializer, which can conflict with the storage
@@ -145,7 +145,7 @@ struct QuickEditor<ImageEditor: ImageEditorView>: View {
             },
             preferenceKey: InnerHeightPreferenceKey.self
         )
-        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
         .task(id: email) {
             await model.fetchProfile()
         }

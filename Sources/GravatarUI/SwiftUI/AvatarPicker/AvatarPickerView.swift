@@ -13,7 +13,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @ObservedObject var model: AvatarPickerViewModel
     @Binding var isPresented: Bool
 
-    @State private var safariURL: URL?
+    @State private var safariURL: IdentifiableURL?
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
@@ -148,7 +148,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             },
             preferenceKey: InnerHeightPreferenceKey.self
         )
-        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
         }
@@ -436,7 +436,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     private func openProfileInSafari() {
-        safariURL = model.profileModel?.profileURL
+        safariURL = IdentifiableURL(url: model.profileModel?.profileURL)
     }
 
     @ViewBuilder

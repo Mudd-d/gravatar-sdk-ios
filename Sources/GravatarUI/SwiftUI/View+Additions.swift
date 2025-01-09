@@ -180,9 +180,9 @@ extension View {
         }
     }
 
-    func presentSafariView(url: Binding<URL?>, colorScheme: ColorScheme) -> some View {
-        self.sheet(item: url) { url in
-            SafariView(url: url)
+    func presentSafariView(identifiableURL: Binding<IdentifiableURL?>, colorScheme: ColorScheme) -> some View {
+        self.sheet(item: identifiableURL) { identifiableURL in
+            SafariView(url: identifiableURL.url)
                 .edgesIgnoringSafeArea(.all)
                 .colorScheme(colorScheme)
         }

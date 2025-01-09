@@ -7,7 +7,7 @@ struct QuickEditorNoticeView: View {
     @Binding var token: String?
     @Binding var oauthError: OAuthError?
     @ObservedObject var model: AvatarPickerViewModel
-    @Binding var safariURL: URL?
+    @Binding var safariURL: IdentifiableURL?
     let proceedAction: @MainActor () -> Void
 
     var body: some View {
