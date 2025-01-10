@@ -19,23 +19,35 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            List(Page.allCases) { page in
-                NavigationLink(page.title, value: page)
+        if #available(iOS 16.0, *) {
+            NavigationStack {
+                List(Page.allCases) { page in
+                    NavigationLink(page.title, value: page)
+                }
+                .listStyle(.plain)
+                .navigationDestination(for: Page.self) { value in
+                    pageView(for: value).navigationTitle(value.title)
+                }
+                .navigationTitle("Gravatar SwiftUI Demo")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar<DemoToolbarContentView> {
+                    DemoToolbarContentView(onDismiss: onDismiss)
+                }
             }
-            .listStyle(.plain)
-            .navigationDestination(for: Page.self) { value in
-                pageView(for: value).navigationTitle(value.title)
-            }
-            .navigationTitle("Gravatar SwiftUI Demo")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                if let onDismiss {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Dismiss") {
-                            onDismiss()
-                        }
+        } else {
+            NavigationView {
+                List(Page.allCases) { page in
+                    NavigationLink {
+                        pageView(for: page)
+                    } label: {
+                        Text(page.title)
                     }
+                }
+                .listStyle(.plain)
+                .navigationTitle("Gravatar SwiftUI Demo")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar<DemoToolbarContentView> {
+                    DemoToolbarContentView(onDismiss: onDismiss)
                 }
             }
         }
@@ -56,4 +68,16 @@ struct ContentView: View {
 
 #Preview {
     ContentView(onDismiss: nil)
+}
+
+struct DemoToolbarContentView: ToolbarContent {
+    let onDismiss: (() -> Void)?
+
+    @ToolbarContentBuilder @MainActor @preconcurrency var body: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Dismiss") {
+                onDismiss?()
+            }
+        }
+    }
 }

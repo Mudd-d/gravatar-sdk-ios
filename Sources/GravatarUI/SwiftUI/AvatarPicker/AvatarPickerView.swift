@@ -10,22 +10,16 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
 
-    // Declare "@StateObject"s as private to prevent setting them from a
-    // memberwise initializer, which can conflict with the storage
-    // management that SwiftUI provides.
-    // https://developer.apple.com/documentation/swiftui/stateobject
-    @StateObject private var model: AvatarPickerViewModel
+    @ObservedObject var model: AvatarPickerViewModel
     @Binding var isPresented: Bool
-    @Binding var authToken: String?
 
-    @State private var safariURL: URL?
+    @State private var safariURL: IdentifiableURL?
     @State private var uploadError: FailedUploadInfo?
     @State private var isUploadErrorDialogPresented: Bool = false
     @State private var avatarToDelete: AvatarImageModel?
     @State private var shareSheetItem: AvatarShareItem?
     @State private var playgroundInputItem: PlaygroundInputItem?
     @State private var altTextEditorAvatar: AvatarImageModel?
-    @State private var shouldDisplayNoSelectedAvatarWarning: Bool = false
 
     var contentLayoutProvider: AvatarPickerContentLayoutProviding
     var customImageEditor: ImageEditorBlock<ImageEditor>?
@@ -33,8 +27,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     var avatarUpdatedHandler: (() -> Void)?
 
     init(
-        email: Email,
-        authToken: Binding<String?>,
+        model: AvatarPickerViewModel,
         isPresented: Binding<Bool>,
         contentLayoutProvider: AvatarPickerContentLayoutProviding = AvatarPickerContentLayoutType.vertical,
         customImageEditor: ImageEditorBlock<ImageEditor>? = nil as NoCustomEditorBlock?,
@@ -46,8 +39,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = authToken
-        self._model = StateObject(wrappedValue: AvatarPickerViewModel(email: email, authToken: authToken.wrappedValue))
+        self.model = model
     }
 
     fileprivate init(
@@ -65,13 +57,10 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         self.customImageEditor = customImageEditor
         self.tokenErrorHandler = tokenErrorHandler
         self.avatarUpdatedHandler = avatarUpdatedHandler
-        self._authToken = .constant(nil)
-        self._model = StateObject(
-            wrappedValue: AvatarPickerViewModel(
-                avatarImageModels: avatarImageModels,
-                selectedImageID: selectedImageID,
-                profileModel: profileModel
-            )
+        self.model = AvatarPickerViewModel(
+            avatarImageModels: avatarImageModels,
+            selectedImageID: selectedImageID,
+            profileModel: profileModel
         )
     }
 
@@ -159,18 +148,9 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             },
             preferenceKey: InnerHeightPreferenceKey.self
         )
-        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
-        .onChange(of: authToken ?? "") { newValue in
-            model.update(authToken: newValue)
-        }
+        .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
         .onChange(of: model.backendSelectedAvatarURL) { _ in
             notifyAvatarSelection()
-        }
-        .onChange(of: model.selectedAvatarURL) { _ in
-            updateShouldDisplayNoSelectedAvatarWarning()
-        }
-        .onChange(of: model.grid.avatars.count) { _ in
-            updateShouldDisplayNoSelectedAvatarWarning()
         }
         .sheet(item: $shareSheetItem) { item in
             ShareSheet(items: [item.fileURL])
@@ -193,20 +173,16 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
         .altTextSheet(
             model: $altTextEditorAvatar,
             email: model.email,
+            toastManager: model.toastManager,
             onSave: { modifiedModel in
-                altTextEditorAvatar = nil
-                Task {
-                    await model.update(altText: modifiedModel.altText, for: modifiedModel)
+                if await model.update(altText: modifiedModel.altText, for: modifiedModel) {
+                    altTextEditorAvatar = nil
                 }
             },
             onCancel: {
                 altTextEditorAvatar = nil
             }
         )
-    }
-
-    private func updateShouldDisplayNoSelectedAvatarWarning() {
-        shouldDisplayNoSelectedAvatarWarning = model.selectedAvatarURL == nil && model.grid.avatars.count > 0
     }
 
     private func header() -> some View {
@@ -426,6 +402,13 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     func notifyAvatarSelection() {
+        // Trigger the inner avatar refresh
+        model.forceRefreshAvatar = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+            // Reset the flag with a small delay otherwise the system ignores the value change.
+            model.forceRefreshAvatar = false
+        }
+        // Notify the main app
         avatarUpdatedHandler?()
     }
 
@@ -453,19 +436,19 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
     }
 
     private func openProfileInSafari() {
-        safariURL = model.profileModel?.profileURL
+        safariURL = IdentifiableURL(url: model.profileModel?.profileURL)
     }
 
     @ViewBuilder
     private func noSelectedAvatarWarning() -> some View {
-        if shouldDisplayNoSelectedAvatarWarning {
+        if model.shouldDisplayNoSelectedAvatarWarning {
             Toast(toast: .init(
                 message: Localized.noImageSelectedMessage,
                 type: .warning,
                 shouldShowShadow: false
             )) { _ in
                 withAnimation {
-                    shouldDisplayNoSelectedAvatarWarning = false
+                    model.shouldDisplayNoSelectedAvatarWarning = false
                 }
             }
             .padding(.horizontal, Constants.horizontalPadding)
@@ -475,50 +458,22 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
 
     @ViewBuilder
     private func profileView() -> some View {
-        VStack(alignment: .leading, content: {
-            AvatarPickerProfileView(
-                avatarURL: $model.selectedAvatarURL,
-                model: $model.profileModel,
-                isLoading: $model.isProfileLoading
-            ) {
-                openProfileInSafari()
-            }.frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.init(
-                    top: .DS.Padding.single,
-                    leading: Constants.horizontalPadding,
-                    bottom: .DS.Padding.single,
-                    trailing: Constants.horizontalPadding
-                ))
-                .background(profileBackground)
-                .cornerRadius(8)
-                .shadow(color: profileShadowColor, radius: profileShadowRadius, y: 3)
-        })
-        .padding(.top, Constants.profileViewTopSpacing / 2)
-        .padding(.bottom, Constants.vStackVerticalSpacing)
-        .padding(.horizontal, Constants.horizontalPadding)
-    }
-
-    @ViewBuilder
-    private var profileBackground: some View {
-        if colorScheme == .dark {
-            Color(UIColor.systemBackground).colorInvert().opacity(0.09)
-        } else {
-            Color(UIColor.systemBackground)
-        }
-    }
-
-    private var profileShadowColor: Color {
-        colorScheme == .light ? Constants.lightModeShadowColor : .clear
-    }
-
-    private var profileShadowRadius: CGFloat {
-        colorScheme == .light ? 30 : 0
+        AvatarPickerProfileViewWrapper(
+            avatarID: $model.avatarIdentifier,
+            forceRefreshAvatar: $model.forceRefreshAvatar,
+            model: $model.profileModel,
+            isLoading: $model.isProfileLoading,
+            safariURL: $safariURL
+        )
+        .padding(.top, AvatarPicker.Constants.profileViewTopSpacing / 2)
+        .padding(.bottom, AvatarPicker.Constants.vStackVerticalSpacing)
+        .padding(.horizontal, AvatarPicker.Constants.horizontalPadding)
     }
 }
 
 // MARK: - Localized Strings
 
-private enum AvatarPicker {
+enum AvatarPicker {
     enum Constants {
         static let horizontalPadding: CGFloat = .DS.Padding.double
         static let lightModeShadowColor = Color(uiColor: UIColor.rgba(25, 30, 35, alpha: 0.2))
@@ -656,7 +611,7 @@ private enum AvatarPicker {
 #Preview("Existing elements") {
     struct PreviewModel: ProfileSummaryModel {
         var avatarIdentifier: Gravatar.AvatarIdentifier? {
-            .email("xxx@gmail.com")
+            .email("some@email.com")
         }
 
         var displayName: String {
@@ -717,5 +672,5 @@ private enum AvatarPicker {
 
 #Preview("Load from network") {
     /// Enter valid email and auth token.
-    AvatarPickerView<NoCustomEditor>(email: .init(""), authToken: .constant(""), isPresented: .constant(true))
+    AvatarPickerView<NoCustomEditor>(model: AvatarPickerViewModel(email: .init(""), authToken: ""), isPresented: .constant(true))
 }

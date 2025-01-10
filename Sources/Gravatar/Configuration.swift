@@ -6,7 +6,11 @@ public actor Configuration {
         package let clientID: String
         package let redirectURI: String
         package var callbackScheme: String {
-            URLComponents(string: redirectURI)?.scheme ?? ""
+            callbackURLComponents?.scheme ?? ""
+        }
+
+        package var callbackURLComponents: URLComponents? {
+            URLComponents(string: redirectURI)
         }
 
         public init(clientID: String, redirectURI: String) {

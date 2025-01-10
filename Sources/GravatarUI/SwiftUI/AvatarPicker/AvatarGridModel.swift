@@ -25,6 +25,16 @@ class AvatarGridModel: ObservableObject {
     func replaceModel(withID id: String, with model: AvatarImageModel) {
         guard let index = index(of: id) else { return }
         avatars[index] = model
+        removeDuplicates(of: model, atIndex: index)
+    }
+
+    /// Keep the model at `index`, remove the rest that has the same `id`.
+    private func removeDuplicates(of model: AvatarImageModel, atIndex index: Int) {
+        for (indexIter, modelIter) in avatars.enumerated() {
+            if modelIter.id == model.id && indexIter != index {
+                avatars.remove(at: indexIter)
+            }
+        }
     }
 
     func removeModel(_ id: String) {

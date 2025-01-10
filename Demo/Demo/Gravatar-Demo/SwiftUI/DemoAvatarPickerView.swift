@@ -43,17 +43,30 @@ struct DemoAvatarPickerView: View {
                 Toggle("Custom image cropper", isOn: $enableCustomImageCropper)
                 Spacer()
                     .frame(height: 24)
-
                 Button("Tap to open the Avatar Picker") {
                     isPresentingPicker = true
                 }
-                .gravatarQuickEditorSheet(
-                    isPresented: $isPresentingPicker,
-                    email: email,
-                    authToken: !token.isEmpty ? token : nil,
-                    scope: .avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout)),
-                    customImageEditor: customImageEditor()
-                )
+                .modifier { view in
+                    if #available(iOS 16.0, *) {
+                        view
+                            .gravatarQuickEditorSheet(
+                                isPresented: $isPresentingPicker,
+                                email: email,
+                                authToken: !token.isEmpty ? token : nil,
+                                scope: .avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout)),
+                                customImageEditor: customImageEditor()
+                            )
+                    } else {
+                        view
+                            .gravatarQuickEditorSheet(
+                                isPresented: $isPresentingPicker,
+                                email: email,
+                                scope: .avatarPicker,
+                                customImageEditor: customImageEditor()
+                            )
+                    }
+                }
+
                 Spacer()
             }
             .padding(.horizontal)

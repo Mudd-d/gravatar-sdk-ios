@@ -3,10 +3,11 @@ import SwiftUI
 struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value == CGFloat {
     var title: String?
     var doneButtonTitle: String?
+    var doneButtonDisabled: Bool
     var actionButtonDisabled: Bool
 
     @Environment(\.colorScheme) var colorScheme
-    @State private var safariURL: URL?
+    @State private var safariURL: IdentifiableURL?
 
     var onActionButtonPressed: (() -> Void)? = nil
     var onDoneButtonPressed: (() -> Void)? = nil
@@ -38,6 +39,7 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
                         Text(doneButtonTitle ?? GravatarNavigationModifierConstants.Localized.doneButtonTitle)
                             .tint(Color(UIColor.gravatarBlue))
                     }
+                    .disabled(doneButtonDisabled)
                 }
             }
             .background {
@@ -51,11 +53,11 @@ struct GravatarNavigationModifier<K: PreferenceKey>: ViewModifier where K.Value 
                     )
                 }
             }
-            .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+            .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
     }
 
     private func openProfileEditInSafari() {
-        guard let url = URL(string: "https://gravatar.com/profile") else { return }
+        guard let url = IdentifiableURL(url: URL(string: "https://gravatar.com/profile")) else { return }
         safariURL = url
     }
 }
@@ -76,8 +78,8 @@ extension View {
     func gravatarNavigation<K>(
         title: String? = nil,
         doneButtonTitle: String? = nil,
+        doneButtonDisabled: Bool = false,
         actionButtonDisabled: Bool,
-        shouldEmitInnerHeight: Bool = true,
         onActionButtonPressed: (() -> Void)? = nil,
         onDoneButtonPressed: (() -> Void)? = nil,
         preferenceKey: K.Type
@@ -86,6 +88,7 @@ extension View {
             GravatarNavigationModifier<K>(
                 title: title,
                 doneButtonTitle: doneButtonTitle,
+                doneButtonDisabled: doneButtonDisabled,
                 actionButtonDisabled: actionButtonDisabled,
                 onActionButtonPressed: onActionButtonPressed,
                 onDoneButtonPressed: onDoneButtonPressed,

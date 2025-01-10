@@ -1,3 +1,4 @@
+import Combine
 import Foundation
 import Gravatar
 import SwiftUI
@@ -8,12 +9,8 @@ class AvatarPickerViewModel: ObservableObject {
     private let avatarService: AvatarService
     private let imageDownloader: ImageDownloader
 
-    private(set) var email: Email? {
+    private(set) var email: Email {
         didSet {
-            guard let email else {
-                avatarIdentifier = nil
-                return
-            }
             avatarIdentifier = .email(email)
         }
     }
@@ -37,7 +34,13 @@ class AvatarPickerViewModel: ObservableObject {
         didSet {
             switch profileResult {
             case .success(let value):
-                profileModel = .init(displayName: value.displayName, location: value.location, profileURL: value.profileURL)
+                profileModel = .init(
+                    displayName: value.displayName,
+                    location: value.location,
+                    profileURL: value.profileURL,
+                    pronunciation: value.pronunciation,
+                    pronouns: value.pronouns
+                )
             default:
                 profileModel = nil
             }
@@ -47,8 +50,11 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var isProfileLoading: Bool = false
     @Published private(set) var isAvatarsLoading: Bool = false
     @Published var avatarIdentifier: AvatarIdentifier?
+    @Published var forceRefreshAvatar: Bool = false
     @Published var profileModel: AvatarPickerProfileView.Model?
+    @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
+    private var cancellables = Set<AnyCancellable>()
 
     init(
         email: Email,
@@ -63,6 +69,7 @@ class AvatarPickerViewModel: ObservableObject {
         self.profileService = profileService ?? ProfileService()
         self.avatarService = avatarService ?? AvatarService()
         self.imageDownloader = imageDownloader ?? ImageDownloadService()
+        setupCombine()
     }
 
     /// Internal init for previewing purposes. Do not make this public.
@@ -82,13 +89,21 @@ class AvatarPickerViewModel: ObservableObject {
             self.selectedAvatarResult = .success(selectedImageID)
         }
 
+        self.email = .init("some@email.com")
+
         grid.setAvatars(avatarImageModels)
         grid.selectAvatar(withID: selectedImageID)
         gridResponseStatus = .success(())
 
         if let profileModel {
             self.profileResult = .success(profileModel)
-            self.profileModel = .init(displayName: profileModel.displayName, location: profileModel.location, profileURL: profileModel.profileURL)
+            self.profileModel = .init(
+                displayName: profileModel.displayName,
+                location: profileModel.location,
+                profileURL: profileModel.profileURL,
+                pronunciation: profileModel.pronunciation,
+                pronouns: profileModel.pronouns
+            )
             switch profileModel.avatarIdentifier {
             case .email(let email):
                 self.email = email
@@ -96,11 +111,27 @@ class AvatarPickerViewModel: ObservableObject {
                 break
             }
         }
+        setupCombine()
+    }
+
+    private func setupCombine() {
+        grid.$avatars
+            .map {
+                $0.filter { avatar in
+                    avatar.state == .loaded
+                }.count
+            }
+            .combineLatest($selectedAvatarURL)
+            .map { loadedAvatarCount, selectedAvatarURL in
+                // Determine if the warning should be displayed
+                selectedAvatarURL == nil && loadedAvatarCount > 0
+            }
+            .assign(to: \.shouldDisplayNoSelectedAvatarWarning, on: self)
+            .store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> Avatar? {
         guard
-            let email,
             let authToken,
             grid.selectedAvatar?.id != id,
             grid.model(with: id)?.state == .loaded
@@ -167,7 +198,7 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchAvatars() async {
-        guard let authToken, let email else { return }
+        guard let authToken else { return }
 
         do {
             isAvatarsLoading = true
@@ -186,7 +217,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     func fetchProfile() async {
-        guard let email else { return }
         do {
             isProfileLoading = true
             let profile = try await profileService.fetch(with: .email(email))
@@ -229,7 +259,6 @@ class AvatarPickerViewModel: ObservableObject {
     }
 
     private func doUpload(squareImage: UIImage, localID: String, accessToken: String) async {
-        guard let email else { return }
         do {
             let avatar = try await avatarService.upload(
                 squareImage,
@@ -346,7 +375,6 @@ class AvatarPickerViewModel: ObservableObject {
         guard let token = self.authToken else { return false }
         do {
             let updatedAvatar = try await avatarService.update(altText: altText, avatarID: .hashID(avatar.id), accessToken: token)
-            toastManager.showToast(Localized.avatarAltTextSuccess + "\n\n \"\(altText)\"")
             withAnimation {
                 grid.replaceModel(withID: avatar.id, with: .init(with: updatedAvatar))
             }

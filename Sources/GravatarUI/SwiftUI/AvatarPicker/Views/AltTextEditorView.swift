@@ -2,66 +2,92 @@ import SwiftUI
 
 struct AltTextEditorView: View {
     let avatar: AvatarImageModel?
-    let email: Email?
-
-    var shouldShowCharCount: Bool {
-        altText.count > 0
-    }
+    let email: Email
 
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
 
     @State var altText: String = ""
     @State var charCount: Int = 0
-    @State var safariURL: URL? = nil
+    @State var safariURL: IdentifiableURL? = nil
+    @State var isLoading: Bool = false
+    @ObservedObject var toastManager: ToastManager
 
     @FocusState var focused: Bool
 
-    let onSave: (AvatarImageModel) -> Void
+    let onSave: (AvatarImageModel) async -> Void
     let onCancel: () -> Void
+
+    var counterPadding: CGFloat {
+        switch dynamicTypeSize {
+        case let size where size <= .large: 0
+        case let size where size < .xxxLarge: -10
+        case let size where size >= .xxxLarge: -18
+        default: 0
+        }
+    }
+
+    var normalSizeTextEditorLayout: some View {
+        ZStack(alignment: .bottomTrailing) {
+            HStack(alignment: .top) {
+                imageView
+                altTextField
+            }
+            characterCountText.padding(.bottom, counterPadding)
+        }.padding(.bottom, 12)
+    }
+
+    var accessibilitySizeTextEditorLayout: some View {
+        VStack(alignment: .trailing) {
+            HStack(alignment: .top) {
+                imageView
+                altTextField
+            }
+            characterCountText.padding(.top, -6).padding(.bottom, -4)
+        }
+    }
 
     var body: some View {
         // Scroll view helps detaching the height of the child view from the height of the parent view.
-        // This avoids a UI problem while scrolling down the sheet whith the keyboard being present.
+        // This avoids a UI problem while scrolling down the sheet with the keyboard being present.
         // GeometryReader also has the same effect. For now we want the content to scroll when the content grows.
         ScrollView {
-            VStack {
-                if let email {
+            ZStack {
+                VStack {
                     EmailText(email: email)
-                }
-                VStack(alignment: .leading) {
-                    HStack {
-                        titleText
-                        Spacer()
-                        altTextHelpButton
-                    }
-                    ZStack(alignment: .bottomTrailing) {
-                        HStack(alignment: .top) {
-                            imageView
-                            altTextField
+                    VStack(alignment: .leading) {
+                        HStack {
+                            titleText
+                            Spacer()
+                            altTextHelpButton
                         }
-                        if shouldShowCharCount {
-                            characterCountText
+                        if dynamicTypeSize >= .accessibility1 {
+                            accessibilitySizeTextEditorLayout
+                        } else {
+                            normalSizeTextEditorLayout
                         }
+
+                        actionButton
+                            .disabled(isLoading)
                     }
-                    Spacer()
-                    actionButton
+                    .padding()
+                    .avatarPickerBorder(colorScheme: .light)
                 }
-                .padding()
-                .avatarPickerBorder(colorScheme: .light)
+                .padding(.bottom)
+                .padding(.horizontal)
+                errorToast
             }
-            .padding(.bottom)
-            .padding(.horizontal)
         }
         .gravatarNavigation(
             doneButtonTitle: Localized.cancelButtonTitle,
+            doneButtonDisabled: isLoading,
             actionButtonDisabled: false,
-            shouldEmitInnerHeight: false,
             onDoneButtonPressed: {
                 onCancel()
             },
             preferenceKey: ConstantHeightPreferenceKey.self
         )
-        .presentSafariView(url: $safariURL, colorScheme: colorScheme)
+        .presentSafariView(identifiableURL: $safariURL, colorScheme: colorScheme)
         .onAppear {
             altText = avatar?.altText ?? ""
         }
@@ -69,16 +95,21 @@ struct AltTextEditorView: View {
 
     var altTextField: some View {
         ZStack(alignment: .topLeading) {
-            TextEditor(text: $altText)
-                .multilineTextAlignment(.leading)
-                .frame(height: 100)
-                .font(.footnote)
-                .focused($focused)
-                .onAppear { focused = true }
-                .onChange(of: altText) { _ in
-                    // Crops text to fit char limit.
-                    altText = String(altText.prefix(Constants.characterLimit))
+            TextEditor(text: Binding(
+                get: { altText.normalizedAltText },
+                set: { newAltText in
+                    if newAltText.contains("\n") {
+                        focused = false
+                    }
+                    altText = newAltText.normalizedAltText
                 }
+            ))
+            .multilineTextAlignment(.leading)
+            .frame(height: dynamicTypeSize >= .accessibility1 ? 120 : Constants.minLength)
+            .font(.footnote)
+            .focused($focused)
+            .submitLabel(.done)
+            .onAppear { focused = true }
             if altText.count == 0 {
                 Text(Localized.altTextPlaceholder)
                     .padding(8)
@@ -97,25 +128,44 @@ struct AltTextEditorView: View {
     }
 
     var actionButton: some View {
-        Button {
-            if let avatar {
-                onSave(avatar.updating { $0.altText = altText })
+        ZStack(alignment: .center) {
+            Button {
+                if let avatar {
+                    isLoading = true
+                    Task {
+                        await onSave(avatar.updating { $0.altText = altText })
+                        isLoading = false
+                    }
+                }
+            } label: {
+                CTAButtonView(Localized.saveButtonTitle)
             }
-        } label: {
-            CTAButtonView(Localized.saveButtonTitle)
-        }.padding(.top)
+            .disabled(isLoading)
+            if isLoading {
+                ProgressView()
+            }
+        }
     }
 
     var characterCountText: some View {
-        Text("\(altText.count)")
-            .font(.callout)
+        Text("\(Constants.characterLimit - altText.count)")
+            .font(.footnote)
+            .monospacedDigit()
             .foregroundColor(altText.count >= Constants.characterLimit ? .red : .secondary)
+            .padding(.trailing, 4)
     }
 
     var altTextHelpButton: some View {
-        Button(Localized.helpButtonTitle) {
-            safariURL = URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars")
-        }.font(.footnote)
+        Button {
+            safariURL = IdentifiableURL(url: URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars"))
+        } label: {
+            Image(systemName: "questionmark.circle")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 18, height: 18)
+                .font(.footnote.weight(.light))
+                .foregroundColor(Color(UIColor.label))
+        }
     }
 
     var imageView: some View {
@@ -131,6 +181,11 @@ struct AltTextEditorView: View {
             .background(Color(UIColor.secondarySystemBackground))
             .aspectRatio(1, contentMode: .fill)
             .shape(RoundedRectangle(cornerRadius: AvatarGridConstants.avatarCornerRadius))
+    }
+
+    var errorToast: some View {
+        ToastContainerView(toastManager: toastManager)
+            .padding(.horizontal)
     }
 }
 
@@ -156,11 +211,6 @@ extension AltTextEditorView {
             value: "Cancel",
             comment: "Title for Cancel button."
         )
-        static let helpButtonTitle = SDKLocalizedString(
-            "AltText.Editor.helpButtonTitle",
-            value: "What is alt text?",
-            comment: "Title for Help button which opens a view explaining what alt text is."
-        )
     }
 }
 
@@ -173,6 +223,13 @@ extension AltTextEditorView {
     }
 }
 
+extension String {
+    fileprivate var normalizedAltText: String {
+        String(self.prefix(AltTextEditorView.Constants.characterLimit))
+            .replacingOccurrences(of: "\n", with: "")
+    }
+}
+
 #Preview {
     struct AltTextPreview: View {
         @State var text = ""
@@ -180,12 +237,20 @@ extension AltTextEditorView {
             id: "1",
             source: .remote(url: "https://gravatar.com/userimage/110207384/aa5f129a2ec75162cee9a1f0c472356a.jpeg?size=256")
         )
+        @ObservedObject var toast = ToastManager()
 
         var body: some View {
-            AltTextEditorView(
-                avatar: avatar,
-                email: .init("some@email.com")
-            ) { _ in } onCancel: {}
+            NavigationView {
+                AltTextEditorView(
+                    avatar: avatar,
+                    email: .init("some@email.com"),
+                    toastManager: toast
+                ) { _ in
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                } onCancel: {
+                    toast.showToast("Error", type: .error)
+                }
+            }
         }
     }
 
