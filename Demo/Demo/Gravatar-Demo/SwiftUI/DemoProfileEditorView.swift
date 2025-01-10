@@ -30,7 +30,9 @@ struct DemoProfileEditorView: View {
                 Divider()
 
                 ProfileSummary(profileModel: $profileModel, avatarID: $avatarID, trigger: $avatarRefreshTrigger).frame(height: 160)
-                QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                if #available(iOS 16.0, *) {
+                    QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                }
                 Divider()
 
                 QEColorSchemePickerRow(selectedScheme: $selectedScheme)
