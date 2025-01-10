@@ -1,9 +1,6 @@
 /* Title for Cancel button. */
 "AltText.Editor.cancelButtonTitle" = "Cancel";
 
-/* Title for Help button which opens a view explaining what alt text is. */
-"AltText.Editor.helpButtonTitle" = "What is alt text?";
-
 /* Placeholder text for Alt Text editor text field. */
 "AltText.Editor.placeholder" = "Write alt text...";
 
