@@ -60,7 +60,7 @@ struct DemoAvatarView: View {
                 Spacer()
             }
             .padding()
-            .onChange(of: borderWidthDouble) { oldValue, newValue in
+            .onChange(of: borderWidthDouble) { newValue in
                 self.borderWidth = CGFloat(newValue ?? 0)
             }
         }

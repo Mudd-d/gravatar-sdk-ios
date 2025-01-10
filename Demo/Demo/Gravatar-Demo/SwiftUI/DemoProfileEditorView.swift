@@ -30,26 +30,48 @@ struct DemoProfileEditorView: View {
                 Divider()
 
                 ProfileSummary(profileModel: $profileModel, avatarID: $avatarID, trigger: $avatarRefreshTrigger).frame(height: 160)
-                QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                if #available(iOS 16.0, *) {
+                    QEContentLayoutPickerRow(contentLayoutOptions: $contentLayoutOptions)
+                }
                 Divider()
 
                 QEColorSchemePickerRow(selectedScheme: $selectedScheme)
             }
             .padding(.horizontal)
-            Button("Open Profile Editor with OAuth flow") {
-                isPresentingPicker.toggle()
-            }
-            .gravatarQuickEditorSheet(
-                isPresented: $isPresentingPicker,
-                email: email,
-                scope: .avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout)),
-                avatarUpdatedHandler: {
-                    avatarRefreshTrigger.trigger()
-                },
-                onDismiss: {
-                    updateHasSession(with: email)
+                Button("Open Profile Editor with OAuth flow") {
+                    isPresentingPicker.toggle()
                 }
-            )
+                .modifier { view in
+                    if #available(iOS 16.0, *) {
+                        view
+                            .gravatarQuickEditorSheet(
+                                isPresented: $isPresentingPicker,
+                                email: email,
+                                scope: .avatarPicker(.init(contentLayout: contentLayoutOptions.contentLayout)),
+                                avatarUpdatedHandler: {
+                                    avatarRefreshTrigger.trigger()
+                                },
+                                onDismiss: {
+                                    updateHasSession(with: email)
+                                }
+                        )
+                    }
+                    else {
+                        view
+                            .gravatarQuickEditorSheet(
+                                isPresented: $isPresentingPicker,
+                                email: email,
+                                scope: .avatarPicker,
+                                avatarUpdatedHandler: {
+                                    avatarRefreshTrigger.trigger()
+                                },
+                                onDismiss: {
+                                    updateHasSession(with: email)
+                                }
+                            )
+                    }
+                }
+
             if hasSession {
                 Button("Log out") {
                     oauthSession.deleteSession(with: .init(email))
@@ -63,7 +85,7 @@ struct DemoProfileEditorView: View {
             updateHasSession(with: email)
             requestProfile()
         }
-        .onChange(of: email) { _, newValue in
+        .onChange(of: email) { newValue in
             updateHasSession(with: newValue)
             requestProfile()
         }
