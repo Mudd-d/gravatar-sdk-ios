@@ -211,11 +211,6 @@ extension AltTextEditorView {
             value: "Cancel",
             comment: "Title for Cancel button."
         )
-        static let helpButtonTitle = SDKLocalizedString(
-            "AltText.Editor.helpButtonTitle",
-            value: "What is alt text?",
-            comment: "Title for Help button which opens a view explaining what alt text is."
-        )
     }
 }
 
