@@ -126,7 +126,12 @@ final class DemoQuickEditorViewController: UIViewController {
     func updateLogoutButton(_ button: UIButton? = nil) {
         guard let savedEmail else { return }
         let button = button ?? logoutButton
-        UIView.animate {
+        if #available(iOS 17, *) {
+            UIView.animate {
+                button.isHidden = !OAuthSession.hasSession(with: Email(savedEmail))
+                button.alpha = button.isHidden ? 0 : 1
+            }
+        } else {
             button.isHidden = !OAuthSession.hasSession(with: Email(savedEmail))
             button.alpha = button.isHidden ? 0 : 1
         }
