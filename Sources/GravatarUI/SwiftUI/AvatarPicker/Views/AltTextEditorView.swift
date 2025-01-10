@@ -156,9 +156,16 @@ struct AltTextEditorView: View {
     }
 
     var altTextHelpButton: some View {
-        Button(Localized.helpButtonTitle) {
+        Button {
             safariURL = IdentifiableURL(url: URL(string: "https://support.gravatar.com/profiles/avatars/#add-alt-text-to-avatars"))
-        }.font(.footnote)
+        } label: {
+            Image(systemName: "questionmark.circle")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 18, height: 18)
+                .font(.footnote.weight(.light))
+                .foregroundColor(Color(UIColor.label))
+        }
     }
 
     var imageView: some View {
