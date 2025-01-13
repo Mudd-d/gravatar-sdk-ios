@@ -101,6 +101,7 @@ extension View {
         model: Binding<AvatarImageModel?>,
         email: Email,
         toastManager: ToastManager,
+        colorScheme: ColorScheme,
         onSave: @escaping (AvatarImageModel) async -> Void,
         onCancel: @escaping () -> Void
     ) -> some View {
@@ -108,6 +109,7 @@ extension View {
             NavigationView {
                 AltTextEditorView(avatar: model, email: email, toastManager: toastManager, onSave: onSave, onCancel: onCancel)
             }
+            .colorScheme(colorScheme)
         }
 
         if #available(iOS 16.0, *) {
