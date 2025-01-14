@@ -163,8 +163,8 @@ struct AltTextEditorView: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 18, height: 18)
-                .font(.footnote.weight(.light))
-                .foregroundColor(Color(UIColor.label))
+                .font(.footnote)
+                .foregroundColor(Color(UIColor.gravatarBlue))
         }
     }
 
