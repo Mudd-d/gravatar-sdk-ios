@@ -21,18 +21,18 @@ steps:
     agents:
       queue: "linter"
 
-  # - label: ":swift: SwiftFormat Linting"
-  #   plugins:
-  #     - docker#v5.12.0:
-  #         image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
-  #         command: ["--lint", "Sources"]
-  #         workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
-  #     - docker#v5.12.0:
-  #         image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
-  #         command: ["--lint", "Tests"]
-  #         workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
-  #   agents:
-  #     queue: "default"
+  - label: ":swift: SwiftFormat Linting"
+    plugins:
+      - docker#v5.12.0:
+          image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
+          command: ["--lint", "Sources"]
+          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+      - docker#v5.12.0:
+          image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
+          command: ["--lint", "Tests"]
+          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+    agents:
+      queue: "default"
 
   - label: ☢️ Danger - PR Check
     command: danger
