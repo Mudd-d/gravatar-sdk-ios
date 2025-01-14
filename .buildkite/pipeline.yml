@@ -7,16 +7,39 @@ agents:
   queue: "mac"
 env:
   IMAGE_ID: $IMAGE_ID
+  SWIFTLINT_VERSION: $SWIFTLINT_VERSION
+  SWIFTFORMAT_VERSION: $SWIFTFORMAT_VERSION
 
 steps:
   #################
   # Lint Source files
   #################
-  - label: "🕵️ Lint"
-    key: "lint"
-    command: |
-      echo "--- 🛠 Linting"
-      make lint
+  - label: ":swift: SwiftLint"
+    plugins:
+      - docker#v5.12.0:
+          image: "ghcr.io/realm/swiftlint:$SWIFTLINT_VERSION"
+          volumes:
+            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
+          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+    agents:
+      queue: "default"
+
+  - label: ":swift: SwiftFormat Linting"
+    plugins:
+      - docker#v5.12.0:
+          image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
+          command: ["--lint", "Sources"]
+          volumes:
+            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
+          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+      - docker#v5.12.0:
+          image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
+          command: ["--lint", "Tests"]
+          volumes:
+            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
+          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+    agents:
+      queue: "default"
 
   - label: ☢️ Danger - PR Check
     command: danger
