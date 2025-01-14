@@ -174,6 +174,7 @@ struct AvatarPickerView<ImageEditor: ImageEditorView>: View {
             model: $altTextEditorAvatar,
             email: model.email,
             toastManager: model.toastManager,
+            colorScheme: colorScheme,
             onSave: { modifiedModel in
                 if await model.update(altText: modifiedModel.altText, for: modifiedModel) {
                     altTextEditorAvatar = nil
