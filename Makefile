@@ -1,4 +1,4 @@
-.PHONY: all clean run
+.PHONY: all clean run swiftlint
 
 # To see how to drive this makefile use:
 #
@@ -7,6 +7,11 @@
 # Cache
 # No spaces allowed
 SWIFTFORMAT_CACHE = ~/Library/Caches/com.charcoaldesign.swiftformat
+
+# SwiftLint
+SWIFTLINT_VERSION ?= 0.58.0
+SWIFTLINT_DOCKER_BUILDER_NAME = swiftlint_builder
+
 
 # The following values can be changed here, or passed on the command line.
 OPENAPI_GENERATOR_DOCKER_IMAGE ?= openapitools/openapi-generator-cli
@@ -71,7 +76,20 @@ swiftformat: # Automatically find and fixes lint issues
 		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
 		swiftformat
 
+swiftlint: docker-swiftlint-builder swiftlint-run # Sets up the buildx builder and runs the swiftlint command
+
+docker-swiftlint-builder: # Create and use the Buildx builder because the SwiftLint docker image doesn't support Apple Silicon
+	@if ! docker buildx inspect $(SWIFTLINT_DOCKER_BUILDER_NAME) >/dev/null 2>&1; then \
+		docker buildx create --use --name $(SWIFTLINT_DOCKER_BUILDER_NAME); \
+	else \
+		docker buildx use $(SWIFTLINT_DOCKER_BUILDER_NAME); \
+	fi
+
+swiftlint-run: # Docker command to run swiftlint
+	@docker run --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
+
 lint: # Use swiftformat to warn about format issues
+	@make swiftlint
 	swift package plugin \
 		--allow-writing-to-package-directory \
 		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
