@@ -12,6 +12,8 @@ SWIFTFORMAT_CACHE = ~/Library/Caches/com.charcoaldesign.swiftformat
 SWIFTLINT_VERSION ?= 0.58.0
 SWIFTLINT_DOCKER_BUILDER_NAME = swiftlint_builder
 
+# SwiftFormat
+SWIFTFORMAT_VERSION ?= 0.54.5
 
 # The following values can be changed here, or passed on the command line.
 OPENAPI_GENERATOR_DOCKER_IMAGE ?= openapitools/openapi-generator-cli
@@ -71,10 +73,12 @@ setup-secrets: bundle-install
 	bundle exec fastlane run configure_apply
 
 swiftformat: # Automatically find and fixes lint issues
-	swift package plugin \
-		--allow-writing-to-package-directory \
-		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
-		swiftformat
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Sources
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Tests
+
+swiftformat-lint:
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Sources
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Tests
 
 swiftlint: docker-swiftlint-builder swiftlint-run # Sets up the buildx builder and runs the swiftlint command
 
@@ -90,11 +94,7 @@ swiftlint-run: # Docker command to run swiftlint
 
 lint: # Use swiftformat to warn about format issues
 	@make swiftlint
-	swift package plugin \
-		--allow-writing-to-package-directory \
-		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
-		swiftformat \
-		--lint
+	@make swiftformat-lint
 
 validate-pod: bundle-install
 	# For some reason this fixes a failure in `lib lint`
