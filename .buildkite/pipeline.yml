@@ -18,8 +18,6 @@ steps:
     plugins:
       - docker#v5.12.0:
           image: "ghcr.io/realm/swiftlint:$SWIFTLINT_VERSION"
-          volumes:
-            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
           workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
     agents:
       queue: "default"
@@ -29,14 +27,10 @@ steps:
       - docker#v5.12.0:
           image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
           command: ["--lint", "Sources"]
-          volumes:
-            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
           workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
       - docker#v5.12.0:
           image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
           command: ["--lint", "Tests"]
-          volumes:
-            - "${BUILDKITE_BUILD_CHECKOUT_PATH}:${BUILDKITE_BUILD_CHECKOUT_PATH}"
           workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
     agents:
       queue: "default"
