@@ -33,6 +33,9 @@ steps:
               image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
               command: ["--lint", "Tests"]
               workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+        notify:
+          - github_commit_status:
+              context: "SwiftFormat Linting"
         agents:
           queue: "default"
 
