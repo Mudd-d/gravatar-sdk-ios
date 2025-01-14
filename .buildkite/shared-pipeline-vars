@@ -7,5 +7,4 @@ export IMAGE_ID="xcode-16.2-macos-14.7.1-v1"
 
 export CI_TOOLKIT="automattic/a8c-ci-toolkit#3.2.2"
 
-export SWIFTLINT_VERSION="0.58.0"
 export SWIFTFORMAT_VERSION="0.54.5"

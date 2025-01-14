@@ -7,7 +7,6 @@ agents:
   queue: "mac"
 env:
   IMAGE_ID: $IMAGE_ID
-  SWIFTLINT_VERSION: $SWIFTLINT_VERSION
   SWIFTFORMAT_VERSION: $SWIFTFORMAT_VERSION
 
 steps:
@@ -15,12 +14,12 @@ steps:
   # Lint Source files
   #################
   - label: ":swift: SwiftLint"
-    plugins:
-      - docker#v5.12.0:
-          image: "ghcr.io/realm/swiftlint:$SWIFTLINT_VERSION"
-          workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
+    command: swiftlint
+    notify:
+      - github_commit_status:
+          context: "SwiftLint"
     agents:
-      queue: "default"
+      queue: "linter"
 
   - label: ":swift: SwiftFormat Linting"
     plugins:
