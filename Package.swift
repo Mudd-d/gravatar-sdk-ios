@@ -1,4 +1,4 @@
-// swift-tools-version: 5.10
+// swift-tools-version: 6.0
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -33,7 +33,8 @@ let package = Package(
             name: "Gravatar",
             resources: [.process("Resources")],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .testTarget(
@@ -41,7 +42,8 @@ let package = Package(
             dependencies: ["Gravatar", "TestHelpers"],
             resources: [.process("Resources")],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .target(
@@ -49,7 +51,8 @@ let package = Package(
             dependencies: ["Gravatar"],
             resources: [.process("Resources")],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .testTarget(
@@ -59,7 +62,8 @@ let package = Package(
             resources: [.process("Resources"),
                         .process("__Snapshots__")],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         ),
         .target(
@@ -67,7 +71,8 @@ let package = Package(
             dependencies: ["Gravatar"],
             resources: [.process("Resources")],
             swiftSettings: [
-                .enableExperimentalFeature("StrictConcurrency")
+                .swiftLanguageMode(.v5),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
         )
     ]

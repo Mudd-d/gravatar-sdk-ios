@@ -7,3 +7,6 @@ CODE_SIGN_IDENTITY = Apple Development: Created via API (886NX39KP6)
 
 // Default the build number to 0 and delegate to build scripts for setting an appropriate number.
 CURRENT_PROJECT_VERSION = 0
+
+SWIFT_VERSION = 5.0
+SWIFT_STRICT_CONCURRENCY = complete
