@@ -9,7 +9,7 @@
 SWIFTFORMAT_CACHE = ~/Library/Caches/com.charcoaldesign.swiftformat
 
 # SwiftLint
-SWIFTLINT_VERSION ?= 0.58.0
+SWIFTLINT_VERSION := $(shell awk -F': ' '/^swiftlint_version: / {print $$2}' .swiftlint.yml)
 SWIFTLINT_DOCKER_BUILDER_NAME = swiftlint_builder
 
 # SwiftFormat
@@ -90,7 +90,14 @@ docker-swiftlint-builder: # Create and use the Buildx builder because the SwiftL
 	fi
 
 swiftlint-run: # Docker command to run swiftlint
-	@docker run --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
+	docker run --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
+
+swiftlint-version:
+	@if [ -z "$(SWIFTLINT_VERSION)" ]; then \
+		echo "SwiftLint version not found in .swiftlint.yml"; \
+	else \
+		echo "SwiftLint version: $(SWIFTLINT_VERSION)"; \
+	fi
 
 lint: # Use swiftformat to warn about format issues
 	@make swiftlint
