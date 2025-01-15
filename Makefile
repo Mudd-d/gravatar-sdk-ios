@@ -4,16 +4,12 @@
 #
 #   % make help
 
-# Cache
-# No spaces allowed
-SWIFTFORMAT_CACHE = ~/Library/Caches/com.charcoaldesign.swiftformat
-
 # SwiftLint
 SWIFTLINT_VERSION := $(shell awk -F': ' '/^swiftlint_version: / {print $$2}' .swiftlint.yml)
 SWIFTLINT_DOCKER_BUILDER_NAME = swiftlint_builder
 
 # SwiftFormat
-SWIFTFORMAT_VERSION ?= 0.54.5
+SWIFTFORMAT_VERSION := $(shell awk '/^--minversion/ { print $$2 }' .swiftformat)
 
 # The following values can be changed here, or passed on the command line.
 OPENAPI_GENERATOR_DOCKER_IMAGE ?= openapitools/openapi-generator-cli

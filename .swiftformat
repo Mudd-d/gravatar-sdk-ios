@@ -1,3 +1,6 @@
+## SwiftFormat version
+--minversion 0.54.5
+
 ## Swift version
 
 # Some rules are applicable only to newer versions of Swift.
