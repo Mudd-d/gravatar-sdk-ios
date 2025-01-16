@@ -23,7 +23,6 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/nicklockwood/SwiftFormat", from: "0.54.5"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.6"),
     ],
     targets: [

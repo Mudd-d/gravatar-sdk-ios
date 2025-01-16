@@ -1,12 +1,15 @@
-.PHONY: all clean run
+.PHONY: all clean run swiftlint
 
 # To see how to drive this makefile use:
 #
 #   % make help
 
-# Cache
-# No spaces allowed
-SWIFTFORMAT_CACHE = ~/Library/Caches/com.charcoaldesign.swiftformat
+# SwiftLint
+SWIFTLINT_VERSION := $(shell awk -F': ' '/^swiftlint_version: / {print $$2}' .swiftlint.yml)
+SWIFTLINT_DOCKER_BUILDER_NAME = swiftlint_builder
+
+# SwiftFormat
+SWIFTFORMAT_VERSION := $(shell awk '/^--minversion/ { print $$2 }' .swiftformat)
 
 # The following values can be changed here, or passed on the command line.
 OPENAPI_GENERATOR_DOCKER_IMAGE ?= openapitools/openapi-generator-cli
@@ -66,17 +69,35 @@ setup-secrets: bundle-install
 	bundle exec fastlane run configure_apply
 
 swiftformat: # Automatically find and fixes lint issues
-	swift package plugin \
-		--allow-writing-to-package-directory \
-		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
-		swiftformat
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Sources
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Tests
+
+swiftformat-lint:
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Sources
+	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Tests
+
+swiftlint: docker-swiftlint-builder swiftlint-run # Sets up the buildx builder and runs the swiftlint command
+
+docker-swiftlint-builder: # Create and use the Buildx builder because the SwiftLint docker image doesn't support Apple Silicon
+	@if ! docker buildx inspect $(SWIFTLINT_DOCKER_BUILDER_NAME) >/dev/null 2>&1; then \
+		docker buildx create --use --name $(SWIFTLINT_DOCKER_BUILDER_NAME); \
+	else \
+		docker buildx use $(SWIFTLINT_DOCKER_BUILDER_NAME); \
+	fi
+
+swiftlint-run: # Docker command to run swiftlint
+	docker run --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
+
+swiftlint-version:
+	@if [ -z "$(SWIFTLINT_VERSION)" ]; then \
+		echo "SwiftLint version not found in .swiftlint.yml"; \
+	else \
+		echo "SwiftLint version: $(SWIFTLINT_VERSION)"; \
+	fi
 
 lint: # Use swiftformat to warn about format issues
-	swift package plugin \
-		--allow-writing-to-package-directory \
-		--allow-writing-to-directory $(SWIFTFORMAT_CACHE) \
-		swiftformat \
-		--lint
+	@make swiftlint
+	@make swiftformat-lint
 
 validate-pod: bundle-install
 	# For some reason this fixes a failure in `lib lint`
