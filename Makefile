@@ -115,10 +115,6 @@ update-example-snapshots:
 	cd ./Sources/GravatarUI/GravatarUI.docc/Resources/ProfileExamples && \
 	for filePath in *; do name=$${filePath%.*}; mv $$filePath $${name//-dark/~dark}@2x$${filePath#$$name}; done
 
-install-and-generate: $(OPENAPI_GENERATOR_CLONE_DIR) # Clones and setup the openapi-generator.
-	"$(OPENAPI_GENERATOR_CLONE_DIR)"/run-in-docker.sh mvn package
-	make generate
-
 generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
 	sed -i '' 's|components/schemas/Rating|components/schemas/AvatarRating|g' $(OPENAPI_DIR)/openapi.yaml
 	sed -i '' 's| Rating:| AvatarRating:|g' $(OPENAPI_DIR)/openapi.yaml
