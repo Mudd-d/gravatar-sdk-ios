@@ -133,8 +133,8 @@ generate: check-docker $(OPENAPI_GENERATED_DIR) # Generates the open-api model
     echo "DONE! 🎉"
 
 check-docker:
-	@command -v docker >/dev/null 2>&1 || { echo "Error: Docker is not installed or not in PATH"; exit 1; }
-	@docker info >/dev/null 2>&1 || { echo "Error: Docker is installed but not running or accessible by the current user"; exit 1; }
+	@command -v docker >/dev/null 2>&1 || { echo "Error: Docker is not installed or not in PATH"; false; }
+	@docker info >/dev/null 2>&1 || { echo "Error: Docker is installed but not running or accessible by the current user"; false; }
 
 generate-strings: bundle-install
 	bundle exec fastlane generate_strings
