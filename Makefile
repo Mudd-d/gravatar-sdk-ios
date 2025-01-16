@@ -86,7 +86,7 @@ docker-swiftlint-builder: # Create and use the Buildx builder because the SwiftL
 	fi
 
 swiftlint-run: # Docker command to run swiftlint
-	docker run --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
+	docker run --rm --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
 
 swiftlint-version:
 	@if [ -z "$(SWIFTLINT_VERSION)" ]; then \
