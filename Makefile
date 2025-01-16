@@ -68,24 +68,24 @@ fetch-code-signing: bundle-install
 setup-secrets: bundle-install
 	bundle exec fastlane run configure_apply
 
-swiftformat: # Automatically find and fixes lint issues
+swiftformat: check-docker # Automatically find and fixes lint issues
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Sources
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) Tests
 
-swiftformat-lint:
+swiftformat-lint: check-docker
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Sources
 	@docker run --rm -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/nicklockwood/swiftformat:$(SWIFTFORMAT_VERSION) --lint Tests
 
 swiftlint: docker-swiftlint-builder swiftlint-run # Sets up the buildx builder and runs the swiftlint command
 
-docker-swiftlint-builder: # Create and use the Buildx builder because the SwiftLint docker image doesn't support Apple Silicon
+docker-swiftlint-builder: check-docker # Create and use the Buildx builder because the SwiftLint docker image doesn't support Apple Silicon
 	@if ! docker buildx inspect $(SWIFTLINT_DOCKER_BUILDER_NAME) >/dev/null 2>&1; then \
 		docker buildx create --use --name $(SWIFTLINT_DOCKER_BUILDER_NAME); \
 	else \
 		docker buildx use $(SWIFTLINT_DOCKER_BUILDER_NAME); \
 	fi
 
-swiftlint-run: # Docker command to run swiftlint
+swiftlint-run: check-docker # Docker command to run swiftlint
 	@docker run --rm --platform linux/amd64 -v $(shell pwd):$(shell pwd) -w $(shell pwd) ghcr.io/realm/swiftlint:$(SWIFTLINT_VERSION)
 
 swiftlint-version:
@@ -115,7 +115,7 @@ update-example-snapshots:
 	cd ./Sources/GravatarUI/GravatarUI.docc/Resources/ProfileExamples && \
 	for filePath in *; do name=$${filePath%.*}; mv $$filePath $${name//-dark/~dark}@2x$${filePath#$$name}; done
 
-generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
+generate: check-docker $(OPENAPI_GENERATED_DIR) # Generates the open-api model
 	sed -i '' 's|components/schemas/Rating|components/schemas/AvatarRating|g' $(OPENAPI_DIR)/openapi.yaml
 	sed -i '' 's| Rating:| AvatarRating:|g' $(OPENAPI_DIR)/openapi.yaml
 	rm -rf "$(OPENAPI_GENERATED_DIR)"/* && \
@@ -131,6 +131,10 @@ generate: $(OPENAPI_GENERATED_DIR) # Generates the open-api model
 	swift ./access-control-modifier.swift && \
 	make swiftformat && \
     echo "DONE! 🎉"
+
+check-docker:
+	@command -v docker >/dev/null 2>&1 || { echo "Error: Docker is not installed or not in PATH"; exit 1; }
+	@docker info >/dev/null 2>&1 || { echo "Error: Docker is installed but not running or accessible by the current user"; exit 1; }
 
 generate-strings: bundle-install
 	bundle exec fastlane generate_strings
