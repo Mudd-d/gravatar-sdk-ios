@@ -59,6 +59,9 @@ ifndef BUILD_NUMBER
 	override BUILD_NUMBER = 0
 endif
 
+validate-package-resolved:
+	@bundle exec fastlane validate_package_resolved scheme:$(SCHEME_DEMO)
+
 bundle-install:
 	bundle install
 
