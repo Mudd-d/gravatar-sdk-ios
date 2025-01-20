@@ -82,13 +82,13 @@ platform :ios do
 
   desc 'Checks whether all Package.resolved files are current'
   lane :validate_package_resolved do |scheme:|
-    resolvePackageDependenciesForProject(project: XCODEPROJ_PATH, scheme: scheme)
-    resolvePackageDependenciesForSPM
+    resolve_package_dependencies_for_project(project: XCODEPROJ_PATH, scheme: scheme)
+    resolve_package_dependencies_for_spm
 
     if uncommitted_changes_exist?
-      UI.user_error!("Uncommitted changes detected:")
+      UI.user_error!('Uncommitted changes detected:')
     else
-      UI.success("No uncommitted changes found.")
+      UI.success('No uncommitted changes found.')
     end
   end
 
@@ -232,24 +232,24 @@ def read_from_xcconfig!(key:, xcconfig:)
   configs[key]
 end
 
-def resolvePackageDependenciesForProject(project:, scheme:)
+def resolve_package_dependencies_for_project(project:, scheme:)
   xcodebuild(
     project: project,
     scheme: scheme,
-    configuration: "Debug",
-    xcargs: "-resolvePackageDependencies -disableAutomaticPackageResolution"
+    configuration: 'Debug',
+    xcargs: '-resolvePackageDependencies -disableAutomaticPackageResolution'
   )
 end
 
-def resolvePackageDependenciesForSPM
-  spm(command: "resolve")
+def resolve_package_dependencies_for_spm
+  spm(command: 'resolve')
 end
 
 def uncommitted_changes_exist?
-  has_changes = sh("git status --porcelain").strip
-  if has_changes.empty?
-    return false # No changes
-  else
-    return true # Changes exist
-  end
+  has_changes = sh('git status --porcelain').strip
+  return false if has_changes.empty?
+
+  # No changes
+
+  true # Changes exist
 end
