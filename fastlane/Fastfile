@@ -246,6 +246,7 @@ def resolve_package_dependencies_for_spm
 end
 
 def uncommitted_changes_exist?
+  puts "Current working directory: #{Dir.pwd}"
   has_changes = sh('git status --porcelain').strip
   return false if has_changes.empty?
 
