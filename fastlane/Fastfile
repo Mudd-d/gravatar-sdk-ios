@@ -249,7 +249,5 @@ def uncommitted_changes_exist?
   has_changes = sh('git status --porcelain').strip
   return false if has_changes.empty?
 
-  # No changes
-
   true # Changes exist
 end
