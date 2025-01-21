@@ -85,8 +85,6 @@ platform :ios do
     resolve_package_dependencies_for_project(project: XCODEPROJ_PATH, scheme: scheme)
     resolve_package_dependencies_for_spm
 
-    sh('git diff')
-
     if uncommitted_changes_exist?
       UI.user_error!('Uncommitted changes detected:')
     else
