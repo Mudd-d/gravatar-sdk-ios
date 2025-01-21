@@ -62,7 +62,7 @@ class DemoFetchProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Fetch Profile"
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
 
         for view in [segmentedControl, emailField, fetchProfileButton, activityIndicator, profileTextView] {
             rootStackView.addArrangedSubview(view)
