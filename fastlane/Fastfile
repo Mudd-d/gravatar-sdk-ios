@@ -240,7 +240,7 @@ def resolve_package_dependencies_for_project(project:, scheme:)
     scheme: scheme,
     configuration: 'Debug',
     clean: true,
-    xcargs: '-resolvePackageDependencies'
+    xcargs: '-resolvePackageDependencies -skipPackageUpdates'
   )
 end
 
