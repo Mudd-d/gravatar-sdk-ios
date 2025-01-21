@@ -45,6 +45,7 @@ final class TextFieldCell: UITableViewCell {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.borderStyle = .roundedRect
         textField.backgroundColor = .systemBackground
+        textField.autocapitalizationType = .none
 
         self.contentView.addSubview(textField)
         NSLayoutConstraint.activate([

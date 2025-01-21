@@ -9,7 +9,7 @@ final class SwitchField: FormField, @unchecked Sendable {
     private var cancellables = Set<AnyCancellable>()
     private var actionHandler: OnSwitchValueChange?
 
-    init(title: String, isOn: Bool, action actionHandler: OnSwitchValueChange? = nil) {
+    init(title: String, isOn: Bool = false, action actionHandler: OnSwitchValueChange? = nil) {
         self.isOn = isOn
         self.title = title
         self.actionHandler = actionHandler

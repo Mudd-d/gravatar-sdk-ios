@@ -3,6 +3,7 @@ import UIKit
 class ImageFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     var image: UIImage?
     var size: CGSize
+    private(set) var imageView: UIImageView?
 
     private let cellID = "ImageFormCell"
 
@@ -15,6 +16,7 @@ class ImageFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     override func dequeueCell(in tableView: UITableView, for indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID) as? ImageCell ?? ImageCell(reuseIdentifier: cellID)
         cell.update(with: self)
+        imageView = cell.formImageView
         return cell
     }
 }
@@ -47,6 +49,8 @@ final class ImageCell: UITableViewCell {
     func update(with config: ImageFormField) {
         widthConstraint.constant = config.size.width
         heightConstraint.constant = config.size.height
-        formImageView.image = config.image
+        if let image = config.image {
+            formImageView.image = image
+        }
     }
 }
