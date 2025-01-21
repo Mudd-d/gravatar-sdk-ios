@@ -85,10 +85,10 @@ platform :ios do
     resolve_package_dependencies_for_project(project: XCODEPROJ_PATH, scheme: scheme)
     resolve_package_dependencies_for_spm
 
-    if uncommitted_changes_exist?
-      UI.user_error!('Uncommitted changes detected:')
-    else
+    if uncommitted_changes.empty?
       UI.success('No uncommitted changes found.')
+    else
+      UI.user_error!("Uncommitted changes detected: \n " + uncommitted_changes)
     end
   end
 
@@ -246,9 +246,6 @@ def resolve_package_dependencies_for_spm
   spm(command: 'resolve')
 end
 
-def uncommitted_changes_exist?
-  has_changes = sh('git status --porcelain').strip
-  return false if has_changes.empty?
-
-  true # Changes exist
+def uncommitted_changes
+  sh('git status --porcelain').strip
 end
