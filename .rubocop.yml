@@ -3,7 +3,6 @@ AllCops:
     - DerivedData/**/*
     - vendor/**/*
     - openapi-generator/**/*
-    - venv/**/*
   NewCops: enable
 
 Naming/FileName:
