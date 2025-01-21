@@ -88,7 +88,7 @@ platform :ios do
     if uncommitted_changes.empty?
       UI.success('No uncommitted changes found.')
     else
-      UI.user_error!("Uncommitted changes detected: \n " + uncommitted_changes)
+      UI.user_error!("Uncommitted changes detected: \n #{uncommitted_changes}")
     end
   end
 
