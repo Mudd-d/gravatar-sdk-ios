@@ -120,15 +120,9 @@ platform :ios do
     #
     # Which suggest the authenticated session from the first call was not carried over to the second.
     configure_code_signing(
-      bundle_ids: [
-        bundle_id_prototype_build!
-      ],
+      bundle_ids: [bundle_id_prototype_build!],
       readonly: readonly
     )
-  end
-
-  lane :configure_code_signing_prototype_build do |readonly: true|
-    configure_code_signing(bundle_ids: [bundle_id_prototype_build!], readonly: readonly)
   end
 end
 
