@@ -4,15 +4,18 @@ import Combine
 class TextFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     let placeholder: String
     let keyboardType: UIKeyboardType
+    let isSecure: Bool
+
     @Published var text: String
     @Published var didEndEditingText: String = ""
 
     private let cellID = "TextFieldCell"
 
-    init(placeholder: String, text: String = "", keyboardType: UIKeyboardType = .default) {
+    init(placeholder: String, text: String = "", isSecure: Bool = false, keyboardType: UIKeyboardType = .default) {
         self.text = text
         self.placeholder = placeholder
         self.keyboardType = keyboardType
+        self.isSecure = isSecure
     }
 
     @MainActor
@@ -64,5 +67,6 @@ final class TextFieldCell: UITableViewCell {
         textField.placeholder = config.placeholder
         textField.text = config.text
         textField.keyboardType = config.keyboardType
+        textField.isSecureTextEntry = config.isSecure
     }
 }

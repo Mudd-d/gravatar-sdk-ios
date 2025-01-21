@@ -1,9 +1,11 @@
 import UIKit
+import Combine
 
 class ImageFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     var image: UIImage?
     var size: CGSize
     private(set) var imageView: UIImageView?
+    private var cancellables = Set<AnyCancellable>()
 
     private let cellID = "ImageFormCell"
 
@@ -17,6 +19,10 @@ class ImageFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID) as? ImageCell ?? ImageCell(reuseIdentifier: cellID)
         cell.update(with: self)
         imageView = cell.formImageView
+        cell.formImageView.publisher(for: \.image).sink { [weak self] image in
+            self?.image = image
+        }.store(in: &cancellables)
+
         return cell
     }
 }

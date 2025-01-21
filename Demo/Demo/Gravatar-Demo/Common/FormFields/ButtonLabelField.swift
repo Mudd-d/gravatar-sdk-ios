@@ -4,15 +4,17 @@ final class ButtonLabelField: FormField, @unchecked Sendable {
     var buttonTitle: String
     var title: String
     var subtitle: String?
+    var isEnabled: Bool
 
     private let cellID = "ButtonCellCell"
     private let action: UIAction
 
     @MainActor
-    init(title: String, subtitle: String?, buttonTitle: String, action actionHandler: @escaping UIActionHandler) {
+    init(title: String, subtitle: String?, buttonTitle: String, isEnabled: Bool = true, action actionHandler: @escaping UIActionHandler) {
         self.title = title
         self.subtitle = subtitle
         self.buttonTitle = buttonTitle
+        self.isEnabled = isEnabled
         self.action = UIAction(handler: actionHandler)
     }
 
@@ -43,6 +45,7 @@ final class ButtonLabelCell: UITableViewCell {
         config.title = field.buttonTitle
         button.configuration = config
         button.sizeToFit()
+        button.isEnabled = field.isEnabled
 
         var cellConfig = self.defaultContentConfiguration()
         cellConfig.text = field.title

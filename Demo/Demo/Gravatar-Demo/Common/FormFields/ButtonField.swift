@@ -3,13 +3,16 @@ import UIKit
 final class ButtonField: FormField, @unchecked Sendable {
     var title: String
     var isActionButton: Bool
+    var isEnabled: Bool
+
     private let cellID = "ButtonCell"
     private let action: UIAction
 
     @MainActor
-    init(title: String, isActionButton: Bool = false, action actionHandler: @escaping UIActionHandler) {
+    init(title: String, isActionButton: Bool = false, enabled: Bool = true, action actionHandler: @escaping UIActionHandler) {
         self.title = title
         self.isActionButton = isActionButton
+        self.isEnabled = enabled
         self.action = UIAction(handler: actionHandler)
     }
 
@@ -46,6 +49,7 @@ final class ButtonCell: UITableViewCell {
         var config = field.isActionButton ? UIButton.Configuration.borderedProminent() : .plain()
         config.title = field.title
         button.configuration = config
+        button.isEnabled = field.isEnabled
         button.sizeToFit()
     }
 }
