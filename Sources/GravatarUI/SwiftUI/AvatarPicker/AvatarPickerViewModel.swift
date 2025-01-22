@@ -29,24 +29,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published private(set) var backendSelectedAvatarURL: URL?
     @Published private(set) var gridResponseStatus: Result<Void, Error>?
     @Published private(set) var grid: AvatarGridModel = .init(avatars: [])
-
-    private var profileResult: Result<ProfileSummaryModel, Error>? {
-        didSet {
-            switch profileResult {
-            case .success(let value):
-                profileModel = .init(
-                    displayName: value.displayName,
-                    location: value.location,
-                    profileURL: value.profileURL,
-                    pronunciation: value.pronunciation,
-                    pronouns: value.pronouns
-                )
-            default:
-                profileModel = nil
-            }
-        }
-    }
-
+    @Published private(set) var profileResult: Result<ProfileSummaryModel, Error>?
     @Published var isProfileLoading: Bool = false
     @Published private(set) var isAvatarsLoading: Bool = false
     @Published var avatarIdentifier: AvatarIdentifier?
@@ -55,6 +38,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published var shouldDisplayNoSelectedAvatarWarning: Bool = false
     @ObservedObject var toastManager: ToastManager = .init()
     private var cancellables = Set<AnyCancellable>()
+    private(set) var compensatingFetchProfileTask: Task<Void, Never>? // for unit testing
 
     init(
         email: Email,
@@ -128,6 +112,52 @@ class AvatarPickerViewModel: ObservableObject {
             }
             .assign(to: \.shouldDisplayNoSelectedAvatarWarning, on: self)
             .store(in: &cancellables)
+
+        $profileResult
+            .combineLatest($gridResponseStatus)
+            .map { profileResult, gridResponseStatus in
+                let isProfileStatus404 = switch profileResult {
+                case .failure(APIError.responseError(let .invalidHTTPStatusCode(response, _))) where response.statusCode == HTTPStatus.notFound.rawValue:
+                    true
+                default:
+                    false
+                }
+
+                let isGridResponseSuccess = switch gridResponseStatus {
+                case .success:
+                    true
+                default:
+                    false
+                }
+                return isProfileStatus404 && isGridResponseSuccess
+            }
+            .filter { $0 == true }
+            .removeDuplicates()
+            .sink { [weak self] _ in
+                self?.compensatingFetchProfileTask = Task {
+                    // Profile does not exist but `/v3/me/avatars` is success. This means it's a new account. Backend creates a new
+                    // profile during the first GET `/v3/me/avatars` of a new user. So we refresh the profile to fetch it.
+                    // Happens only when the token is passed externally.
+                    await self?.fetchProfile()
+                }
+            }
+            .store(in: &cancellables)
+
+        $profileResult.sink { [weak self] profileResult in
+            switch profileResult {
+            case .success(let value):
+                self?.profileModel = .init(
+                    displayName: value.displayName,
+                    location: value.location,
+                    profileURL: value.profileURL,
+                    pronunciation: value.pronunciation,
+                    pronouns: value.pronouns
+                )
+            default:
+                self?.profileModel = nil
+            }
+        }
+        .store(in: &cancellables)
     }
 
     func selectAvatar(with id: String) async -> Avatar? {
