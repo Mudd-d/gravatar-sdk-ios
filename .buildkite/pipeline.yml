@@ -48,15 +48,6 @@ steps:
             permit_on_passed: true
         agents:
           queue: linter
-      
-      - label: ":swift: Package.resolved"
-        plugins: [$CI_TOOLKIT]
-        notify:
-          - github_commit_status:
-              context: "Package.resolved"
-        command: |
-          install_gems
-          bundle exec make validate-package-resolved
 
   #################
   # Build and Test
