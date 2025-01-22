@@ -80,6 +80,18 @@ platform :ios do
     )
   end
 
+  desc 'Checks whether all Package.resolved files are current'
+  lane :validate_package_resolved do |scheme:|
+    resolve_package_dependencies_for_project(project: XCODEPROJ_PATH, scheme: scheme)
+    resolve_package_dependencies_for_spm
+
+    if uncommitted_changes.empty?
+      UI.success('No uncommitted changes found.')
+    else
+      UI.user_error!("Uncommitted changes detected: \n #{uncommitted_changes}")
+    end
+  end
+
   desc 'Builds the demo app from the given scheme for distribution'
   lane :build_demo_for_distribution do |scheme:, build_number:|
     UI.user_error! 'Please pass a build number by calling the lane with build_number:VALUE' if build_number.nil? || build_number.empty?
@@ -218,4 +230,22 @@ def read_from_xcconfig!(key:, xcconfig:)
   UI.user_error!("Could not find value for #{key} in xcconfig!") unless configs.key?(key)
 
   configs[key]
+end
+
+def resolve_package_dependencies_for_project(project:, scheme:)
+  xcodebuild(
+    project: project,
+    scheme: scheme,
+    configuration: 'Debug',
+    clean: true,
+    xcargs: '-resolvePackageDependencies -skipPackageUpdates'
+  )
+end
+
+def resolve_package_dependencies_for_spm
+  spm(command: 'resolve')
+end
+
+def uncommitted_changes
+  sh('git status --porcelain').strip
 end
