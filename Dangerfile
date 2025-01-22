@@ -15,7 +15,7 @@ manifest_pr_checker.check_swift_package_resolved_updated_strict(
 )
 
 manifest_pr_checker.check_swift_package_resolved_updated_strict(
-  manifest_path: 'Demo/Gravatar-Demo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.swift',
+  manifest_path: 'Package.swift',
   manifest_lock_path: 'Demo/Gravatar-Demo.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved',
   report_type: :error
 )
