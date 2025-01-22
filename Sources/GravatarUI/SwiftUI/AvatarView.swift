@@ -5,6 +5,7 @@ import SwiftUI
 public struct AvatarView<LoadingView: View, Placeholder: View>: View {
     @ViewBuilder private let loadingView: (() -> LoadingView)?
     @Binding private var forceRefresh: Bool
+    @Binding private var oneTimeForceRefresh: Bool
     @State private var isLoading: Bool = false
     private var url: URL?
     private let placeholderView: (() -> Placeholder)?
@@ -19,6 +20,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
         cache: ImageCaching = ImageCache.shared,
         urlSession: URLSession = .shared,
         forceRefresh: Binding<Bool> = .constant(false),
+        oneTimeForceRefresh: Binding<Bool> = .constant(false),
         loadingView: (() -> LoadingView)?,
         transaction: Transaction = Transaction()
     ) where Placeholder == AnyView {
@@ -34,6 +36,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
         self.loadingView = loadingView
         self.urlSession = urlSession
         self._forceRefresh = forceRefresh
+        self._oneTimeForceRefresh = oneTimeForceRefresh
         self.transaction = transaction
     }
 
@@ -43,6 +46,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
         cache: ImageCaching = ImageCache.shared,
         urlSession: URLSession = .shared,
         forceRefresh: Binding<Bool> = .constant(false),
+        oneTimeForceRefresh: Binding<Bool> = .constant(false),
         loadingView: (() -> LoadingView)?,
         transaction: Transaction = Transaction()
     ) {
@@ -52,6 +56,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
         self.loadingView = loadingView
         self.urlSession = urlSession
         self._forceRefresh = forceRefresh
+        self._oneTimeForceRefresh = oneTimeForceRefresh
         self.transaction = transaction
     }
 
@@ -61,6 +66,7 @@ public struct AvatarView<LoadingView: View, Placeholder: View>: View {
             cache: cache,
             urlSession: urlSession,
             forceRefresh: $forceRefresh,
+            oneTimeForceRefresh: $oneTimeForceRefresh,
             transaction: transaction,
             isLoading: $isLoading
         ) { phase in

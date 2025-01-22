@@ -106,7 +106,7 @@ struct AvatarPickerProfileView: View {
                     .colorScheme(colorScheme)
                     .background(Color(UIColor.systemBackground))
             },
-            forceRefresh: $forceRefreshAvatar,
+            oneTimeForceRefresh: $forceRefreshAvatar,
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())
