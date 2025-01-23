@@ -29,6 +29,7 @@ struct AvatarPickerProfileView: View {
             with: avatarID,
             options: .init(
                 preferredSize: .points(Constants.avatarLength),
+                rating: .x,
                 defaultAvatarOption: .status404
             )
         )?.url
