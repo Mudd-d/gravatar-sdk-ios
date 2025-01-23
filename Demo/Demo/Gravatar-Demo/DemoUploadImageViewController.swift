@@ -6,7 +6,7 @@ class DemoUploadImageViewController: BaseFormViewController {
     let emailFormField = TextFormField(placeholder: "Email", keyboardType: .emailAddress)
     let tokenFormField = TextFormField(placeholder: "Token", isSecure: true)
     let avatarImageField = ImageFormField(size: .init(width: 300, height: 300))
-    let resultField = ButtonLabelField(title: "", subtitle: "", buttonTitle: "") { _ in }
+    let resultField = LabelField(title: "", subtitle: "")
 
     lazy var backendSelectionBehaviorButtonField = ButtonLabelField(
         title: "Backend selection behavior",

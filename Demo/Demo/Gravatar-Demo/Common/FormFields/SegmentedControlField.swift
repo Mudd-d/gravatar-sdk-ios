@@ -34,7 +34,7 @@ class SegmentedControlField: FormField, @unchecked Sendable, UITextFieldDelegate
     }
 }
 
-final class SegmentedControlCell: UITableViewCell {
+private final class SegmentedControlCell: UITableViewCell {
     let selector = UISegmentedControl()
 
     init(reuseIdentifier: String?) {

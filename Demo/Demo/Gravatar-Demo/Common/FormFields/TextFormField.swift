@@ -40,7 +40,7 @@ class TextFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     }
 }
 
-final class TextFieldCell: UITableViewCell {
+private final class TextFieldCell: UITableViewCell {
     let textField = UITextField()
 
     init(reuseIdentifier: String?) {

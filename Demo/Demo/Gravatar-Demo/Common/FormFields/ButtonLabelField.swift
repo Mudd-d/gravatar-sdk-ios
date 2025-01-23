@@ -28,7 +28,7 @@ final class ButtonLabelField: FormField, @unchecked Sendable {
     }
 }
 
-final class ButtonLabelCell: UITableViewCell {
+private final class ButtonLabelCell: UITableViewCell {
     let button = UIButton()
 
     init(reuseIdentifier: String?) {

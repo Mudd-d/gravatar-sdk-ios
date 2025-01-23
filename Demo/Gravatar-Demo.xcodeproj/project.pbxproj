@@ -16,6 +16,7 @@
 		1E15CA782D3FB84700B5FCB4 /* TextFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */; };
 		1E15CA7A2D3FB8AF00B5FCB4 /* ImageFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA792D3FB8AF00B5FCB4 /* ImageFormField.swift */; };
 		1E15CA7C2D3FB8F700B5FCB4 /* SegmentedControlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA7B2D3FB8F700B5FCB4 /* SegmentedControlField.swift */; };
+		1E1C5F342D42734800209999 /* LabelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E1C5F332D42734800209999 /* LabelField.swift */; };
 		1E3FA2412C74E539002901F2 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA23F2C74B8CC002901F2 /* Secrets.swift */; };
 		1E62631C2CD13DB700FC362F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C5D60F2B5B33E20067C2A8 /* ContentView.swift */; };
 		1E62631D2CD13DB700FC362F /* DemoAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9146A7AD2C3BD8F000E07C63 /* DemoAvatarView.swift */; };
@@ -58,6 +59,7 @@
 		1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormField.swift; sourceTree = "<group>"; };
 		1E15CA792D3FB8AF00B5FCB4 /* ImageFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFormField.swift; sourceTree = "<group>"; };
 		1E15CA7B2D3FB8F700B5FCB4 /* SegmentedControlField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlField.swift; sourceTree = "<group>"; };
+		1E1C5F332D42734800209999 /* LabelField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelField.swift; sourceTree = "<group>"; };
 		1E3FA23D2C74B7B5002901F2 /* Secrets.tpl */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.tpl; sourceTree = "<group>"; };
 		1E3FA23F2C74B8CC002901F2 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProfileEditorView.swift; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 			isa = PBXGroup;
 			children = (
 				1E15CA712D3FB48900B5FCB4 /* SwitchField.swift */,
+				1E1C5F332D42734800209999 /* LabelField.swift */,
 				1E15CA732D3FB4FD00B5FCB4 /* ButtonField.swift */,
 				1E15CA752D3FB7D300B5FCB4 /* ButtonLabelField.swift */,
 				1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */,
@@ -417,6 +420,7 @@
 				1ECAB5072BC984440043A331 /* DemoProfileConfigurationViewController.swift in Sources */,
 				919C70552CAA8A090036B03C /* QELayoutOptions.swift in Sources */,
 				91E2FB042BC0276E00265E8E /* DemoProfileViewsViewController.swift in Sources */,
+				1E1C5F342D42734800209999 /* LabelField.swift in Sources */,
 				1E15CA722D3FB48900B5FCB4 /* SwitchField.swift in Sources */,
 				1E15CA782D3FB84700B5FCB4 /* TextFormField.swift in Sources */,
 				91CB2CD42D2EB2E100569581 /* View+Demo.swift in Sources */,

@@ -30,7 +30,7 @@ final class SwitchField: FormField, @unchecked Sendable {
     }
 }
 
-final class SwitchCell: UITableViewCell {
+private final class SwitchCell: UITableViewCell {
     let switcher = UISwitch()
 
     init(reuseIdentifier: String?) {

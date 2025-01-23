@@ -27,7 +27,7 @@ class ImageFormField: FormField, @unchecked Sendable, UITextFieldDelegate {
     }
 }
 
-final class ImageCell: UITableViewCell {
+private final class ImageCell: UITableViewCell {
     let formImageView = UIImageView()
 
     private lazy var widthConstraint: NSLayoutConstraint = formImageView.widthAnchor.constraint(equalToConstant: 300)
