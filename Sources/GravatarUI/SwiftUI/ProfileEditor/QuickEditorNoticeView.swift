@@ -12,7 +12,6 @@ struct QuickEditorNoticeView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            EmailText(email: email)
             if shouldShowIntro {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(QuickEditorConstants.Localized.MissingToken.headline)
@@ -28,6 +27,8 @@ struct QuickEditorNoticeView: View {
                 .padding(.top, .DS.Padding.split)
                 .padding(.bottom, .DS.Padding.split)
                 .frame(maxWidth: .infinity, alignment: .leading)
+            } else {
+                EmailText(email: email)
             }
             AvatarPickerProfileViewWrapper(
                 avatarID: $model.avatarIdentifier,
