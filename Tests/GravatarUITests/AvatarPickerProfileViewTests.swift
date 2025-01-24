@@ -44,22 +44,22 @@ final class AvatarPickerProfileViewTests: XCTestCase {
     @MainActor
     func testAvatarPickerProfileViewWithoutLocation() throws {
         let testView =
-        VStack(alignment: .leading, content: {
-            AvatarPickerProfileView(
-                avatarID: .constant(.email("")),
-                forceRefreshAvatar: .constant(false),
-                model: .constant(
-                    .init(
-                        displayName: "Shelly Kimbrough",
-                        location: "",
-                        profileURL: URL(string: "https://gravatar.com")
-                    )
-                ),
-                isLoading: .constant(false)
-            )
-            .frame(maxWidth: .infinity, alignment: .leading)
-        })
-        .frame(minWidth: Self.width)
+            VStack(alignment: .leading, content: {
+                AvatarPickerProfileView(
+                    avatarID: .constant(.email("")),
+                    forceRefreshAvatar: .constant(false),
+                    model: .constant(
+                        .init(
+                            displayName: "Shelly Kimbrough",
+                            location: "",
+                            profileURL: URL(string: "https://gravatar.com")
+                        )
+                    ),
+                    isLoading: .constant(false)
+                )
+                .frame(maxWidth: .infinity, alignment: .leading)
+            })
+            .frame(minWidth: Self.width)
 
         assertSnapshots(
             of: testView,

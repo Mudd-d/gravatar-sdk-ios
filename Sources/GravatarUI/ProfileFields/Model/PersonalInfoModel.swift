@@ -35,7 +35,7 @@ public enum PersonalInfoBuildingBlock {
 }
 
 extension String {
-    internal func nilIfEmpty() -> String? {
+    func nilIfEmpty() -> String? {
         isEmpty ? nil : self
     }
 }
