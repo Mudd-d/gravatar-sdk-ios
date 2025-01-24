@@ -8,7 +8,6 @@ agents:
 env:
   IMAGE_ID: $IMAGE_ID
   SWIFTFORMAT_VERSION: $SWIFTFORMAT_VERSION
-  DEMO_PROJECT: $DEMO_PROJECT
 
 steps:
   #################
@@ -95,7 +94,7 @@ steps:
         plugins: [$CI_TOOLKIT]
         command: |
           install_gems
-          install_swiftpm_dependencies --project "$DEMO_PROJECT"
+          install_swiftpm_dependencies --project "Demo/Gravatar-Demo.xcodeproj"
           BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution
         artifact_paths:
           - ".build/artifacts/*.ipa"

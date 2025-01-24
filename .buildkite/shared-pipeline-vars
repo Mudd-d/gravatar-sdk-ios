@@ -8,5 +8,3 @@ export IMAGE_ID="xcode-16.2-macos-14.7.1-v1"
 export CI_TOOLKIT="automattic/a8c-ci-toolkit#3.9.1"
 
 export SWIFTFORMAT_VERSION=$( awk '/^--minversion/ { print $2 }' .swiftformat )
-
-export DEMO_PROJECT="Demo/Gravatar-Demo.xcodeproj"
