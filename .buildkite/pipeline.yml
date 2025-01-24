@@ -48,15 +48,6 @@ steps:
             permit_on_passed: true
         agents:
           queue: linter
-      
-      - label: ":swift: Package.resolved"
-        plugins: [$CI_TOOLKIT]
-        notify:
-          - github_commit_status:
-              context: "Package.resolved"
-        command: |
-          install_gems
-          bundle exec make validate-package-resolved
 
   #################
   # Build and Test
@@ -64,6 +55,7 @@ steps:
   - label: "📦 Build and Test Swift Package"
     key: "test"
     command: |
+      install_swiftpm_dependencies --use-spm
       validate_swift_package
     plugins: [$CI_TOOLKIT]
 
@@ -102,6 +94,7 @@ steps:
         plugins: [$CI_TOOLKIT]
         command: |
           install_gems
+          install_swiftpm_dependencies --project "Demo/Gravatar-Demo.xcodeproj"
           BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution
         artifact_paths:
           - ".build/artifacts/*.ipa"
