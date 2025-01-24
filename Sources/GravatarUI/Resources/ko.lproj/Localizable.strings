@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-31 09:54:04+0000 */
+/* Translation-Revision-Date: 2025-01-15 09:54:03+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ko_KR */
@@ -39,6 +39,15 @@
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "공유...";
 
+/* Headline of an intro screen for editing a user's profile. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "프로필 편집";
+
+/* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "그라바타로 %@ 프로필을 보강하세요.";
+
+/* A message that informs the user about Gravatar. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "한 곳에서 웹 프로필을 관리하세요.";
+
 /* Title of a button that allows the user to try loading their avatars again */
 "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle" = "다시 시도";
 
@@ -75,6 +84,9 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "아바타를 설정하겠습니다.";
 
+/* Title of a button that will proceed with the action. */
+"AvatarPicker.Continue.title" = "계속";
+
 /* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "삭제";
 
@@ -107,6 +119,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "프로필 보기 →";
+
+/* Placeholder text for the name field */
+"AvatarPickerProfile.Name.placeholder" = "이름";
+
+/* Placeholder text for some profile fields. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "직무, 위치, 대명사 등";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "죄송합니다. 대체 텍스트를 업데이트하는 중 문제가 발생했습니다.";

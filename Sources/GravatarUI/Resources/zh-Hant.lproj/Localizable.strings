@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-26 09:54:04+0000 */
+/* Translation-Revision-Date: 2025-01-16 13:54:03+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: zh_TW */
@@ -39,6 +39,15 @@
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "分享…";
 
+/* Headline of an intro screen for editing a user's profile. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "編輯你的個人檔案";
+
+/* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "透過 Gravatar 提升 %@ 個人檔案。";
+
+/* A message that informs the user about Gravatar. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "集中管理你在網路上的個人檔案。";
+
 /* Title of a button that allows the user to try loading their avatars again */
 "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle" = "再試一次";
 
@@ -75,6 +84,9 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "立即設定你的大頭貼";
 
+/* Title of a button that will proceed with the action. */
+"AvatarPicker.Continue.title" = "繼續";
+
 /* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "刪除";
 
@@ -107,6 +119,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "檢視個人檔案 →";
+
+/* Placeholder text for the name field */
+"AvatarPickerProfile.Name.placeholder" = "你的姓名";
+
+/* Placeholder text for some profile fields. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "工作、位置、代稱等";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "糟糕，嘗試更新替代文字時發生問題。";
