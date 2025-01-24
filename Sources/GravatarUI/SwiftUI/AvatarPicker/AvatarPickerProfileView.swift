@@ -13,7 +13,7 @@ struct AvatarPickerProfileView: View {
         var profileURL: URL?
 
         var profileDetails: String? {
-            return location
+            location
         }
     }
 
