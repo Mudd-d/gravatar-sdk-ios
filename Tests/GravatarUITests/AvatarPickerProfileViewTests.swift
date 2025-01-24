@@ -23,9 +23,7 @@ final class AvatarPickerProfileViewTests: XCTestCase {
                         .init(
                             displayName: "Shelly Kimbrough",
                             location: "San Antonio, TX",
-                            profileURL: URL(string: "https://gravatar.com"),
-                            pronunciation: "SHEL-ee",
-                            pronouns: "she/her"
+                            profileURL: URL(string: "https://gravatar.com")
                         )
                     ),
                     isLoading: .constant(false)
