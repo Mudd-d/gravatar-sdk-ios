@@ -50,7 +50,7 @@ struct AvatarPickerProfileView: View {
             } else {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(model?.displayName ?? Localized.namePlaceholder)
-                        .font(.title3)
+                        .font(.headline)
                         .fontWeight(.bold)
                     if let model {
                         if let details = model.profileDetails {
