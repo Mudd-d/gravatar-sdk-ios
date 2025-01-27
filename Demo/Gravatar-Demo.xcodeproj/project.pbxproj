@@ -9,6 +9,14 @@
 /* Begin PBXBuildFile section */
 		1E0087932B63CFFE0012ECEA /* DemoFetchProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0087922B63CFFE0012ECEA /* DemoFetchProfileViewController.swift */; };
 		1E0087952B63DBCB0012ECEA /* DemoUploadImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E0087942B63DBCB0012ECEA /* DemoUploadImageViewController.swift */; };
+		1E15CA6F2D3E863400B5FCB4 /* BaseFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA6E2D3E863400B5FCB4 /* BaseFormViewController.swift */; };
+		1E15CA722D3FB48900B5FCB4 /* SwitchField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA712D3FB48900B5FCB4 /* SwitchField.swift */; };
+		1E15CA742D3FB4FD00B5FCB4 /* ButtonField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA732D3FB4FD00B5FCB4 /* ButtonField.swift */; };
+		1E15CA762D3FB7D300B5FCB4 /* ButtonLabelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA752D3FB7D300B5FCB4 /* ButtonLabelField.swift */; };
+		1E15CA782D3FB84700B5FCB4 /* TextFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */; };
+		1E15CA7A2D3FB8AF00B5FCB4 /* ImageFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA792D3FB8AF00B5FCB4 /* ImageFormField.swift */; };
+		1E15CA7C2D3FB8F700B5FCB4 /* SegmentedControlField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E15CA7B2D3FB8F700B5FCB4 /* SegmentedControlField.swift */; };
+		1E1C5F342D42734800209999 /* LabelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E1C5F332D42734800209999 /* LabelField.swift */; };
 		1E3FA2412C74E539002901F2 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E3FA23F2C74B8CC002901F2 /* Secrets.swift */; };
 		1E62631C2CD13DB700FC362F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49C5D60F2B5B33E20067C2A8 /* ContentView.swift */; };
 		1E62631D2CD13DB700FC362F /* DemoAvatarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9146A7AD2C3BD8F000E07C63 /* DemoAvatarView.swift */; };
@@ -44,6 +52,14 @@
 		1E0087922B63CFFE0012ECEA /* DemoFetchProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoFetchProfileViewController.swift; sourceTree = "<group>"; };
 		1E0087942B63DBCB0012ECEA /* DemoUploadImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoUploadImageViewController.swift; sourceTree = "<group>"; };
 		1E09931F2CF76A870031D33A /* Gravatar Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Gravatar Demo.entitlements"; sourceTree = "<group>"; };
+		1E15CA6E2D3E863400B5FCB4 /* BaseFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFormViewController.swift; sourceTree = "<group>"; };
+		1E15CA712D3FB48900B5FCB4 /* SwitchField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchField.swift; sourceTree = "<group>"; };
+		1E15CA732D3FB4FD00B5FCB4 /* ButtonField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonField.swift; sourceTree = "<group>"; };
+		1E15CA752D3FB7D300B5FCB4 /* ButtonLabelField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonLabelField.swift; sourceTree = "<group>"; };
+		1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFormField.swift; sourceTree = "<group>"; };
+		1E15CA792D3FB8AF00B5FCB4 /* ImageFormField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFormField.swift; sourceTree = "<group>"; };
+		1E15CA7B2D3FB8F700B5FCB4 /* SegmentedControlField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentedControlField.swift; sourceTree = "<group>"; };
+		1E1C5F332D42734800209999 /* LabelField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelField.swift; sourceTree = "<group>"; };
 		1E3FA23D2C74B7B5002901F2 /* Secrets.tpl */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secrets.tpl; sourceTree = "<group>"; };
 		1E3FA23F2C74B8CC002901F2 /* Secrets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		1E3FA2442C75E403002901F2 /* DemoProfileEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoProfileEditorView.swift; sourceTree = "<group>"; };
@@ -142,6 +158,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1E15CA702D3FB46F00B5FCB4 /* FormFields */ = {
+			isa = PBXGroup;
+			children = (
+				1E15CA712D3FB48900B5FCB4 /* SwitchField.swift */,
+				1E1C5F332D42734800209999 /* LabelField.swift */,
+				1E15CA732D3FB4FD00B5FCB4 /* ButtonField.swift */,
+				1E15CA752D3FB7D300B5FCB4 /* ButtonLabelField.swift */,
+				1E15CA772D3FB84700B5FCB4 /* TextFormField.swift */,
+				1E15CA792D3FB8AF00B5FCB4 /* ImageFormField.swift */,
+				1E15CA7B2D3FB8F700B5FCB4 /* SegmentedControlField.swift */,
+			);
+			path = FormFields;
+			sourceTree = "<group>";
+		};
 		1E1646B12CD14B460015B720 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -237,6 +267,8 @@
 		91956A502B67939F00BF3CF0 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				1E15CA6E2D3E863400B5FCB4 /* BaseFormViewController.swift */,
+				1E15CA702D3FB46F00B5FCB4 /* FormFields */,
 				91956A512B6793AF00BF3CF0 /* SwitchWithLabel.swift */,
 			);
 			path = Common;
@@ -360,7 +392,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1E15CA742D3FB4FD00B5FCB4 /* ButtonField.swift in Sources */,
 				1E62631C2CD13DB700FC362F /* ContentView.swift in Sources */,
+				1E15CA7A2D3FB8AF00B5FCB4 /* ImageFormField.swift in Sources */,
+				1E15CA762D3FB7D300B5FCB4 /* ButtonLabelField.swift in Sources */,
 				1E62631D2CD13DB700FC362F /* DemoAvatarView.swift in Sources */,
 				1E62631E2CD13DB700FC362F /* DemoAvatarPickerView.swift in Sources */,
 				1E62631F2CD13DB700FC362F /* DemoProfileEditorView.swift in Sources */,
@@ -369,6 +404,7 @@
 				1E6263222CD13DB700FC362F /* TestImageCropper.swift in Sources */,
 				91F0B3DD2B62815F0025C4F8 /* MainTableViewController.swift in Sources */,
 				1E3FA2412C74E539002901F2 /* Secrets.swift in Sources */,
+				1E15CA6F2D3E863400B5FCB4 /* BaseFormViewController.swift in Sources */,
 				914AC0192BD7FF08005DA4A5 /* DemoBaseProfileViewController.swift in Sources */,
 				1E0087932B63CFFE0012ECEA /* DemoFetchProfileViewController.swift in Sources */,
 				1E0087952B63DBCB0012ECEA /* DemoUploadImageViewController.swift in Sources */,
@@ -379,10 +415,14 @@
 				91F0B3DE2B62815F0025C4F8 /* DemoAvatarDownloadViewController.swift in Sources */,
 				91956A542B67943A00BF3CF0 /* DemoUIImageViewExtensionViewController.swift in Sources */,
 				914AC0202BDAAC3C005DA4A5 /* DemoRemoteSVGViewController.swift in Sources */,
+				1E15CA7C2D3FB8F700B5FCB4 /* SegmentedControlField.swift in Sources */,
 				495775E42B5B34970082812A /* SceneDelegate.swift in Sources */,
 				1ECAB5072BC984440043A331 /* DemoProfileConfigurationViewController.swift in Sources */,
 				919C70552CAA8A090036B03C /* QELayoutOptions.swift in Sources */,
 				91E2FB042BC0276E00265E8E /* DemoProfileViewsViewController.swift in Sources */,
+				1E1C5F342D42734800209999 /* LabelField.swift in Sources */,
+				1E15CA722D3FB48900B5FCB4 /* SwitchField.swift in Sources */,
+				1E15CA782D3FB84700B5FCB4 /* TextFormField.swift in Sources */,
 				91CB2CD42D2EB2E100569581 /* View+Demo.swift in Sources */,
 				9133058E2C91F8D1009F5C0B /* DemoImageCropperViewController.swift in Sources */,
 			);
