@@ -1,144 +1,102 @@
 import UIKit
 import Gravatar
+import Combine
 
-class DemoUploadImageViewController: UIViewController {
-    let rootStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .vertical
-        stack.spacing = 12
-        stack.distribution = .fill
-        stack.alignment = .fill
+class DemoUploadImageViewController: BaseFormViewController {
+    let emailFormField = TextFormField(placeholder: "Email", keyboardType: .emailAddress)
+    let tokenFormField = TextFormField(placeholder: "Token", isSecure: true)
+    let avatarImageField = ImageFormField(size: .init(width: 300, height: 300))
+    let resultField = LabelField(title: "", subtitle: "")
 
-        return stack
-    }()
+    lazy var backendSelectionBehaviorButtonField = ButtonLabelField(
+        title: "Backend selection behavior",
+        subtitle: "Preserve selection",
+        buttonTitle: "Select"
+    ) { [weak self] _ in
+        self?.avatarSelectionTapped()
+    }
 
-    let emailField: UITextField = {
-        let textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Email"
-        textField.keyboardType = .emailAddress
-        textField.autocapitalizationType = .none
-        textField.textContentType = .emailAddress
-        textField.textAlignment = .center
-        return textField
-    }()
+    lazy var selectAvatarButtonField = ButtonField(title: "Select Image") { [weak self] _ in
+        self?.selectImage()
+    }
 
-    let tokenField: UITextField = {
-        let textField = UITextField()
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Token"
-        textField.autocapitalizationType = .none
-        textField.textAlignment = .center
-        textField.isSecureTextEntry = true
-        return textField
-    }()
-    
-    lazy var avatarSelectionButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(avatarSelectionBehavior.description, for: .normal)
-        button.contentHorizontalAlignment = .center
-        button.isEnabled = false
-        return button
-    }()
+    lazy var uploadImageButtonField = ButtonField(
+        title: "Upload Image",
+        isActionButton: true,
+        enabled: false
+    ) { [weak self] _ in
+        self?.uploadImageButtonHandler()
+    }
 
-    let selectImageButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Select Image", for: .normal)
-        button.contentHorizontalAlignment = .center
-        return button
-    }()
+    override var form: [FormField] {
+        [
+            emailFormField,
+            tokenFormField,
+            backendSelectionBehaviorButtonField,
+            selectAvatarButtonField,
+            uploadImageButtonField,
+            avatarImageField,
+            resultField
+        ]
+    }
 
-    let uploadImageButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Upload Image", for: .normal)
-        button.contentHorizontalAlignment = .center
-        return button
-    }()
-
-    let avatarImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.heightAnchor.constraint(equalToConstant: 300).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 300).isActive = true
-        imageView.backgroundColor = .lightGray
-        return imageView
-    }()
-
-    let activityIndicator = UIActivityIndicatorView(style: .large)
-
-    let resultLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .center
-        return label
-    }()
-
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
     private var avatarSelectionBehavior: AvatarSelection = .preserveSelection
 
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Upload Image"
-        view.backgroundColor = .white
 
-        for view in [emailField, tokenField, avatarSelectionButton, selectImageButton, avatarImageView, uploadImageButton, activityIndicator, resultLabel] {
-            rootStackView.addArrangedSubview(view)
+        tableView.tableFooterView = activityIndicator
+
+        emailFormField.$text
+            .map { $0.isEmpty }
+            .sink
+        { [weak self] isEmpty in
+            guard let self else { return }
+            uploadImageButtonField.isEnabled = !isEmpty
+            update(uploadImageButtonField)
         }
-        view.addSubview(rootStackView)
-
-        NSLayoutConstraint.activate([
-            view.safeAreaLayoutGuide.topAnchor.constraint(equalTo: rootStackView.topAnchor),
-            view.readableContentGuide.leadingAnchor.constraint(equalTo: rootStackView.leadingAnchor),
-            view.readableContentGuide.trailingAnchor.constraint(equalTo: rootStackView.trailingAnchor),
-        ])
-
-        emailField.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
-        uploadImageButton.addTarget(self, action: #selector(fetchProfileButtonHandler), for: .touchUpInside)
-        selectImageButton.addTarget(self, action: #selector(selectImage), for: .touchUpInside)
+        .store(in: &cancellables)
     }
 
-    @objc func selectImage(_ sender: UIButton) {
+    func selectImage() {
         let picker = UIImagePickerController()
         picker.allowsEditing = true
         picker.delegate = self
         present(picker, animated: true)
     }
-    
-    @objc func textFieldDidChange(_ sender: UITextField) {
-        if emailField.text?.isEmpty == true {
-            avatarSelectionButton.isEnabled = false
-        } else {
-            avatarSelectionButton.isEnabled = true
-            avatarSelectionButton.removeTarget(nil, action: nil, for: .touchUpInside)
-            avatarSelectionButton.addTarget(self, action: #selector(avatarSelectionTapped), for: .touchUpInside)
-        }
-    }
 
-    @objc func fetchProfileButtonHandler() {
-        guard 
+    @objc func uploadImageButtonHandler() {
+        let email = emailFormField.text
+        let token = tokenFormField.text
+
+        guard
             activityIndicator.isAnimating == false,
-            let email = emailField.text, email.isEmpty == false,
-            let token = tokenField.text, token.isEmpty == false,
-            let image = avatarImageView.image
+            email.isEmpty == false,
+            token.isEmpty == false,
+            let image = avatarImageField.image
         else {
             return
         }
         
         activityIndicator.startAnimating()
-        resultLabel.text = nil
-
+        resultField.subtitle = ""
+        update(resultField)
         let service = Gravatar.AvatarService()
 
         Task {
             do {
-                let avatarModel = try await service.upload(image, selectionBehavior: avatarSelectionBehavior, accessToken: token)
-                resultLabel.text = "✅ Avatar id \(avatarModel.id)"
+                let avatarModel = try await service.upload(
+                    image,
+                    selectionBehavior: avatarSelectionBehavior,
+                    accessToken: token
+                )
+                resultField.subtitle = "✅ Avatar id \(avatarModel.id)"
             } catch {
-                resultLabel.text = "Error \((error as NSError).code): \(error.localizedDescription)"
+                resultField.subtitle = "Error \((error as NSError).code): \(error.localizedDescription)"
             }
+            update(resultField)
             activityIndicator.stopAnimating()
         }
     }
@@ -149,7 +107,8 @@ extension DemoUploadImageViewController: UIImagePickerControllerDelegate, UINavi
         guard let image = info[.editedImage] as? UIImage else { return }
 
         let squareImage = makeSquare(image)
-        avatarImageView.image = squareImage
+        avatarImageField.image = squareImage
+        update(avatarImageField)
 
         dismiss(animated: true)
     }
@@ -169,23 +128,21 @@ extension DemoUploadImageViewController: UIImagePickerControllerDelegate, UINavi
             image.draw(in: CGRect(origin: imageOrigin, size: image.size))
         }
     }
-    
-    @objc private func avatarSelectionTapped() {
-        if let email = emailField.text {
-            setAvatarSelectionMethod(with: email)
-        }
-    }
-    
-    @objc private func setAvatarSelectionMethod(with email: String) {
-        guard let email = emailField.text else { return }
 
+    @objc private func avatarSelectionTapped() {
+        setAvatarSelectionMethod(with: emailFormField.text)
+    }
+
+    @objc private func setAvatarSelectionMethod(with email: String) {
         let controller = UIAlertController(title: "Avatar selection behavior:", message: nil, preferredStyle: .actionSheet)
 
 
         AvatarSelection.allCases(for: .init(email)).forEach { selectionCase in
             controller.addAction(UIAlertAction(title: selectionCase.description, style: .default) { [weak self] action in
-                self?.avatarSelectionBehavior = selectionCase
-                self?.avatarSelectionButton.setTitle(selectionCase.description, for: .normal)
+                guard let self else { return }
+                avatarSelectionBehavior = selectionCase
+                backendSelectionBehaviorButtonField.subtitle = selectionCase.description
+                update(backendSelectionBehaviorButtonField)
             })
         }
 
@@ -193,11 +150,6 @@ extension DemoUploadImageViewController: UIImagePickerControllerDelegate, UINavi
 
         present(controller, animated: true)
     }
-}
-
-enum AvatarUploadVersion: String, CaseIterable {
-    case v1
-    case v3
 }
 
 extension AvatarSelection {

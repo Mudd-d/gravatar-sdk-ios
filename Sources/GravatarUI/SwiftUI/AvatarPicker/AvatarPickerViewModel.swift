@@ -30,6 +30,7 @@ class AvatarPickerViewModel: ObservableObject {
     @Published private(set) var gridResponseStatus: Result<Void, Error>?
     @Published private(set) var grid: AvatarGridModel = .init(avatars: [])
     @Published private(set) var profileResult: Result<ProfileSummaryModel, Error>?
+
     @Published var isProfileLoading: Bool = false
     @Published private(set) var isAvatarsLoading: Bool = false
     @Published var avatarIdentifier: AvatarIdentifier?
@@ -84,9 +85,7 @@ class AvatarPickerViewModel: ObservableObject {
             self.profileModel = .init(
                 displayName: profileModel.displayName,
                 location: profileModel.location,
-                profileURL: profileModel.profileURL,
-                pronunciation: profileModel.pronunciation,
-                pronouns: profileModel.pronouns
+                profileURL: profileModel.profileURL
             )
             switch profileModel.avatarIdentifier {
             case .email(let email):
@@ -149,9 +148,7 @@ class AvatarPickerViewModel: ObservableObject {
                 self?.profileModel = .init(
                     displayName: value.displayName,
                     location: value.location,
-                    profileURL: value.profileURL,
-                    pronunciation: value.pronunciation,
-                    pronouns: value.pronouns
+                    profileURL: value.profileURL
                 )
             default:
                 self?.profileModel = nil

@@ -11,14 +11,9 @@ struct AvatarPickerProfileView: View {
         var displayName: String
         var location: String
         var profileURL: URL?
-        var pronunciation: String
-        var pronouns: String
 
         var profileDetails: String? {
-            let joinedFields = [pronunciation, pronouns, location]
-                .filter { !$0.isEmpty }
-                .joined(separator: "・")
-            return joinedFields.isEmpty ? nil : joinedFields
+            location.nilIfEmpty()
         }
     }
 
@@ -51,7 +46,7 @@ struct AvatarPickerProfileView: View {
             } else {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(model?.displayName ?? Localized.namePlaceholder)
-                        .font(.title3)
+                        .font(.headline)
                         .fontWeight(.bold)
                     if let model {
                         if let details = model.profileDetails {
@@ -148,8 +143,8 @@ extension AvatarPickerProfileView {
         )
         static let profileDetailsPlaceholder = SDKLocalizedString(
             "AvatarPickerProfile.ProfileFields.placeholder",
-            value: "Job, location, pronouns etc.",
-            comment: "Placeholder text for some profile fields."
+            value: "Location",
+            comment: "Placeholder text for the profile card. Will show as subtitle bellow the name placeholder."
         )
     }
 }
@@ -164,9 +159,7 @@ extension AvatarPickerProfileView {
             .init(
                 displayName: "Shelly Kimbrough",
                 location: "San Antonio, TX",
-                profileURL: URL(string: "https://gravatar.com"),
-                pronunciation: "SHEL-ee",
-                pronouns: "she/her"
+                profileURL: URL(string: "https://gravatar.com")
             )
         ),
         isLoading: .constant(false)
