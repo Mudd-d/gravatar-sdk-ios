@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-27 09:54:07+0000 */
+/* Translation-Revision-Date: 2025-01-15 09:54:03+0000 */
 /* Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2); */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ru */
@@ -39,6 +39,15 @@
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "Поделиться…";
 
+/* Headline of an intro screen for editing a user's profile. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "Редактировать профиль";
+
+/* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "Расширьте возможности вашего профиля %@ с помощью Gravatar.";
+
+/* A message that informs the user about Gravatar. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "Централизованно управляйте своим интернет-профилем на всех сайтах.";
+
 /* Title of a button that allows the user to try loading their avatars again */
 "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle" = "Повторить попытку";
 
@@ -75,6 +84,9 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Настройте свой аватар";
 
+/* Title of a button that will proceed with the action. */
+"AvatarPicker.Continue.title" = "Продолжить";
+
 /* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Удалить";
 
@@ -107,6 +119,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Просмотреть профиль →";
+
+/* Placeholder text for the name field */
+"AvatarPickerProfile.Name.placeholder" = "Ваше имя";
+
+/* Placeholder text for some profile fields. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Добавьте ваше местоположение, местоимения и т. д.";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Что-то пошло не так при попытке изменить альтернативный текст.";

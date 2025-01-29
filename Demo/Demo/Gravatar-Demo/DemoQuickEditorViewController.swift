@@ -197,7 +197,7 @@ final class DemoQuickEditorViewController: UIViewController {
             token: token
         )
         presenter.present(in: self, onAvatarUpdated: { [weak self] in
-            self?.profileSummaryView.loadAvatar(with: .email(email), options: [.forceRefresh])
+            self?.profileSummaryView.loadAvatar(with: .email(email), rating: .x, options: [.forceRefresh])
         } , onDismiss: { [weak self] in
             self?.updateLogoutButton()
         })

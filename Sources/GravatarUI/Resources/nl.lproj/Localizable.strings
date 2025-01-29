@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-03 13:54:02+0000 */
+/* Translation-Revision-Date: 2025-01-16 09:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: nl */
@@ -39,6 +39,15 @@
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "Delen";
 
+/* Headline of an intro screen for editing a user's profile. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "Je profiel bewerken";
+
+/* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "Verbeter je %@-profiel met Gravatar.";
+
+/* A message that informs the user about Gravatar. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "Beheer je profiel voor het web op één plek.";
+
 /* Title of a button that allows the user to try loading their avatars again */
 "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle" = "Opnieuw proberen";
 
@@ -75,6 +84,9 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Laten we je avatar instellen";
 
+/* Title of a button that will proceed with the action. */
+"AvatarPicker.Continue.title" = "Doorgaan";
+
 /* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Verwijderen";
 
@@ -107,6 +119,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Profiel bekijken →";
+
+/* Placeholder text for the name field */
+"AvatarPickerProfile.Name.placeholder" = "Je naam";
+
+/* Placeholder text for some profile fields. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Functie, locatie, persoonlijk voornaamwoorden enz.";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Oeps, er is iets misgegaan terwijl je je alt. tekst probeerde aan te passen.";

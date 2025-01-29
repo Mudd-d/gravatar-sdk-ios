@@ -15,7 +15,7 @@ final class AvatarPickerViewModelTests {
     }
 
     static func createModel(
-        session: URLSessionAvatarPickerMock = .init(),
+        session: URLSessionProtocol = URLSessionAvatarPickerMock(),
         imageDownloader: ImageDownloader = TestImageFetcher(result: .success)
     ) -> AvatarPickerViewModel {
         .init(
@@ -209,7 +209,7 @@ final class AvatarPickerViewModelTests {
 
     @Test
     func testUploadErrorTooLarge() async throws {
-        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.payloadTooLarge.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: HTTPStatus.payloadTooLarge.rawValue))
         model.grid.setAvatars([])
 
         await confirmation { confirmation in
@@ -277,7 +277,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test success deletion when the response is a 404 error")
     func testDeleteError404() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
-        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: HTTPStatus.notFound.rawValue))
         model.grid.setAvatars([avatarToDelete])
 
         #expect(await model.delete(avatarToDelete))
@@ -287,7 +287,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test success deletion of selected avatar when the response is a 404 error")
     func testDeleteSelectedAvatarError404() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""), isSelected: true)
-        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.notFound.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: HTTPStatus.notFound.rawValue))
         model.grid.setAvatars([avatarToDelete])
         #expect(model.grid.selectedAvatar != nil)
 
@@ -308,7 +308,7 @@ final class AvatarPickerViewModelTests {
     @Test("Test error deletion when the response is an error different to 404")
     func testDeleteErrorFails() async throws {
         let avatarToDelete = Self.createImageModel(id: "1", source: .remote(url: ""))
-        model = Self.createModel(session: .init(returnErrorCode: HTTPStatus.unauthorized.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: HTTPStatus.unauthorized.rawValue))
         model.grid.setAvatars([avatarToDelete])
 
         #expect(await model.delete(avatarToDelete) == false, "Delete request should fail")
@@ -345,7 +345,7 @@ final class AvatarPickerViewModelTests {
     )
     func changeAvatarRatingReturnsError(httpStatus: HTTPStatus) async throws {
         let testAvatarID = "991a7b71cf9f34..."
-        model = Self.createModel(session: .init(returnErrorCode: httpStatus.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: httpStatus.rawValue))
 
         await model.refresh()
         let avatar = try #require(model.grid.avatars.first(where: { $0.id == testAvatarID }), "No avatar found")
@@ -381,12 +381,30 @@ final class AvatarPickerViewModelTests {
         #expect(updatedAvatar.altText == newAltText)
     }
 
+    @Test
+    func testNewAccountProfileRefresh() async throws {
+        let session = URLSessionAvatarPickerMockNewAccount()
+        model = Self.createModel(session: session)
+        await model.refresh()
+        let task = try #require(model.compensatingFetchProfileTask, "No profile task found")
+        // `await confirmation { ... }` doesn't await the unstructured `Task` so we need to await it.
+        // For context: https://forums.swift.org/t/testing-closure-based-asynchronous-apis/73705/9
+        await task.value
+        let isProfileFetched = switch model.profileResult {
+        case .success:
+            true
+        default:
+            false
+        }
+        #expect(isProfileFetched)
+    }
+
     @Test(
         "Handle avatar alt text change: Failure",
         arguments: [HTTPStatus.unauthorized, .forbidden]
     )
     func testUpdateAltTextError(httpStatus: HTTPStatus) async throws {
-        model = Self.createModel(session: .init(returnErrorCode: httpStatus.rawValue))
+        model = Self.createModel(session: URLSessionAvatarPickerMock(returnErrorCode: httpStatus.rawValue))
         await model.refresh()
         let avatar = model.grid.avatars[0]
         let originalAltText = avatar.altText
@@ -539,4 +557,30 @@ extension Data? {
         guard let self else { return false }
         return (try? decoder.decode(T.self, from: self)) != nil
     }
+}
+
+// Simulates profile creation at the BE side on the very first avatar request.
+actor URLSessionAvatarPickerMockNewAccount: URLSessionProtocol {
+    func data(for request: URLRequest) async throws -> (Data, URLResponse) {
+        if request.isProfilesRequest {
+            if profileRequestCount == 0 {
+                profileRequestCount += 1
+                // profile is missing on the first call
+                return ("{\"error\":\"error\"".data(using: .utf8)!, HTTPURLResponse.errorResponse(code: 404))
+            } else {
+                return (Bundle.fullProfileJsonData, HTTPURLResponse.successResponse()) // Profile data
+            }
+        } else if request.isAvatarsRequest == true {
+            return (Bundle.getAvatarsJsonData, HTTPURLResponse.successResponse()) // Avatars data
+        }
+        throw TestURLSessionError(message: "Unexpected request")
+    }
+
+    func upload(for request: URLRequest, from bodyData: Data) async throws -> (Data, URLResponse) {
+        (Bundle.postAvatarUploadJsonData, HTTPURLResponse.successResponse())
+    }
+
+    private var profileRequestCount: Int = 0
+
+    init() {}
 }

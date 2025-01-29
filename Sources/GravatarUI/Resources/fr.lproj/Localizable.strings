@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2024-12-30 13:54:03+0000 */
+/* Translation-Revision-Date: 2025-01-15 09:45:36+0000 */
 /* Plural-Forms: nplurals=2; plural=n > 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: fr */
@@ -39,6 +39,15 @@
 /* An option in the avatar menu that shares the avatar */
 "AvatarPicker.AvatarAction.share" = "Partager…";
 
+/* Headline of an intro screen for editing a user's profile. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "Modifier votre profil";
+
+/* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "Améliorez votre profil %@ avec Gravatar.";
+
+/* A message that informs the user about Gravatar. */
+"AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "Gérez votre profil sur le Web en un seul endroit.";
+
 /* Title of a button that allows the user to try loading their avatars again */
 "AvatarPicker.ContentLoading.Failure.Retry.ctaButtonTitle" = "Réessayer";
 
@@ -75,6 +84,9 @@
 /* Title of a message advising the user to setup their avatar */
 "AvatarPicker.ContentLoading.success.title" = "Configurons votre avatar";
 
+/* Title of a button that will proceed with the action. */
+"AvatarPicker.Continue.title" = "Continuer";
+
 /* The title button which confirms the avatar deletion. */
 "AvatarPicker.Deletion.Confirmation.ctaButtonTitle" = "Supprimer";
 
@@ -107,6 +119,12 @@
 
 /* Title of a button that will take you to your Gravatar profile, with an arrow indicating that this action will cause you to leave this view */
 "AvatarPickerProfile.Button.ViewProfile.title" = "Afficher le profil →";
+
+/* Placeholder text for the name field */
+"AvatarPickerProfile.Name.placeholder" = "Votre Nom";
+
+/* Placeholder text for some profile fields. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Emploi, lieu, pronoms, etc.";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Oups, un couac est survenu lors de la tentative de mise à jour du texte alternatif.";

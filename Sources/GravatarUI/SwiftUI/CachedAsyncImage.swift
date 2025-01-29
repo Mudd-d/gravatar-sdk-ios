@@ -6,6 +6,7 @@ import SwiftUI
 struct CachedAsyncImage<Content: View>: View {
     @State private var phase: AsyncImagePhase
     @Binding private var forceRefresh: Bool
+    @Binding private var oneTimeForceRefresh: Bool
     @Binding private var isLoading: Bool
 
     private let url: URL?
@@ -25,6 +26,14 @@ struct CachedAsyncImage<Content: View>: View {
                     }
                 }
             }
+            .onChange(of: oneTimeForceRefresh) { newValue in
+                if newValue {
+                    Task {
+                        await load()
+                        oneTimeForceRefresh = false
+                    }
+                }
+            }
             .task(id: url) {
                 await load()
             }
@@ -35,6 +44,7 @@ struct CachedAsyncImage<Content: View>: View {
         cache: ImageCaching = ImageCache.shared,
         urlSession: URLSession = .shared,
         forceRefresh: Binding<Bool> = .constant(false),
+        oneTimeForceRefresh: Binding<Bool> = .constant(false),
         scale: CGFloat = UITraitCollection.current.displayScale,
         transaction: Transaction = Transaction(),
         isLoading: Binding<Bool> = .constant(false),
@@ -46,6 +56,7 @@ struct CachedAsyncImage<Content: View>: View {
         self.transaction = transaction
         self.content = content
         self._forceRefresh = forceRefresh
+        self._oneTimeForceRefresh = oneTimeForceRefresh
         self._isLoading = isLoading
         self._phase = State(wrappedValue: .empty)
         self.cache = cache
@@ -64,7 +75,7 @@ struct CachedAsyncImage<Content: View>: View {
             isLoading = true
             let result = try await imageDownloader.fetchImage(
                 with: url,
-                forceRefresh: forceRefresh,
+                forceRefresh: forceRefresh || oneTimeForceRefresh,
                 processingMethod: .common(scaleFactor: scale)
             )
             withAnimation(transaction.animation) {

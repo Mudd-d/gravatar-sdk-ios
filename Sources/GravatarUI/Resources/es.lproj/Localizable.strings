@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-14 09:54:05+0000 */
+/* Translation-Revision-Date: 2025-01-15 15:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: es */
@@ -43,7 +43,7 @@
 "AvatarPicker.ContentLoading.Failure.MissingToken.headline" = "Edita tu perfil";
 
 /* Subheadline of an intro screen for editing a user's profile. %@ is the name of a mobile app that uses Gravatar services. */
-"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "Mejora tu perfil de %@ con Gravatar";
+"AvatarPicker.ContentLoading.Failure.MissingToken.subheadline" = "Mejora tu perfil de %@ con Gravatar.";
 
 /* A message that informs the user about Gravatar. */
 "AvatarPicker.ContentLoading.Failure.MissingToken.subtext" = "Gestiona tu perfil para la web en un único lugar.";

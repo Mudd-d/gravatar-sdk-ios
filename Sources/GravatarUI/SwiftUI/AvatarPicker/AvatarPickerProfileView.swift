@@ -24,6 +24,7 @@ struct AvatarPickerProfileView: View {
             with: avatarID,
             options: .init(
                 preferredSize: .points(Constants.avatarLength),
+                rating: .x,
                 defaultAvatarOption: .status404
             )
         )?.url
@@ -101,7 +102,7 @@ struct AvatarPickerProfileView: View {
                     .colorScheme(colorScheme)
                     .background(Color(UIColor.systemBackground))
             },
-            forceRefresh: $forceRefreshAvatar,
+            oneTimeForceRefresh: $forceRefreshAvatar,
             loadingView: {
                 ProgressView()
                     .progressViewStyle(CircularProgressViewStyle())

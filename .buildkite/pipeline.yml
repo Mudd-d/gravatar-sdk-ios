@@ -55,6 +55,7 @@ steps:
   - label: "📦 Build and Test Swift Package"
     key: "test"
     command: |
+      install_swiftpm_dependencies --use-spm
       validate_swift_package
     plugins: [$CI_TOOLKIT]
 
@@ -93,6 +94,7 @@ steps:
         plugins: [$CI_TOOLKIT]
         command: |
           install_gems
+          install_swiftpm_dependencies --project "Demo/Gravatar-Demo.xcodeproj"
           BUILD_NUMBER=$BUILDKITE_BUILD_NUMBER make build-demo-for-distribution
         artifact_paths:
           - ".build/artifacts/*.ipa"

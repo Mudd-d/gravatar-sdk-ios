@@ -122,7 +122,7 @@ struct ProfileSummary: UIViewRepresentable {
     
     func updateUIView(_ uiView: GravatarUI.ProfileSummaryView, context: Context) {
         trigger.onTrigger = {
-            uiView.loadAvatar(with: avatarID, options: [.forceRefresh])
+            uiView.loadAvatar(with: avatarID, rating: .x, options: [.forceRefresh])
         }
 
         uiView.update(with: profileModel)
