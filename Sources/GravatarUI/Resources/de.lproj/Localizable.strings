@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-15 17:54:03+0000 */
+/* Translation-Revision-Date: 2025-02-05 15:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: de */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "Dein Name";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "Beruf, Ort, Pronomen usw.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Ort";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Ups, beim Versuch, den Alt-Text zu aktualisieren, ist etwas schiefgegangen.";

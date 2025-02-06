@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-16 09:54:02+0000 */
+/* Translation-Revision-Date: 2025-02-05 11:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: nl */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "Je naam";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "Functie, locatie, persoonlijk voornaamwoorden enz.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Locatie";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Oeps, er is iets misgegaan terwijl je je alt. tekst probeerde aan te passen.";
