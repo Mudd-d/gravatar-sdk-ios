@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-15 09:54:03+0000 */
+/* Translation-Revision-Date: 2025-02-04 09:54:04+0000 */
 /* Plural-Forms: nplurals=1; plural=0; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ko_KR */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "이름";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "직무, 위치, 대명사 등";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "위치";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "죄송합니다. 대체 텍스트를 업데이트하는 중 문제가 발생했습니다.";

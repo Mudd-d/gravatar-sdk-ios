@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-06 15:03:44+0000 */
+/* Translation-Revision-Date: 2025-01-28 14:45:45+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: sv_SE */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "Ditt namn";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "Jobb, plats, pronomen etc.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Plats";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Hoppsan, något fungerade inte riktigt när du försökte uppdatera den alternativa texten.";

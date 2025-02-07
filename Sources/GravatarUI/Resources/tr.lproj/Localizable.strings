@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-13 11:37:38+0000 */
+/* Translation-Revision-Date: 2025-01-28 08:58:41+0000 */
 /* Plural-Forms: nplurals=2; plural=(n > 1); */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: tr */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "İsminiz";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "İş, konum, zamirler vb.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Konum";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Üzgünüz, alt metni değiştirmeye çalışırken bir sorun yaşandı.";
