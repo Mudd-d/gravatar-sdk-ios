@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-14 13:54:02+0000 */
+/* Translation-Revision-Date: 2025-02-04 15:54:02+0000 */
 /* Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: ar */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "اسمك";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "الوظيفة، والموقع، والضمائر، وما إلى ذلك";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "الموقع";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "عذرًا، ثمَّة شيء لم يعمل بشكل طبيعي في أثناء محاولة تحديث النص البديل.";

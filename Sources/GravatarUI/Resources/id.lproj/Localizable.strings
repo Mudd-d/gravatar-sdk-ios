@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-15 09:54:03+0000 */
+/* Translation-Revision-Date: 2025-02-04 09:54:03+0000 */
 /* Plural-Forms: nplurals=2; plural=n > 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: id */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "Nama Anda";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "Pekerjaan, lokasi, kata ganti Anda, dll.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Lokasi";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Ups, terjadi kesalahan saat memperbarui teks alt.";

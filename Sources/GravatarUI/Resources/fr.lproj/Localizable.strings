@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-15 09:45:36+0000 */
+/* Translation-Revision-Date: 2025-02-03 15:29:55+0000 */
 /* Plural-Forms: nplurals=2; plural=n > 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: fr */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "Votre Nom";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "Emploi, lieu, pronoms, etc.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "Localisation";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "Oups, un couac est survenu lors de la tentative de mise à jour du texte alternatif.";
