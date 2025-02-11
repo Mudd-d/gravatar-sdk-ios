@@ -1,4 +1,4 @@
-/* Translation-Revision-Date: 2025-01-16 09:54:03+0000 */
+/* Translation-Revision-Date: 2025-02-05 15:54:02+0000 */
 /* Plural-Forms: nplurals=2; plural=n != 1; */
 /* Generator: GlotPress/2.4.0-alpha */
 /* Language: he_IL */
@@ -123,8 +123,8 @@
 /* Placeholder text for the name field */
 "AvatarPickerProfile.Name.placeholder" = "השם שלך";
 
-/* Placeholder text for some profile fields. */
-"AvatarPickerProfile.ProfileFields.placeholder" = "משרה, מיקום, כינוי גוף וכו'.";
+/* Placeholder text for the profile card. Will show as subtitle bellow the name placeholder. */
+"AvatarPickerProfile.ProfileFields.placeholder" = "מיקום";
 
 /* This error message shows when the user attempts to change the alt text of an avatar and fails. */
 "AvatarPickerViewModel.AltText.Error" = "אופס, משהו השתבש במהלך הניסיון לעדכן את הטקסט החלופי.";
