@@ -29,11 +29,7 @@ steps:
         plugins:
           - docker#v5.12.0:
               image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
-              command: ["--lint", "Sources"]
-              workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
-          - docker#v5.12.0:
-              image: "ghcr.io/nicklockwood/swiftformat:$SWIFTFORMAT_VERSION"
-              command: ["--lint", "Tests"]
+              command: ["Sources", "Tests", "--lint"]
               workdir: "${BUILDKITE_BUILD_CHECKOUT_PATH}"
         notify:
           - github_commit_status:
