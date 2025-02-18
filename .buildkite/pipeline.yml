@@ -44,6 +44,9 @@ steps:
         retry:
           manual:
             permit_on_passed: true
+        notify:
+          - github_commit_status:
+              context: "Danger - PR Check"
         agents:
           queue: linter
 
@@ -56,6 +59,9 @@ steps:
       install_swiftpm_dependencies --use-spm
       validate_swift_package
     plugins: [$CI_TOOLKIT]
+    notify:
+      - github_commit_status:
+          context: "Build and Test Swift Package"
 
   ###################
   # Validate Podspec
@@ -65,6 +71,9 @@ steps:
     command: |
       .buildkite/commands/validate-pods.sh
     plugins: [$CI_TOOLKIT]
+    notify:
+      - github_commit_status:
+          context: "Validate Podspecs"
 
   #######################
   # Publish the Podspecs (if we're building a tag)
@@ -85,7 +94,7 @@ steps:
   ###################
   # Prototype Builds of Demo Projects
   ###################
-  - group: ":appcenter: Prototype Builds"
+  - group: ":appcenter: Prototype Build"
     steps:
       - label: "🛠️ Build Demo"
         key: build_demo
@@ -98,9 +107,15 @@ steps:
         artifact_paths:
           - ".build/artifacts/*.ipa"
           - ".build/artifacts/*.dSYM.zip"
+        notify:
+          - github_commit_status:
+              context: "Build Prototype"
 
       - label: "⬆️ Upload Demo to App Center"
         depends_on: build_demo
         plugins: [$CI_TOOLKIT]
         command: .buildkite/commands/upload-to-appcenter.sh
         if: build.pull_request.id != null
+        notify:
+          - github_commit_status:
+              context: "Publish Prototype"
