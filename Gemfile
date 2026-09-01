@@ -2,8 +2,8 @@
 
 source 'https://rubygems.org'
 
-gem 'danger-dangermattic', '~> 1.4.0'
-gem 'fastlane', '~> 2.237'
+gem 'danger-dangermattic', '~> 1.4.1'
+gem 'fastlane', '~> 2.238'
 gem 'fastlane-plugin-firebase_app_distribution', '~> 1.0'
-gem 'fastlane-plugin-wpmreleasetoolkit', '~> 14.10'
-gem 'rubocop', '~> 1.88'
+gem 'fastlane-plugin-wpmreleasetoolkit', '~> 15.0'
+gem 'rubocop', '~> 1.90'

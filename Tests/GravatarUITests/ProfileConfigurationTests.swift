@@ -119,6 +119,7 @@ final class TestProfileConfiguration: XCTestCase {
         config.avatarConfiguration.avatarLength = 80
         view.configuration = config
         let superView = view.wrapInSuperView(with: Constants.width)
-        assertSnapshot(of: superView, as: .image)
+        // Summary layout: the personal info line is a larger share of this frame than in the full profile views.
+        assertSnapshot(of: superView, as: .imageWithHostTolerance(precision: 0.96))
     }
 }

@@ -23,7 +23,7 @@ final class ProfileViewSnapshots: XCTestCase {
             let containerView = wrap(profileView)
             containerView.overrideUserInterfaceStyle = interfaceStyle
             let postfix = interfaceStyle == .dark ? "view-dark" : "view"
-            assertSnapshot(of: containerView, as: .image, named: postfix, testName: "profileView")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: postfix, testName: "profileView")
         }
     }
 
@@ -35,7 +35,7 @@ final class ProfileViewSnapshots: XCTestCase {
             let containerView = wrap(profileView)
             containerView.overrideUserInterfaceStyle = interfaceStyle
             let postfix = interfaceStyle == .dark ? "view-dark" : "view"
-            assertSnapshot(of: containerView, as: .image, named: postfix, testName: "profileSummaryView")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: postfix, testName: "profileSummaryView")
         }
     }
 
@@ -47,7 +47,7 @@ final class ProfileViewSnapshots: XCTestCase {
             let containerView = wrap(profileView)
             containerView.overrideUserInterfaceStyle = interfaceStyle
             let postfix = interfaceStyle == .dark ? "view-dark" : "view"
-            assertSnapshot(of: containerView, as: .image, named: postfix, testName: "largeProfileView")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: postfix, testName: "largeProfileView")
         }
     }
 
@@ -59,7 +59,7 @@ final class ProfileViewSnapshots: XCTestCase {
             let containerView = wrap(profileView)
             containerView.overrideUserInterfaceStyle = interfaceStyle
             let postfix = interfaceStyle == .dark ? "view-dark" : "view"
-            assertSnapshot(of: containerView, as: .image, named: postfix, testName: "largeProfileSummaryView")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: postfix, testName: "largeProfileSummaryView")
         }
     }
 

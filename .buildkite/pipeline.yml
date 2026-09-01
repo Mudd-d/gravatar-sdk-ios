@@ -72,10 +72,7 @@ steps:
         key: build_demo
         depends_on: test
         plugins: [$CI_TOOLKIT]
-        command: |
-          install_gems
-          install_swiftpm_dependencies --project "Demo/Gravatar-Demo.xcodeproj"
-          make build-demo-for-distribution
+        command: .buildkite/commands/build-demo.sh
         artifact_paths:
           - ".build/artifacts/*.ipa"
           - ".build/artifacts/*.dSYM.zip"

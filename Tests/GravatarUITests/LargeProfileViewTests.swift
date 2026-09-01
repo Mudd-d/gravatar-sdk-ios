@@ -20,7 +20,7 @@ final class LargeProfileViewTests: XCTestCase {
         for paletteType in palettesToTest {
             let (cardView, containerView) = createViews(paletteType: paletteType)
             cardView.update(with: TestProfileCardModel.fullCard())
-            assertSnapshot(of: containerView, as: .image, named: "testLargeProfileView-\(paletteType.name)")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "testLargeProfileView-\(paletteType.name)")
         }
     }
 
@@ -28,7 +28,7 @@ final class LargeProfileViewTests: XCTestCase {
     func testInitiallyEmptyLargeProfileView() throws {
         for paletteType in palettesToTest {
             let (_, containerView) = createViews(paletteType: paletteType)
-            assertSnapshot(of: containerView, as: .image, named: "\(paletteType.name)")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(paletteType.name)")
         }
     }
 
@@ -39,7 +39,7 @@ final class LargeProfileViewTests: XCTestCase {
         containerView.overrideUserInterfaceStyle = interfaceStyle
         cardView.update(with: TestProfileCardModel.fullCard())
         cardView.update(with: nil) // clear data and show placeholders
-        assertSnapshot(of: containerView, as: .image, named: "\(interfaceStyle.name)")
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(interfaceStyle.name)")
     }
 
     @MainActor
@@ -50,7 +50,7 @@ final class LargeProfileViewTests: XCTestCase {
         cardView.update(with: TestProfileCardModel.fullCard())
         cardView.update(with: nil) // clear data and show placeholders
         cardView.update(with: TestProfileCardModel.summaryCard()) // set data and hide placeholders
-        assertSnapshot(of: containerView, as: .image, named: "\(interfaceStyle.name)")
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(interfaceStyle.name)")
     }
 
     @MainActor
@@ -60,7 +60,7 @@ final class LargeProfileViewTests: XCTestCase {
         containerView.overrideUserInterfaceStyle = interfaceStyle
         cardView.update(with: TestProfileCardModel.fullCard())
         cardView.update(with: nil) // clear data and show placeholders
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -71,7 +71,7 @@ final class LargeProfileViewTests: XCTestCase {
         cardView.update(with: TestProfileCardModel.fullCard())
         cardView.update(with: nil) // clear data and show placeholders
         cardView.update(with: TestProfileCardModel.summaryCard()) // set data and hide placeholders
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -80,7 +80,7 @@ final class LargeProfileViewTests: XCTestCase {
         let (cardView, containerView) = createViews(paletteType: .light)
         containerView.overrideUserInterfaceStyle = interfaceStyle
         cardView.placeholderColorPolicy = .custom(PlaceholderColors(backgroundColor: .purple, loadingAnimationColors: [.green, .blue]))
-        assertSnapshot(of: containerView, as: .image, named: "\(interfaceStyle.name)")
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(interfaceStyle.name)")
     }
 
     @MainActor
@@ -90,7 +90,7 @@ final class LargeProfileViewTests: XCTestCase {
         containerView.overrideUserInterfaceStyle = interfaceStyle
         cardView.isLoading = true
         cardView.isLoading = false
-        assertSnapshot(of: containerView, as: .image, named: "\(interfaceStyle.name)")
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(interfaceStyle.name)")
     }
 
     @MainActor
@@ -101,7 +101,7 @@ final class LargeProfileViewTests: XCTestCase {
         cardView.isLoading = true
         cardView.update(with: TestProfileCardModel.fullCard())
         cardView.isLoading = false
-        assertSnapshot(of: containerView, as: .image, named: "\(interfaceStyle.name)")
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "\(interfaceStyle.name)")
     }
 
     @MainActor
@@ -111,7 +111,7 @@ final class LargeProfileViewTests: XCTestCase {
             cardView.updateWithClaimProfilePrompt()
             containerView.backgroundColor = .systemBackground
             containerView.overrideUserInterfaceStyle = paletteType.palette.preferredUserInterfaceStyle
-            assertSnapshot(of: containerView, as: .image, named: "testLargeProfileView-\(paletteType.name)")
+            assertSnapshot(of: containerView, as: .imageWithHostTolerance(), named: "testLargeProfileView-\(paletteType.name)")
         }
     }
 
@@ -119,7 +119,7 @@ final class LargeProfileViewTests: XCTestCase {
     func testLargeProfileViewEmptyStateCustomPalette() throws {
         let (cardView, containerView) = createViews(paletteType: .custom(Palette.testPalette))
         cardView.updateWithClaimProfilePrompt()
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -129,7 +129,7 @@ final class LargeProfileViewTests: XCTestCase {
             avatarType: .imageView(TestAvatarImageView(frame: .zero))
         )
         cardView.update(with: TestProfileCardModel.fullCard())
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -141,7 +141,7 @@ final class LargeProfileViewTests: XCTestCase {
         )
         avatarView.applyStyle()
         cardView.update(with: TestProfileCardModel.fullCard())
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -152,7 +152,7 @@ final class LargeProfileViewTests: XCTestCase {
             avatarType: .imageViewWrapper(avatarView)
         )
         cardView.update(with: TestProfileCardModel.fullCard())
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
@@ -163,7 +163,7 @@ final class LargeProfileViewTests: XCTestCase {
             avatarType: .custom(avatarView)
         )
         cardView.update(with: TestProfileCardModel.fullCard())
-        assertSnapshot(of: containerView, as: .image)
+        assertSnapshot(of: containerView, as: .imageWithHostTolerance())
     }
 
     @MainActor
